@@ -6,12 +6,25 @@ import About from './components/About';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Navbar from './components/Navbar';
+import Floating from './components/Floating';
+import Footer from './components/Footer';
 import './index.css';
-
-function App() {
+// / Main App Component
+const App = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    // Check for saved theme preference or default to dark mode
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setDarkMode(savedTheme === 'dark');
+    } else {
+      setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -20,7 +33,12 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text)] transition-colors duration-300">
+    <div className={`min-h-screen transition-all duration-500 ${
+      darkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white' 
+        : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'
+    }`}>
+      <Floating />
       <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
       <main>
         <Hero />
@@ -28,11 +46,9 @@ function App() {
         <Projects />
         <Contact />
       </main>
-      <footer className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>© 2025 Prabin Parajuli. All rights reserved.</p>
-      </footer>
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;
