@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 import './index.css';
 // / Main App Component
 const App = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
     // Check for saved theme preference or default to dark mode

@@ -93,7 +93,7 @@ const Contact = () => {
                     icon: '📸',
                     label: 'Instagram',
                     value: '@mantramountain',
-                    href: 'https://www.instagram.com/mantramountain/'
+                    href: 'https://www.instagram.com/prabin_496/'
                   }
                 ].map((contact, index) => (
                   <motion.a

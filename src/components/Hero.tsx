@@ -111,8 +111,8 @@ const Hero = () => {
             >
               {[
                 { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: "💼", label: "LinkedIn" },
-                { href: "https://github.com/yourusername", icon: "🔗", label: "GitHub" },
-                { href: "https://www.instagram.com/mantramountain/", icon: "📸", label: "Instagram" }
+                { href: "https://github.com/prabin_496", icon: "🔗", label: "GitHub" },
+                { href: "https://www.instagram.com/prabin_496/", icon: "📸", label: "Instagram" }
               ].map((social, index) => (
                 <motion.a
                   key={social.label}
