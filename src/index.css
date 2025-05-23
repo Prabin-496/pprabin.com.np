@@ -6,34 +6,13 @@
   :root {
     --primary: #3b82f6; /* Blue */
     --secondary: #8b5cf6; /* Purple */
-    --background: #ffffff;
-    --text: #1f2937;
-  }
-
-  .dark {
-    --background: #1f2937;
-    --text: #e5e7eb;
+    --background: #000000;
+    --text: #000000;
   }
 }
 
 @layer components {
   .glass {
     @apply bg-white/30 dark:bg-gray-800/30 backdrop-blur-md border border-gray-200/30 dark:border-gray-700/30 shadow-lg;
-  }
-
-  .section {
-    @apply py-16 md:py-24;
-  }
-
-  .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .btn {
-    @apply px-6 py-3 rounded-full font-medium transition-colors;
-  }
-
-  .btn-primary {
-    @apply bg-primary text-white hover:bg-blue-700;
   }
 }
