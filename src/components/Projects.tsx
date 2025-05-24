@@ -1,6 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
+import mantraMountain from '../assets/mantraMountain.png';
+import ludo from '../assets/Ludo.png';
+import travelHimalayan from '../assets/travelHimalayan.png'
 
 const Projects = () => {
   const projects = [
@@ -8,11 +11,28 @@ const Projects = () => {
       title: 'Mantra Mountain',
       description:
         'A trekking package booking application built with the MERN stack. Features user authentication, package browsing, booking management, and an admin dashboard.',
-      image: '/mantra-mountain.jpg',
+      image: mantraMountain,
       technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
       liveLink: 'https://mantra-mountain.vercel.app/',
       githubLink: 'https://github.com/yourusername/mantra-mountain',
     },
+    {
+      title: 'Ludo Blockchain',
+      description:
+        'A blockchain-based ludo game built with the MERN stack and solidity',
+      image:ludo,
+      technologies: ['React', 'solidity','Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
+      liveLink: 'https://solana-ludo-kings.vercel.app/',
+    },
+    {
+      title: 'Travel Himalayan',
+      description:
+        'Made using wordpress by Prabin Parajuli',
+      image:travelHimalayan,
+      technologies: ['Wordpress'],
+      liveLink: 'https://www.travelhimalayanepal.com/',
+    },
+
   ];
 
   return (
@@ -34,7 +54,9 @@ const Projects = () => {
                 className="glass rounded-xl overflow-hidden shadow-lg"
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
               >
-                <div className="aspect-[16/9] bg-gradient-to-br from-primary/20 to-secondary/20"></div>
+                <div className="aspect-[16/5] bg-gradient-to-br from-primary/20 to-secondary/20">
+                <img src={project.image} alt="" />
+                </div>
                 <div className="p-6">
                   <h3 className="text-xl sm:text-2xl font-bold mb-3 text-gray-800 dark:text-gray-200">{project.title}</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{project.description}</p>
