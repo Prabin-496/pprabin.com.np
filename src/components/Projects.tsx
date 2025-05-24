@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import mantraMountain from '../assets/mantraMountain.png';
+import mantramountain from '../assets/mantramountain.png';
 import ludo from '../assets/Ludo.png';
 import travelHimalayan from '../assets/travelHimalayan.png'
 
@@ -11,7 +11,7 @@ const Projects = () => {
       title: 'Mantra Mountain',
       description:
         'A trekking package booking application built with the MERN stack. Features user authentication, package browsing, booking management, and an admin dashboard.',
-      image: mantraMountain,
+      image: mantramountain,
       technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
       liveLink: 'https://mantra-mountain.vercel.app/',
       githubLink: 'https://github.com/yourusername/mantra-mountain',
