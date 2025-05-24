@@ -101,3 +101,7 @@ const Projects = () => {
 };
 
 export default Projects;
+
+
+
+// this is kust to add the changes to the commit
