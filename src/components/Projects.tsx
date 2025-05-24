@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import mantramountain from '../assets/mantramountain.png';
-import ludo from '../assets/Ludo.png';
+import Mantramountain from '../assets/mantramountain.png';
+import Ludo from '../assets/Ludo.png';
 import travelHimalayan from '../assets/travelHimalayan.png'
 
 const Projects = () => {
@@ -11,16 +11,15 @@ const Projects = () => {
       title: 'Mantra Mountain',
       description:
         'A trekking package booking application built with the MERN stack. Features user authentication, package browsing, booking management, and an admin dashboard.',
-      image: mantramountain,
+      image: Mantramountain,
       technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
       liveLink: 'https://mantra-mountain.vercel.app/',
-      githubLink: 'https://github.com/yourusername/mantra-mountain',
     },
     {
       title: 'Ludo Blockchain',
       description:
         'A blockchain-based ludo game built with the MERN stack and solidity',
-      image:ludo,
+      image:Ludo,
       technologies: ['React', 'solidity','Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
       liveLink: 'https://solana-ludo-kings.vercel.app/',
     },
