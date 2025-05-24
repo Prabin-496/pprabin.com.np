@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
-import Mantramountain from '../assets/mantramountain.png';
-import Ludo from '../assets/Ludo.png';
+import Mantramountain from '../Assets/mantramountain.png';
+import Ludo from '../Assets/Ludo.png';
 import travelHimalayan from '../assets/travelHimalayan.png'
+//for vercel the Assets is capital
 
 const Projects = () => {
   const projects = [
