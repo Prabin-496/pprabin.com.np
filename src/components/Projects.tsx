@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
 import Mantramountain from '../Assets/mantramountain.png';
 import Ludo from '../Assets/Ludo.png';
-import travelHimalayan from '../assets/travelHimalayan.png'
+import travelHimalayan from '../Assets/travelHimalayan.png'
+import MantraMountainWOrdpress from '../Assets/mmimage.png'
 //for vercel the Assets is capital
 
 const Projects = () => {
@@ -32,6 +33,13 @@ const Projects = () => {
       technologies: ['Wordpress'],
       liveLink: 'https://www.travelhimalayanepal.com/',
     },
+    {
+      title:'Mantra Mountain Nepal Treks PVT LTD',
+      description:'This is a booking site made using wordpress',
+      image: MantraMountainWOrdpress,
+      technologies: ['Wordpress'],
+      liveLink:'https://www.mantramountain.com',
+    }
 
   ];
 
