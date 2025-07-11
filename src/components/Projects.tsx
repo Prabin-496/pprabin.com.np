@@ -5,6 +5,7 @@ import Mantramountain from '../Assets/mantramountain.png';
 import Ludo from '../Assets/Ludo.png';
 import travelHimalayan from '../Assets/travelHimalayan.png'
 import MantraMountainWOrdpress from '../Assets/mmimage.png'
+import WatersGold from '../Assets/watersgold.png'
 //for vercel the Assets is capital
 
 const Projects = () => {
@@ -39,6 +40,13 @@ const Projects = () => {
       image: MantraMountainWOrdpress,
       technologies: ['Wordpress'],
       liveLink:'https://www.mantramountain.com',
+    },
+      {
+      title:'Barefoot and boujee',
+      description:'A muai thai gym website made using wordpress',
+      image: WatersGold,
+      technologies: ['Wordpress'],
+      liveLink:'https://watersgold.io/',
     }
 
   ];
