@@ -308,7 +308,7 @@ const Portfolio = () => {
           >
             {[
               { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" />, label: "LinkedIn" },
-              { href: "https://github.com/prabin_496", icon: <Github className="w-5 h-5" />, label: "GitHub" },
+              { href: "https://github.com/Prabin-496", icon: <Github className="w-5 h-5" />, label: "GitHub" },
               { href: "https://www.instagram.com/prabin_496/", icon: <Instagram className="w-5 h-5" />, label: "Instagram" }
             ].map((social, index) => (
               <motion.a
@@ -1000,7 +1000,7 @@ const Portfolio = () => {
           >
             {[
               { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" /> },
-              { href: "https://github.com/prabin_496", icon: <Github className="w-5 h-5" /> },
+              { href: "https://github.com/prabin-496", icon: <Github className="w-5 h-5" /> },
               { href: "https://www.instagram.com/prabin_496/", icon: <Instagram className="w-5 h-5" /> },
               { href: "https://www.instagram.com/prabininthecity/", icon: <Camera className="w-5 h-5" /> }
             ].map((social, index) => (
