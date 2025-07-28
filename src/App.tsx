@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
-import Hero from './components/Hero';
-import About from './components/About';
-import Projects from './components/Projects';
-import Contact from './components/Contact';
-import Navbar from './components/Navbar';
+// import Hero from './components/Hero';
+// import About from './components/About';
+import Projects from './components/Portfolio';
+// import Contact from './components/Contact';
+// import Navbar from './components/Navbar';
 import Floating from './components/Floating';
 import Footer from './components/Footer';
 import './index.css';
@@ -39,14 +39,14 @@ const App = () => {
         : 'bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900'
     }`}>
       <Floating />
-      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+      {/* <Navbar darkMode={darkMode} setDarkMode={setDarkMode} /> */}
       <main>
-        <Hero />
-        <About />
+        {/* <Hero />
+        <About /> */}
         <Projects />
-        <Contact />
+        {/* <Contact /> */}
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

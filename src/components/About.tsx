@@ -12,6 +12,7 @@ const About = () => {
     { name: 'Tailwind CSS', level: 92, icon: '🎨' },
     { name: 'Docker', level: 80, icon: '🐳' },
     { name: 'Git', level: 88, icon: '📚' },
+    { name: 'Video Editing', level:60, icon: '🎨' },
   ];
 
   return (
