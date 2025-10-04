@@ -9,6 +9,7 @@ import MMWP from '../Assets/mmimage.png';
 import MMPROMO from '../Assets/MMPROMO.png';
 import HowToLoseWeight  from '../Assets/HowToLoseWeight.png';
 import pullup from '../Assets/pullup.png';
+import IPO from '../Assets/IPO.png';
 
 
 
@@ -111,6 +112,14 @@ const Portfolio = () => {
       thumbnail: pullup,
       videoLink: 'https://www.youtube.com/shorts/5Cl9mI-2HoE',
       software: 'DaVinci Resolve'
+    },
+     {
+      id: 4,
+      title: 'Share Market Content with more than 10k views',
+      description: 'About the Nepali share markrt news about the Upcomming IPO.',
+      thumbnail: IPO,
+      videoLink: 'https://www.tiktok.com/@eyeonearth5/video/7555928771740650773',
+      software: 'Final Cut Pro'
     }
   ];
 
