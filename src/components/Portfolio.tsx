@@ -120,6 +120,22 @@ const Portfolio = () => {
       thumbnail: IPO,
       videoLink: 'https://www.tiktok.com/@eyeonearth5/video/7555928771740650773',
       software: 'Final Cut Pro'
+    },
+    {
+      id: 5,
+      title: 'Share Market Chanel on Tiktok',
+      description: 'About the Nepali share markrt news  and finincial Knaowladge sharing with the Nepali people.',
+      thumbnail: IPO,
+      videoLink: 'https://www.tiktok.com/@eyeonearth5',
+      software: 'Final Cut Pro'
+    },
+    {
+      id: 6,
+      title: 'Adventure Travel Chanel on Tiktok',
+      description: 'Trevel and places in nepal and discount offer for the travel and adventure activities.',
+      thumbnail: MMPROMO,
+      videoLink: 'https://www.tiktok.com/@this.is.non.perso',
+      software: 'Final Cut Pro'
     }
   ];
 
@@ -991,6 +1007,10 @@ const Portfolio = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+
+
+            
+            
           >
             <div className="font-bold text-xl bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               Prabin.Parajuli
