@@ -9,7 +9,9 @@ import MMWP from '../Assets/mmimage.png';
 import MMPROMO from '../Assets/MMPROMO.png';
 import HowToLoseWeight  from '../Assets/HowToLoseWeight.png';
 import pullup from '../Assets/pullup.png';
-import IPO from '../Assets/IPO.png';
+import IPO from '../Assets/IPO.png';  hotair
+import hotair from '../Assets/hotair.png';
+
 
 
 
@@ -89,6 +91,23 @@ const Portfolio = () => {
   ];
 
   const videoProjects = [
+    
+    {
+      id: 5,
+      title: 'Share Market Chanel on Tiktok',
+      description: 'About the Nepali share markrt news  and finincial Knaowladge sharing with the Nepali people.',
+      thumbnail: IPO,
+      videoLink: 'https://www.tiktok.com/@eyeonearth5',
+      software: 'Final Cut Pro'
+    },
+    {
+      id: 6,
+      title: 'Adventure Travel Chanel on Tiktok',
+      description: 'Trevel and places in nepal and discount offer for the travel and adventure activities.',
+      thumbnail: hotair,
+      videoLink: 'https://www.tiktok.com/@this.is.non.perso',
+      software: 'Final Cut Pro'
+    },
     {
       id: 1,
       title: 'Travel Promo Video',
@@ -119,22 +138,6 @@ const Portfolio = () => {
       description: 'About the Nepali share markrt news about the Upcomming IPO.',
       thumbnail: IPO,
       videoLink: 'https://www.tiktok.com/@eyeonearth5/video/7555928771740650773',
-      software: 'Final Cut Pro'
-    },
-    {
-      id: 5,
-      title: 'Share Market Chanel on Tiktok',
-      description: 'About the Nepali share markrt news  and finincial Knaowladge sharing with the Nepali people.',
-      thumbnail: IPO,
-      videoLink: 'https://www.tiktok.com/@eyeonearth5',
-      software: 'Final Cut Pro'
-    },
-    {
-      id: 6,
-      title: 'Adventure Travel Chanel on Tiktok',
-      description: 'Trevel and places in nepal and discount offer for the travel and adventure activities.',
-      thumbnail: MMPROMO,
-      videoLink: 'https://www.tiktok.com/@this.is.non.perso',
       software: 'Final Cut Pro'
     }
   ];
