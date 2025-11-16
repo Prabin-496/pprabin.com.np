@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ExternalLink, Github, Mail, Linkedin, Instagram, Youtube, Menu, X, Camera, Code, Video, Globe } from 'lucide-react';
+import { ChevronDown, ExternalLink, Github, Mail, Linkedin, Instagram, Youtube, Menu, X, Camera, Code, Video, Globe, Image as ImageIcon } from 'lucide-react';
 import MM from '../Assets/mantramountain.png';
 import Ludo from '../Assets/Ludo.png';
 import TH from '../Assets/travelHimalayan.png';
-import WG from '../Assets/watersgold.png';
 import MMWP from '../Assets/mmimage.png';
-import MMPROMO from '../Assets/MMPROMO.png';
-import HowToLoseWeight  from '../Assets/HowToLoseWeight.png';
 import pullup from '../Assets/pullup.png';
-import IPO from '../Assets/IPO.png';  hotair
+import IPO from '../Assets/IPO.png';  
 import hotair from '../Assets/hotair.png';
+
+// Placeholder for missing images
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
 
 
 
@@ -18,7 +18,7 @@ import hotair from '../Assets/hotair.png';
 const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -83,7 +83,7 @@ const Portfolio = () => {
       id: 5,
       title: 'Waters Gold',
       description: 'Modern Retreat in Pokhara, Nepal serving Muay Thai and wellness programs.',
-      image: WG,
+      image: PLACEHOLDER_IMAGE,
       technologies: ['WordPress', 'Custom CSS', 'JavaScript'],
       liveLink: 'https://watersgold.io/',
       category: 'wordpress'
@@ -112,7 +112,7 @@ const Portfolio = () => {
       id: 1,
       title: 'Travel Promo Video',
       description: 'Cinematic travel promotional video showcasing the beauty of Nepal.',
-      thumbnail: MMPROMO,
+      thumbnail: PLACEHOLDER_IMAGE,
       videoLink: 'https://www.youtube.com/shorts/VpZ3d9gNN1o',
       software: 'DaVinci Resolve'
     },
@@ -120,7 +120,7 @@ const Portfolio = () => {
       id: 2,
       title: 'Fitness Motivation',
       description: 'High-energy fitness video focused on weight loss motivation.',
-      thumbnail: HowToLoseWeight,
+      thumbnail: PLACEHOLDER_IMAGE,
       videoLink: 'https://www.youtube.com/shorts/--vdahx_6Kc',
       software: 'DaVinci Resolve'
     },
@@ -131,14 +131,6 @@ const Portfolio = () => {
       thumbnail: pullup,
       videoLink: 'https://www.youtube.com/shorts/5Cl9mI-2HoE',
       software: 'DaVinci Resolve'
-    },
-     {
-      id: 4,
-      title: 'Share Market Content with more than 10k views',
-      description: 'About the Nepali share markrt news about the Upcomming IPO.',
-      thumbnail: IPO,
-      videoLink: 'https://www.tiktok.com/@eyeonearth5/video/7555928771740650773',
-      software: 'Final Cut Pro'
     }
   ];
 
@@ -526,14 +518,25 @@ const Portfolio = () => {
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ scale: 1.02, y: -5 }}
               >
-                <div className="aspect-video overflow-hidden">
-                  <motion.img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.3 }}
-                  />
+                <div className="aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  {project.image ? (
+                    <motion.img
+                      src={project.image}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = PLACEHOLDER_IMAGE;
+                      }}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                      <ImageIcon className="w-16 h-16 mb-2" />
+                      <span className="text-sm">Image not available</span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-8">
                   <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
@@ -607,14 +610,24 @@ const Portfolio = () => {
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02, y: -5 }}
                 >
-                  <div className="aspect-video relative overflow-hidden">
-                    <motion.img
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.3 }}
-                    />
+                  <div className="aspect-video relative overflow-hidden bg-gray-200 dark:bg-gray-700">
+                    {video.thumbnail ? (
+                      <motion.img
+                        src={video.thumbnail}
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = PLACEHOLDER_IMAGE;
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+                        <ImageIcon className="w-16 h-16" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <motion.a
                         href={video.videoLink}
@@ -791,7 +804,7 @@ const Portfolio = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setIsSubmitting(true);
       // Simulate form submission
@@ -801,7 +814,7 @@ const Portfolio = () => {
       setFormData({ name: '', email: '', message: '' });
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
     };
