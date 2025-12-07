@@ -22,7 +22,7 @@ const Portfolio = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'projects', 'photography', 'contact'];
+      const sections = ['home', 'about', 'skills', 'video-editing', 'projects', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       sections.forEach(section => {
@@ -91,69 +91,68 @@ const Portfolio = () => {
   ];
 
   const videoProjects = [
-    
     {
-      id: 5,
-      title: 'Share Market Chanel on Tiktok',
-      description: 'About the Nepali share markrt news  and finincial Knaowladge sharing with the Nepali people.',
+      id: 1,
+      title: 'Share Market Channel on TikTok',
+      description: 'Nepali share market news and financial knowledge sharing. Created engaging content with high retention rates using algorithm-optimized editing techniques.',
       thumbnail: IPO,
       videoLink: 'https://www.tiktok.com/@eyeonearth5',
       software: 'Final Cut Pro'
     },
     {
-      id: 6,
-      title: 'Adventure Travel Chanel on Tiktok',
-      description: 'Trevel and places in nepal and discount offer for the travel and adventure activities.',
+      id: 2,
+      title: 'Adventure Travel Channel on TikTok',
+      description: 'Travel and places in Nepal with discount offers for travel and adventure activities. Focused on hook creation and audience retention strategies.',
       thumbnail: hotair,
       videoLink: 'https://www.tiktok.com/@this.is.non.perso',
       software: 'Final Cut Pro'
     },
     {
-      id: 1,
+      id: 3,
       title: 'Travel Promo Video',
-      description: 'Cinematic travel promotional video showcasing the beauty of Nepal.',
+      description: 'Cinematic travel promotional video showcasing the beauty of Nepal with optimized editing for social media engagement.',
       thumbnail: PLACEHOLDER_IMAGE,
       videoLink: 'https://www.youtube.com/shorts/VpZ3d9gNN1o',
-      software: 'DaVinci Resolve'
+      software: 'Final Cut Pro'
     },
     {
-      id: 2,
+      id: 4,
       title: 'Fitness Motivation',
-      description: 'High-energy fitness video focused on weight loss motivation.',
+      description: 'High-energy fitness video focused on weight loss motivation with strategic hook placement and retention techniques.',
       thumbnail: PLACEHOLDER_IMAGE,
       videoLink: 'https://www.youtube.com/shorts/--vdahx_6Kc',
-      software: 'DaVinci Resolve'
+      software: 'Final Cut Pro'
     },
     {
-      id: 3,
+      id: 5,
       title: 'Lifestyle Content',
-      description: 'Creative lifestyle video with dynamic editing and color grading.',
+      description: 'Creative lifestyle video with dynamic editing, color grading, and algorithm-optimized pacing for maximum engagement.',
       thumbnail: pullup,
       videoLink: 'https://www.youtube.com/shorts/5Cl9mI-2HoE',
-      software: 'DaVinci Resolve'
+      software: 'Final Cut Pro'
     }
   ];
 
   const skills = [
     {
-      category: 'Frontend Development',
-      icon: <Code className="w-6 h-6" />,
-      skills: ['React', 'JavaScript', 'TypeScript', 'Tailwind CSS', 'HTML5', 'CSS3']
-    },
-    {
-      category: 'Backend Development',
-      icon: <Globe className="w-6 h-6" />,
-      skills: ['Node.js', 'Express', 'MongoDB', 'MySQL', 'REST APIs', 'GraphQL']
-    },
-    {
-      category: 'Video Editing',
+      category: 'Video Editing & Production',
       icon: <Video className="w-6 h-6" />,
-      skills: ['DaVinci Resolve', 'Adobe Premiere', 'Color Grading', 'Motion Graphics']
+      skills: ['Final Cut Pro', 'Color Grading', 'Motion Graphics', 'Audio Mixing', 'Transitions & Effects', 'Video Optimization']
     },
     {
-      category: 'Photography',
-      icon: <Camera className="w-6 h-6" />,
-      skills: ['Portrait Photography', 'Landscape', 'Street Photography', 'Photo Editing']
+      category: 'Content Strategy & Creation',
+      icon: <Code className="w-6 h-6" />,
+      skills: ['Content Writing', 'Scripting', 'Storytelling', 'Hook Creation', 'Audience Retention', 'Algorithm Optimization']
+    },
+    {
+      category: 'Social Media Management',
+      icon: <Globe className="w-6 h-6" />,
+      skills: ['Platform Strategy', 'Content Planning', 'Analytics & Insights', 'Trend Analysis', 'Engagement Optimization', 'Brand Building']
+    },
+    {
+      category: 'Technical Skills',
+      icon: <Code className="w-6 h-6" />,
+      skills: ['React', 'JavaScript', 'WordPress', 'UI/UX Design', 'Web Development', 'Digital Marketing']
     }
   ];
 
@@ -174,19 +173,19 @@ const Portfolio = () => {
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'About', 'Skills', 'Projects', 'Photography', 'Contact'].map((item) => (
+            {['Home', 'About', 'Skills', 'Video Editing', 'Projects', 'Contact'].map((item) => (
               <motion.a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={`#${item.toLowerCase().replace(' ', '-')}`}
                 className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                  activeSection === item.toLowerCase()
+                  activeSection === item.toLowerCase().replace(' ', '-')
                     ? 'text-blue-400'
                     : 'text-gray-600 dark:text-gray-300 hover:text-blue-400'
                 }`}
                 whileHover={{ scale: 1.05 }}
               >
                 {item}
-                {activeSection === item.toLowerCase() && (
+                {activeSection === item.toLowerCase().replace(' ', '-') && (
                   <motion.div
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400"
                     layoutId="activeTab"
@@ -214,10 +213,10 @@ const Portfolio = () => {
             exit={{ opacity: 0, height: 0 }}
           >
             <div className="px-6 py-4 space-y-4">
-              {['Home', 'About', 'Skills', 'Projects', 'Photography', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Video Editing', 'Projects', 'Contact'].map((item) => (
                 <a
                   key={item}
-                  href={`#${item.toLowerCase()}`}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
                   className="block text-gray-600 dark:text-gray-300 hover:text-blue-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -277,7 +276,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Full Stack Developer & Creative Professional
+            Video Editor & Social Media Content Creator
           </motion.h2>
 
           <motion.p
@@ -286,7 +285,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            Crafting exceptional digital experiences with modern technologies. Specialized in MERN stack development, video editing, and photography - creating solutions that make a difference.
+            Specialized in Final Cut Pro video editing, content creation, and social media strategy. Expert in algorithm optimization, audience retention, scripting, and creating engaging hooks that drive results. Perfect fit for Video Editor and Social Media Manager roles.
           </motion.p>
 
           <motion.div
@@ -296,7 +295,7 @@ const Portfolio = () => {
             transition={{ delay: 0.9 }}
           >
             <motion.a
-              href="#projects"
+              href="#video-editing"
               className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white font-semibold shadow-2xl overflow-hidden"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -391,13 +390,13 @@ const Portfolio = () => {
               transition={{ delay: 0.3 }}
             >
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                I'm a passionate Full Stack Developer and creative professional based in Pokhara, Nepal. With expertise in modern web technologies and a keen eye for design, I create digital experiences that are both functional and beautiful.
+                I'm a passionate Video Editor and Social Media Content Creator based in Pokhara, Nepal. Currently pursuing BSc (Hons) Computing at Informatics College Pokhara (partnered with London Metropolitan University, UK), I combine my technical education with extensive expertise in video editing, content creation, and social media strategy.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Beyond coding, I'm also a photographer and video editor, bringing a unique creative perspective to every project. I believe in the power of technology to solve real-world problems and create meaningful connections.
+                Specialized in Final Cut Pro, I've dedicated countless hours studying social media algorithms, content writing, scripting, and audience retention strategies. My work focuses on creating engaging video content that hooks viewers from the first second and maintains high retention rates throughout.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                When I'm not developing applications, you can find me exploring the mountains of Nepal with my camera, creating visual stories that capture the beauty of our world.
+                With experience as a Campaign Manager at Basiyo and a background in UI/UX design, web development, and digital marketing, I bring a unique blend of technical skills and creative vision to every project. I'm the perfect fit for roles requiring video editing expertise, social media management, and content strategy.
               </p>
             </motion.div>
 
@@ -411,11 +410,15 @@ const Portfolio = () => {
               <div className="aspect-square rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/20 p-8">
                 <div className="w-full h-full rounded-2xl bg-gradient-to-br from-blue-400/10 to-purple-400/10 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-6xl mb-4">🚀</div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Always Learning</h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Constantly exploring new technologies and creative techniques to deliver innovative solutions.
+                    <div className="text-6xl mb-4">🎬</div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Video Editing Expert</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Specialized in Final Cut Pro with deep knowledge of social media algorithms, content strategy, and audience engagement.
                     </p>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <p>🎓 BSc (Hons) Computing</p>
+                      <p>📍 Informatics College Pokhara</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -502,9 +505,18 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Featured Projects
+                Web Development Projects
               </span>
             </motion.h2>
+            <motion.p
+              className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Alongside my video editing expertise, I also develop web applications and digital solutions
+            </motion.p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
@@ -586,7 +598,111 @@ const Portfolio = () => {
             ))}
           </div>
 
-          {/* Video Projects Section */}
+        </motion.div>
+      </div>
+    </section>
+  );
+
+  const VideoEditing = () => (
+    <section id="video-editing" className="py-32 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-50/30 to-transparent dark:via-gray-900/30"></div>
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-center mb-20">
+            <motion.h2
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Video Editing Expertise
+              </span>
+            </motion.h2>
+            <motion.p
+              className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Specialized in Final Cut Pro with deep expertise in social media algorithm optimization, content strategy, and audience engagement
+            </motion.p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+                <Video className="w-12 h-12 text-blue-400 mb-6" />
+                <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+                  Final Cut Pro Specialist
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  With extensive experience in Final Cut Pro, I create engaging video content optimized for social media platforms. My expertise includes color grading, motion graphics, transitions, and audio mixing to produce professional-quality videos that drive engagement.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Algorithm-Optimized Editing</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Hook Creation & Audience Retention</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Content Strategy & Scripting</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+                <Code className="w-12 h-12 text-purple-400 mb-6" />
+                <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+                  Content Creation & Strategy
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
+                  Beyond editing, I excel in content writing, scripting, and understanding social media algorithms. I've studied extensively on how to beat social media algorithms, focusing on audience retention, hook creation, and engagement optimization.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Social Media Algorithm Expertise</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Script Writing & Storytelling</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-gray-600 dark:text-gray-400">Performance Analytics & Optimization</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Video Projects Showcase */}
           <div className="mt-20">
             <motion.h3
               className="text-3xl font-bold mb-12 text-center"
@@ -595,7 +711,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                Video Editing Showcase
+                Featured Video Projects
               </span>
             </motion.h3>
 
@@ -656,139 +772,40 @@ const Portfolio = () => {
               ))}
             </div>
           </div>
-        </motion.div>
-      </div>
-    </section>
-  );
 
-  const Photography = () => (
-    <section id="photography" className="py-32 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-50/30 to-transparent dark:via-gray-900/30"></div>
-      
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="text-center mb-20">
-            <motion.h2
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Photography Journey
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              Capturing moments and telling stories through the lens - explore my photographic adventures
-            </motion.p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
-            <motion.div
-              className="space-y-6"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
-                <Camera className="w-12 h-12 text-blue-400 mb-6" />
-                <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                  Visual Storytelling
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-                  Photography is my passion for capturing the beauty of Nepal's landscapes, 
-                  culture, and people. Each image tells a unique story, from the majestic 
-                  Himalayas to the vibrant streets of Pokhara.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <span className="text-gray-600 dark:text-gray-400">Landscape Photography</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-gray-600 dark:text-gray-400">Street Photography</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                    <span className="text-gray-600 dark:text-gray-400">Portrait Photography</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-            >
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
-                  'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=400&fit=crop',
-                  'https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=400&fit=crop',
-                  'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop'
-                ].map((image, index) => (
-                  <motion.div
-                    key={index}
-                    className="aspect-square rounded-2xl overflow-hidden shadow-xl"
-                    whileHover={{ scale: 1.05, rotate: index % 2 === 0 ? 2 : -2 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <img
-                      src={image}
-                      alt={`Photography ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Instagram Showcase */}
+          {/* Skills Showcase */}
           <motion.div
-            className="text-center"
+            className="mt-20 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.7 }}
           >
             <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-12 border border-white/20 shadow-2xl">
-              <Instagram className="w-16 h-16 text-pink-400 mx-auto mb-6" />
+              <Youtube className="w-16 h-16 text-red-400 mx-auto mb-6" />
               <h3 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Follow My Photography Journey
+                Perfect Fit for Video Editor & Social Media Manager Roles
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-                Join me on Instagram to see my latest photography work, behind-the-scenes content, 
-                and adventures through the beautiful landscapes of Nepal.
+                With expertise in Final Cut Pro, content strategy, algorithm optimization, and social media management, I bring the perfect combination of technical skills and creative vision that companies need for video editing and social media roles.
               </p>
-              <motion.a
-                href="https://www.instagram.com/prabininthecity/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Instagram className="w-5 h-5" />
-                @prabininthecity
-                <ExternalLink className="w-4 h-4" />
-              </motion.a>
+              <div className="grid md:grid-cols-3 gap-6 mt-8">
+                <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
+                  <div className="text-3xl mb-3">🎬</div>
+                  <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Video Editing</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Final Cut Pro Expert</p>
+                </div>
+                <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
+                  <div className="text-3xl mb-3">📊</div>
+                  <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Algorithm Knowledge</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Social Media Optimization</p>
+                </div>
+                <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
+                  <div className="text-3xl mb-3">✍️</div>
+                  <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Content Creation</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Scripting & Strategy</p>
+                </div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -848,7 +865,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                Ready to bring your ideas to life? Let's discuss your next project!
+                Looking for a Video Editor or Social Media Manager? Let's discuss how I can help bring your content vision to life!
               </motion.p>
             </div>
 
@@ -865,8 +882,7 @@ const Portfolio = () => {
                     Get in Touch
                   </h3>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    I'm always excited to work on new projects and collaborate with amazing people. 
-                    Whether you have a project in mind or just want to say hello, feel free to reach out!
+                    I'm always excited to work on new video editing and social media projects. Whether you need video content creation, social media management, or content strategy, I'm here to help bring your vision to life with Final Cut Pro expertise and algorithm-optimized content!
                   </p>
                 </div>
 
@@ -1032,7 +1048,7 @@ const Portfolio = () => {
               Prabin.Parajuli
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-              Full Stack Developer & Creative Professional
+              Video Editor & Social Media Content Creator
             </p>
           </motion.div>
 
@@ -1086,8 +1102,8 @@ const Portfolio = () => {
         <Hero />
         <About />
         <Skills />
+        <VideoEditing />
         <Projects />
-        <Photography />
         <Contact />
         <Footer />
       </div>

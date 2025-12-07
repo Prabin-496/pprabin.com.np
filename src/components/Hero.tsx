@@ -79,7 +79,7 @@ const Hero = () => {
               transition={{ delay: 0.9 }}
             >
               <motion.a
-                href="#projects"
+                href="#video-editing"
                 className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white font-semibold shadow-2xl overflow-hidden"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
