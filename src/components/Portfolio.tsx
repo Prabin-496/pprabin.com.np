@@ -8,6 +8,10 @@ import MMWP from '../Assets/mmimage.png';
 import pullup from '../Assets/pullup.png';
 import IPO from '../Assets/IPO.png';  
 import hotair from '../Assets/hotair.png';
+import travel from '../Assets/Tiktok_MantraPokhara.png';
+import gym from '../Assets/gymThumbnail.png';
+import loseWeight from '../Assets/how to lose weight.png';
+import market from '../Assets/market.png';
 
 // Placeholder for missing images
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
@@ -95,7 +99,7 @@ const Portfolio = () => {
       id: 1,
       title: 'Share Market Channel on TikTok',
       description: 'Nepali share market news and financial knowledge sharing. Created engaging content with high retention rates using algorithm-optimized editing techniques.',
-      thumbnail: IPO,
+      thumbnail: market,
       videoLink: 'https://www.tiktok.com/@eyeonearth5',
       software: 'Final Cut Pro'
     },
@@ -111,7 +115,7 @@ const Portfolio = () => {
       id: 3,
       title: 'Travel Promo Video',
       description: 'Cinematic travel promotional video showcasing the beauty of Nepal with optimized editing for social media engagement.',
-      thumbnail: PLACEHOLDER_IMAGE,
+      thumbnail: travel,
       videoLink: 'https://www.youtube.com/shorts/VpZ3d9gNN1o',
       software: 'Final Cut Pro'
     },
@@ -119,7 +123,7 @@ const Portfolio = () => {
       id: 4,
       title: 'Fitness Motivation',
       description: 'High-energy fitness video focused on weight loss motivation with strategic hook placement and retention techniques.',
-      thumbnail: PLACEHOLDER_IMAGE,
+      thumbnail: loseWeight,
       videoLink: 'https://www.youtube.com/shorts/--vdahx_6Kc',
       software: 'Final Cut Pro'
     },
@@ -127,7 +131,7 @@ const Portfolio = () => {
       id: 5,
       title: 'Lifestyle Content',
       description: 'Creative lifestyle video with dynamic editing, color grading, and algorithm-optimized pacing for maximum engagement.',
-      thumbnail: pullup,
+      thumbnail: gym,
       videoLink: 'https://www.youtube.com/shorts/5Cl9mI-2HoE',
       software: 'Final Cut Pro'
     }
