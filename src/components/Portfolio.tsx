@@ -12,7 +12,7 @@ import travel from '../Assets/Tiktok_MantraPokhara.png';
 import gym from '../Assets/gymThumbnail.png';
 import loseWeight from '../Assets/how to lose weight.png';
 import market from '../Assets/market.png';
-
+import handpan from '../Assets/handpan.jpeg';
 // Placeholder for missing images
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
 
@@ -91,7 +91,17 @@ const Portfolio = () => {
       technologies: ['WordPress', 'Custom CSS', 'JavaScript'],
       liveLink: 'https://watersgold.io/',
       category: 'wordpress'
+    },
+    {
+      id: 6,
+      title: 'Singapore Handpans',
+      description: 'E-commerce website for handcrafted handpans, showcasing instruments, sound samples, and brand story.',
+      image: handpan,
+      technologies: ['WordPress', 'Elementor', 'Custom CSS', 'JavaScript','JS'],
+      liveLink: 'https://singaporehandpans.com/',
+      category: 'wordpress'
     }
+    
   ];
 
   const videoProjects = [
