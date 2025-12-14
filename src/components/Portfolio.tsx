@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ExternalLink, Github, Mail, Linkedin, Instagram, Youtube, Menu, X, Camera, Code, Video, Globe, Image as ImageIcon } from 'lucide-react';
+import { ChevronDown, ExternalLink, Github, Mail, Linkedin, Instagram, Youtube, Menu, X, Camera, Code, Video, Globe, Image as ImageIcon, Briefcase, GraduationCap, Award, Languages } from 'lucide-react';
 import MM from '../Assets/mantramountain.png';
 import Ludo from '../Assets/Ludo.png';
 import TH from '../Assets/travelHimalayan.png';
 import MMWP from '../Assets/mmimage.png';
-import pullup from '../Assets/pullup.png';
-import IPO from '../Assets/IPO.png';  
 import hotair from '../Assets/hotair.png';
 import travel from '../Assets/Tiktok_MantraPokhara.png';
 import gym from '../Assets/gymThumbnail.png';
@@ -26,7 +24,7 @@ const Portfolio = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'video-editing', 'projects', 'contact'];
+      const sections = ['home', 'about', 'skills', 'experience', 'education', 'video-editing', 'projects', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       sections.forEach(section => {
@@ -149,25 +147,91 @@ const Portfolio = () => {
 
   const skills = [
     {
-      category: 'Video Editing & Production',
-      icon: <Video className="w-6 h-6" />,
-      skills: ['Final Cut Pro', 'Color Grading', 'Motion Graphics', 'Audio Mixing', 'Transitions & Effects', 'Video Optimization']
-    },
-    {
-      category: 'Content Strategy & Creation',
+      category: 'Frontend & Full-Stack Development',
       icon: <Code className="w-6 h-6" />,
-      skills: ['Content Writing', 'Scripting', 'Storytelling', 'Hook Creation', 'Audience Retention', 'Algorithm Optimization']
+      skills: ['MERN Stack', 'React', 'JavaScript', 'Node.js', 'Express', 'MongoDB', 'Responsive Web Design']
     },
     {
-      category: 'Social Media Management',
+      category: 'UI/UX Design & Development',
       icon: <Globe className="w-6 h-6" />,
-      skills: ['Platform Strategy', 'Content Planning', 'Analytics & Insights', 'Trend Analysis', 'Engagement Optimization', 'Brand Building']
+      skills: ['UI/UX Design', 'Figma', 'Admin Dashboards', 'Content Management', 'WordPress', 'WooCommerce']
     },
     {
-      category: 'Technical Skills',
+      category: 'Video Editing & Content Creation',
+      icon: <Video className="w-6 h-6" />,
+      skills: ['Final Cut Pro', 'Content Strategy', 'Social Media Management', 'Algorithm Optimization', 'SEO']
+    },
+    {
+      category: 'Additional Skills',
       icon: <Code className="w-6 h-6" />,
-      skills: ['React', 'JavaScript', 'WordPress', 'UI/UX Design', 'Web Development', 'Digital Marketing']
+      skills: ['Problem-Solving', 'Cross-functional Collaboration', 'Performance Optimization', 'Digital Marketing']
     }
+  ];
+
+  const workExperience = [
+    {
+      id: 1,
+      company: 'Mantra Mountain',
+      position: 'Full-Stack Developer',
+      location: 'Nepal',
+      period: 'Jan 2024 - 2025',
+      description: 'Built the initial company website using the MERN stack. Currently managing the live WordPress site, optimizing UX and content. Improved booking workflows, performance, and SEO visibility.',
+      technologies: ['MERN Stack', 'WordPress', 'React', 'Node.js', 'MongoDB', 'SEO']
+    },
+    {
+      id: 2,
+      company: 'Basiyo',
+      position: 'Campaign Manager / Web & UI Operations',
+      location: 'Nepal',
+      period: 'Feb 2022 - 2025',
+      description: 'Managed frontend content and admin dashboards for digital campaigns. Optimized UI/UX of landing pages to improve user experience. Tracked performance metrics and coordinated updates with design and dev teams.',
+      technologies: ['UI/UX Design', 'Admin Dashboards', 'Content Management', 'Performance Analytics']
+    },
+    {
+      id: 3,
+      company: 'S.A I.T Solution and Trade Concern',
+      position: 'Web Developer',
+      location: 'Nepal',
+      period: 'Mar 2020 - Jan 2022',
+      description: 'Developed and maintained business websites and landing pages. Implemented responsive UI designs and optimized site performance. Collaborated with clients to deliver functional, production-ready solutions.',
+      technologies: ['Web Development', 'Responsive Design', 'Client Collaboration', 'Performance Optimization']
+    }
+  ];
+
+  const education = [
+    {
+      id: 1,
+      degree: "Bachelor's Degree in Computing",
+      institution: 'London Metropolitan University',
+      location: 'Informatics College Pokhara',
+      period: 'Mar 2023 – Dec 2025',
+      focus: 'Focus on Web Development, Software Engineering, Databases, and Application Design.'
+    },
+    {
+      id: 2,
+      degree: 'High School Diploma',
+      institution: 'Motherland Secondary School',
+      location: 'Nepal',
+      period: 'Jan 2017 – Oct 2019',
+      focus: 'Business Administration & Management'
+    }
+  ];
+
+  const certifications = [
+    'Figma for UX Design',
+    'Learning npm',
+    'Microsoft 365 Copilot First Look',
+    'Objects in JavaScript',
+    'React (Multiple Certifications)',
+    'Node.js (Multiple Certifications)',
+    'AI (Multiple Certifications)',
+    'UX Design (Multiple Certifications)'
+  ];
+
+  const languages = [
+    { name: 'English', level: 'Fluent' },
+    { name: 'Nepali', level: 'Native' },
+    { name: 'Japanese', level: 'Elementary' }
   ];
 
   const Navigation = () => (
@@ -187,7 +251,7 @@ const Portfolio = () => {
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'About', 'Skills', 'Video Editing', 'Projects', 'Contact'].map((item) => (
+            {['Home', 'About', 'Skills', 'Experience', 'Education', 'Video Editing', 'Projects', 'Contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -227,7 +291,7 @@ const Portfolio = () => {
             exit={{ opacity: 0, height: 0 }}
           >
             <div className="px-6 py-4 space-y-4">
-              {['Home', 'About', 'Skills', 'Video Editing', 'Projects', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Experience', 'Education', 'Video Editing', 'Projects', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -290,7 +354,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Video Editor & Social Media Content Creator
+            IT & Web Engineer | Video Editor & Content Creator
           </motion.h2>
 
           <motion.p
@@ -299,7 +363,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            Specialized in Final Cut Pro video editing, content creation, and social media strategy. Expert in algorithm optimization, audience retention, scripting, and creating engaging hooks that drive results. Perfect fit for Video Editor and Social Media Manager roles.
+            Results-oriented IT and Web Engineer seeking challenging roles to apply expertise in designing and developing websites, user-focused interfaces, and scalable web applications. Proven track record in frontend development, problem-solving, and cross-functional collaboration. Also specialized in Final Cut Pro video editing, content creation, and social media strategy.
           </motion.p>
 
           <motion.div
@@ -404,13 +468,13 @@ const Portfolio = () => {
               transition={{ delay: 0.3 }}
             >
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                I'm a passionate Video Editor and Social Media Content Creator based in Pokhara, Nepal. Currently pursuing BSc (Hons) Computing at Informatics College Pokhara (partnered with London Metropolitan University, UK), I combine my technical education with extensive expertise in video editing, content creation, and social media strategy.
+                I'm a results-oriented IT and Web Engineer based in Pokhara, Nepal, currently completed a Bachelor's Degree in Computing at London Metropolitan University (via Informatics College Pokhara). I specialize in designing and developing websites, user-focused interfaces, and scalable web applications using modern technologies like the MERN stack.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Specialized in Final Cut Pro, I've dedicated countless hours studying social media algorithms, content writing, scripting, and audience retention strategies. My work focuses on creating engaging video content that hooks viewers from the first second and maintains high retention rates throughout.
+                With proven experience in frontend development, problem-solving, and cross-functional collaboration, I've worked as a Full-Stack Developer at Mantra Mountain, Campaign Manager at Basiyo, and Web Developer at S.A I.T Solution. I'm adept at utilizing modern web technologies to optimize performance, usability, and overall digital efficiency.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                With experience as a Campaign Manager at Basiyo and a background in UI/UX design, web development, and digital marketing, I bring a unique blend of technical skills and creative vision to every project. I'm the perfect fit for roles requiring video editing expertise, social media management, and content strategy.
+                Beyond web development, I'm also specialized in Final Cut Pro video editing, content creation, and social media strategy. I bring a unique blend of technical skills and creative vision to every project, making me a versatile professional for both technical and creative roles.
               </p>
             </motion.div>
 
@@ -424,13 +488,14 @@ const Portfolio = () => {
               <div className="aspect-square rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/20 p-8">
                 <div className="w-full h-full rounded-2xl bg-gradient-to-br from-blue-400/10 to-purple-400/10 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-6xl mb-4">🎬</div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Video Editing Expert</h3>
+                    <div className="text-6xl mb-4">💻</div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IT & Web Engineer</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Specialized in Final Cut Pro with deep knowledge of social media algorithms, content strategy, and audience engagement.
+                      Specialized in MERN Stack, UI/UX Design, and Full-Stack Web Development. Proven track record in building scalable web applications and optimizing digital solutions.
                     </p>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      <p>🎓 BSc (Hons) Computing</p>
+                      <p>🎓 Bachelor's Degree in Computing</p>
+                      <p>📍 London Metropolitan University</p>
                       <p>📍 Informatics College Pokhara</p>
                     </div>
                   </div>
@@ -496,6 +561,199 @@ const Portfolio = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+
+  const Experience = () => (
+    <section id="experience" className="py-32 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/30 to-transparent dark:via-gray-900/30"></div>
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-center mb-20">
+            <motion.h2
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Work Experience
+              </span>
+            </motion.h2>
+          </div>
+
+          <div className="space-y-8">
+            {workExperience.map((exp, index) => (
+              <motion.div
+                key={exp.id}
+                className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl"
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl">
+                      <Briefcase className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1">
+                        {exp.position}
+                      </h3>
+                      <p className="text-lg text-blue-400 font-semibold mb-1">
+                        {exp.company}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {exp.location} • {exp.period}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                  {exp.description}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {exp.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 text-sm rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+
+  const EducationSection = () => (
+    <section id="education" className="py-32 relative">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-center mb-20">
+            <motion.h2
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Education
+              </span>
+            </motion.h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            {education.map((edu, index) => (
+              <motion.div
+                key={edu.id}
+                className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl">
+                    <GraduationCap className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">
+                      {edu.degree}
+                    </h3>
+                    <p className="text-lg text-blue-400 font-semibold mb-2">
+                      {edu.institution}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                      {edu.location} • {edu.period}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {edu.focus}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Certifications & Languages */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <motion.div
+              className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Award className="w-8 h-8 text-purple-400" />
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                  Certifications
+                </h3>
+              </div>
+              <div className="space-y-2">
+                {certifications.map((cert, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 text-gray-600 dark:text-gray-400"
+                  >
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span>{cert}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Languages className="w-8 h-8 text-pink-400" />
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                  Languages
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {languages.map((lang, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-white/5 dark:bg-gray-700/20 rounded-xl"
+                  >
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      {lang.name}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {lang.level}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
@@ -879,7 +1137,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                Looking for a Video Editor or Social Media Manager? Let's discuss how I can help bring your content vision to life!
+                Looking for an IT & Web Engineer, Video Editor, or Social Media Manager? Let's discuss how I can help bring your vision to life!
               </motion.p>
             </div>
 
@@ -896,7 +1154,7 @@ const Portfolio = () => {
                     Get in Touch
                   </h3>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    I'm always excited to work on new video editing and social media projects. Whether you need video content creation, social media management, or content strategy, I'm here to help bring your vision to life with Final Cut Pro expertise and algorithm-optimized content!
+                    I'm always excited to work on new projects. Whether you need web development, UI/UX design, video content creation, social media management, or full-stack solutions, I'm here to help bring your vision to life with expertise in MERN stack, Final Cut Pro, and modern web technologies!
                   </p>
                 </div>
 
@@ -1062,7 +1320,7 @@ const Portfolio = () => {
               Prabin.Parajuli
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-              Video Editor & Social Media Content Creator
+              IT & Web Engineer | Video Editor & Content Creator
             </p>
           </motion.div>
 
@@ -1116,6 +1374,8 @@ const Portfolio = () => {
         <Hero />
         <About />
         <Skills />
+        <Experience />
+        <EducationSection />
         <VideoEditing />
         <Projects />
         <Contact />
