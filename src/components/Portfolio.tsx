@@ -108,7 +108,7 @@ const Portfolio = () => {
       title: 'Share Market Channel on TikTok',
       description: 'Nepali share market news and financial knowledge sharing. Created engaging content with high retention rates using algorithm-optimized editing techniques.',
       thumbnail: market,
-      videoLink: 'https://www.tiktok.com/@eyeonearth5',
+      videoLink: 'https://www.tiktok.com/@money_mantra_np',
       software: 'Final Cut Pro'
     },
     {
