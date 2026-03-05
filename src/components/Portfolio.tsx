@@ -24,7 +24,7 @@ const Portfolio = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'experience', 'education', 'video-editing', 'projects', 'contact'];
+      const sections = ['home', 'about', 'skills', 'experience', 'education', 'projects', 'video-editing', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       sections.forEach(section => {
@@ -95,7 +95,7 @@ const Portfolio = () => {
       title: 'Singapore Handpans',
       description: 'E-commerce website for handcrafted handpans, showcasing instruments, sound samples, and brand story.',
       image: handpan,
-      technologies: ['WordPress', 'Elementor', 'Custom CSS', 'JavaScript','JS'],
+      technologies: ['WordPress', 'Elementor', 'Custom CSS', 'JavaScript'],
       liveLink: 'https://singaporehandpans.com/',
       category: 'wordpress'
     }
@@ -147,24 +147,24 @@ const Portfolio = () => {
 
   const skills = [
     {
-      category: 'Frontend & Full-Stack Development',
+      category: 'Frontend Development',
       icon: <Code className="w-6 h-6" />,
-      skills: ['MERN Stack', 'React', 'JavaScript', 'Node.js', 'Express', 'MongoDB', 'Responsive Web Design']
+      skills: ['React', 'JavaScript', 'TypeScript', 'Component-Based Architecture', 'Responsive Web Design', 'Performance Optimization']
     },
     {
-      category: 'UI/UX Design & Development',
+      category: 'Full-Stack & Backend',
       icon: <Globe className="w-6 h-6" />,
-      skills: ['UI/UX Design', 'Figma', 'Admin Dashboards', 'Content Management', 'WordPress', 'WooCommerce']
+      skills: ['MERN Stack', 'MongoDB', 'Express', 'Node.js', 'REST APIs', 'WordPress']
     },
     {
-      category: 'Video Editing & Content Creation',
-      icon: <Video className="w-6 h-6" />,
-      skills: ['Final Cut Pro', 'Content Strategy', 'Social Media Management', 'Algorithm Optimization', 'SEO']
-    },
-    {
-      category: 'Additional Skills',
+      category: 'UI/UX & Design',
       icon: <Code className="w-6 h-6" />,
-      skills: ['Problem-Solving', 'Cross-functional Collaboration', 'Performance Optimization', 'Digital Marketing']
+      skills: ['Figma', 'UI/UX Design', 'Admin Dashboards', 'Content Management', 'SEO Optimization']
+    },
+    {
+      category: 'Additional & Creative',
+      icon: <Video className="w-6 h-6" />,
+      skills: ['Problem-Solving', 'Cross-functional Collaboration', 'Final Cut Pro (Side Projects)']
     }
   ];
 
@@ -183,7 +183,7 @@ const Portfolio = () => {
       company: 'Basiyo',
       position: 'Campaign Manager / Web & UI Operations',
       location: 'Nepal',
-      period: 'Feb 2022 - 2025',
+      period: 'Feb 2022 - 2024',
       description: 'Managed frontend content and admin dashboards for digital campaigns. Optimized UI/UX of landing pages to improve user experience. Tracked performance metrics and coordinated updates with design and dev teams.',
       technologies: ['UI/UX Design', 'Admin Dashboards', 'Content Management', 'Performance Analytics']
     },
@@ -222,16 +222,13 @@ const Portfolio = () => {
     'Learning npm',
     'Microsoft 365 Copilot First Look',
     'Objects in JavaScript',
-    'React (Multiple Certifications)',
-    'Node.js (Multiple Certifications)',
-    'AI (Multiple Certifications)',
-    'UX Design (Multiple Certifications)'
+    'React & Node.js (Multiple Certifications)'
   ];
 
   const languages = [
     { name: 'English', level: 'Fluent' },
     { name: 'Nepali', level: 'Native' },
-    { name: 'Japanese', level: 'Elementary' }
+    { name: 'Japanese', level: 'JLPT N5–N4 (Basic Communication)' }
   ];
 
   const Navigation = () => (
@@ -251,7 +248,7 @@ const Portfolio = () => {
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'About', 'Skills', 'Experience', 'Education', 'Video Editing', 'Projects', 'Contact'].map((item) => (
+            {['Home', 'About', 'Skills', 'Experience', 'Education', 'Projects', 'Video Editing', 'Contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -291,7 +288,7 @@ const Portfolio = () => {
             exit={{ opacity: 0, height: 0 }}
           >
             <div className="px-6 py-4 space-y-4">
-              {['Home', 'About', 'Skills', 'Experience', 'Education', 'Video Editing', 'Projects', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Experience', 'Education', 'Projects', 'Video Editing', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -354,7 +351,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            IT & Web Engineer | Video Editor & Content Creator
+            Frontend Engineer & Web Developer
           </motion.h2>
 
           <motion.p
@@ -363,7 +360,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            Results-oriented IT and Web Engineer seeking challenging roles to apply expertise in designing and developing websites, user-focused interfaces, and scalable web applications. Proven track record in frontend development, problem-solving, and cross-functional collaboration. Also specialized in Final Cut Pro video editing, content creation, and social media strategy.
+            Results-oriented IT and Web Engineer based in Tokyo, Japan. Seeking challenging roles to apply expertise in designing and developing websites, user-focused interfaces, and scalable web applications. Proven track record in frontend development, problem-solving, and cross-functional collaboration. Adept at utilising modern web technologies to optimise performance, usability, and digital efficiency.
           </motion.p>
 
           <motion.div
@@ -373,7 +370,7 @@ const Portfolio = () => {
             transition={{ delay: 0.9 }}
           >
             <motion.a
-              href="#video-editing"
+              href="#projects"
               className="group relative px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl text-white font-semibold shadow-2xl overflow-hidden"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -468,13 +465,13 @@ const Portfolio = () => {
               transition={{ delay: 0.3 }}
             >
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                I'm a results-oriented IT and Web Engineer based in Pokhara, Nepal, currently completed a Bachelor's Degree in Computing at London Metropolitan University (via Informatics College Pokhara). I specialize in designing and developing websites, user-focused interfaces, and scalable web applications using modern technologies like the MERN stack.
+                I'm a Computer Science graduate (BSc Computing, London Metropolitan University) based in Ichikawa, Chiba, Japan. I specialise in designing and developing websites, user-focused interfaces, and scalable web applications. My core focus is frontend development with React, JavaScript, and TypeScript, along with MERN stack projects, UI/UX design (Figma), and responsive web solutions.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                With proven experience in frontend development, problem-solving, and cross-functional collaboration, I've worked as a Full-Stack Developer at Mantra Mountain, Campaign Manager at Basiyo, and Web Developer at S.A I.T Solution. I'm adept at utilizing modern web technologies to optimize performance, usability, and overall digital efficiency.
+                With experience as a Full-Stack Developer at Mantra Mountain, Campaign Manager at Basiyo, and Web Developer at S.A I.T Solution, I bring a proven track record in frontend development, problem-solving, and cross-functional collaboration. I'm actively learning Next.js and modern frontend practices to grow as an engineer.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Beyond web development, I'm also specialized in Final Cut Pro video editing, content creation, and social media strategy. I bring a unique blend of technical skills and creative vision to every project, making me a versatile professional for both technical and creative roles.
+                Beyond web development, I enjoy video editing and content creation as a creative side project. I bring both technical depth and creative versatility to every project.
               </p>
             </motion.div>
 
@@ -496,7 +493,7 @@ const Portfolio = () => {
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       <p>🎓 Bachelor's Degree in Computing</p>
                       <p>📍 London Metropolitan University</p>
-                      <p>📍 Informatics College Pokhara</p>
+                      <p>📍 Ichikawa, Chiba, Japan</p>
                     </div>
                   </div>
                 </div>
@@ -787,7 +784,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Alongside my video editing expertise, I also develop web applications and digital solutions
+              Full-stack and frontend projects built with React, MERN stack, and WordPress
             </motion.p>
           </div>
 
@@ -894,7 +891,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Video Editing Expertise
+                Video Editing
               </span>
             </motion.h2>
             <motion.p
@@ -904,7 +901,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Specialized in Final Cut Pro with deep expertise in social media algorithm optimization, content strategy, and audience engagement
+              A creative side project — video content creation with Final Cut Pro, social media optimization, and content strategy
             </motion.p>
           </div>
 
@@ -1056,10 +1053,10 @@ const Portfolio = () => {
             <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-12 border border-white/20 shadow-2xl">
               <Youtube className="w-16 h-16 text-red-400 mx-auto mb-6" />
               <h3 className="text-3xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Perfect Fit for Video Editor & Social Media Manager Roles
+                Creative Side Projects
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-                With expertise in Final Cut Pro, content strategy, algorithm optimization, and social media management, I bring the perfect combination of technical skills and creative vision that companies need for video editing and social media roles.
+                Outside of web development, I create video content using Final Cut Pro. These projects showcase my ability to combine creative editing, content strategy, and social media optimization.
               </p>
               <div className="grid md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
@@ -1137,7 +1134,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                Looking for an IT & Web Engineer, Video Editor, or Social Media Manager? Let's discuss how I can help bring your vision to life!
+                Looking for a Frontend Engineer or Web Developer? Open to opportunities in Tokyo and beyond. Let's connect!
               </motion.p>
             </div>
 
@@ -1154,7 +1151,7 @@ const Portfolio = () => {
                     Get in Touch
                   </h3>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    I'm always excited to work on new projects. Whether you need web development, UI/UX design, video content creation, social media management, or full-stack solutions, I'm here to help bring your vision to life with expertise in MERN stack, Final Cut Pro, and modern web technologies!
+                    Open to Frontend Engineer, Web Developer, and related roles in Japan. I bring experience in React, MERN stack, UI/UX design (Figma), and building user-focused web applications. Let's discuss how I can contribute to your team!
                   </p>
                 </div>
 
@@ -1320,7 +1317,7 @@ const Portfolio = () => {
               Prabin.Parajuli
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-              IT & Web Engineer | Video Editor & Content Creator
+              Frontend Engineer & Web Developer · Based in Tokyo, Japan
             </p>
           </motion.div>
 
@@ -1360,7 +1357,7 @@ const Portfolio = () => {
           transition={{ delay: 0.4 }}
         >
           <p className="text-gray-600 dark:text-gray-400 text-sm">
-            © 2025 Prabin Parajuli. All rights reserved. Made with ❤️ in Nepal.
+            © 2025 Prabin Parajuli. All rights reserved. Based in Tokyo, Japan.
           </p>
         </motion.div>
       </div>
@@ -1376,8 +1373,8 @@ const Portfolio = () => {
         <Skills />
         <Experience />
         <EducationSection />
-        <VideoEditing />
         <Projects />
+        <VideoEditing />
         <Contact />
         <Footer />
       </div>
