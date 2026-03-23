@@ -21,10 +21,12 @@ const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode] = useState(true);
+  const [showAllProjects, setShowAllProjects] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'skills', 'experience', 'education', 'projects', 'video-editing', 'contact'];
+      // Keep the active section aligned with the main navigation.
+      const sections = ['home', 'about', 'skills', 'projects', 'experience', 'japan', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       sections.forEach(section => {
@@ -42,6 +44,20 @@ const Portfolio = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Basic SEO for a Vite SPA (no framework head manager).
+    document.title = 'Prabin Parajuli | Frontend Developer (React & Next.js) - Japan';
+    const description = 'Frontend Developer portfolio: React/TypeScript, MERN projects, UI/UX work, and Next.js learning. Based in Japan (Ichikawa, Chiba). Open to Tokyo roles.';
+
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'description');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', description);
+  }, []);
+
   const projects = [
     {
       id: 1,
@@ -50,7 +66,7 @@ const Portfolio = () => {
       image: MM,
       technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS'],
       liveLink: 'https://mantra-mountain.vercel.app/',
-      githubLink: '#',
+      githubLink: 'https://github.com/prabin-496',
       category: 'fullstack'
     },
     {
@@ -60,7 +76,7 @@ const Portfolio = () => {
       image: Ludo,
       technologies: ['React', 'Solidity', 'Node.js', 'Express', 'MongoDB', 'Web3'],
       liveLink: 'https://solana-ludo-kings.vercel.app/',
-      githubLink: '#',
+      githubLink: 'https://github.com/prabin-496',
       category: 'blockchain'
     },
     {
@@ -70,16 +86,27 @@ const Portfolio = () => {
       image: TH,
       technologies: ['WordPress', 'PHP', 'MySQL'],
       liveLink: 'https://www.travelhimalayanepal.com/',
+      githubLink: 'https://github.com/prabin-496',
       category: 'wordpress'
     },
     {
       id: 4,
-      title: 'Mantra Mountain Nepal Treks',
-      description: 'Corporate booking website for trekking packages with integrated payment system.',
-      image: MMWP,
-      technologies: ['WordPress', 'WooCommerce', 'Custom PHP'],
-      liveLink: 'https://www.mantramountain.com',
-      category: 'wordpress'
+  title: 'Mantra Mountain Nepal Treks',
+  description: 'Next.js booking website for trekking and adventure activities with WhatsApp inquiry notifications.',
+  image: MMWP,
+  technologies: [
+    'Next.js 16.2.0',
+    'React 18.3.1',
+    'Tailwind CSS',
+    'Material UI',
+    'PHP 8.2.29',
+    'MySQL',
+    'Turbopack',
+    'Vercel'
+  ],
+  liveLink: 'https://www.mantramountain.com',
+  githubLink: 'https://github.com/prabin-496',
+  category: 'nextjs'
     },
     {
       id: 5,
@@ -88,6 +115,7 @@ const Portfolio = () => {
       image: PLACEHOLDER_IMAGE,
       technologies: ['WordPress', 'Custom CSS', 'JavaScript'],
       liveLink: 'https://watersgold.io/',
+      githubLink: 'https://github.com/prabin-496',
       category: 'wordpress'
     },
     {
@@ -97,10 +125,140 @@ const Portfolio = () => {
       image: handpan,
       technologies: ['WordPress', 'Elementor', 'Custom CSS', 'JavaScript'],
       liveLink: 'https://singaporehandpans.com/',
+      githubLink: 'https://github.com/prabin-496',
       category: 'wordpress'
     }
     
   ];
+
+  const projectNarratives: Record<
+    number,
+    { problem: string[]; solution: string[]; result: string[]; features: string[] }
+  > = {
+    1: {
+      problem: [
+        'Bookings were hard to manage and users needed a clear booking flow.',
+        'The admin needed a simple way to manage packages, users, and bookings.',
+      ],
+      solution: [
+        'Built a full MERN application with user authentication and an admin dashboard.',
+        'Created responsive UI for package browsing and booking management.',
+        'Designed the booking workflow to reduce friction and improve conversions.',
+      ],
+      result: [
+        'Working booking system with admin-controlled data and user journeys.',
+        'Improved UX, performance, and SEO visibility for key pages.',
+      ],
+      features: [
+        'Booking workflow UX',
+        'Admin dashboard',
+        'Responsive UI',
+        'SEO visibility',
+        'Performance-focused frontend',
+      ],
+    },
+    2: {
+      problem: [
+        'Needed a modern frontend for a blockchain-based game experience.',
+        'Required wallet-style interactions and smooth UX for game flows.',
+      ],
+      solution: [
+        'Built a React UI integrated with a MERN backend and smart-contract logic.',
+        'Implemented game interactions with Web3-friendly patterns.',
+      ],
+      result: [
+        'A playable blockchain game frontend with clear UI flows.',
+      ],
+      features: [
+        'React UX for Web3',
+        'MERN architecture',
+        'Smart-contract integration',
+        'Performance-conscious UI',
+      ],
+    },
+    3: {
+      problem: [
+        'Wanted a professional marketing + booking experience for travel services.',
+        'Needed fast loading pages and clear information hierarchy.',
+      ],
+      solution: [
+        'Delivered a WordPress site with booking functionality.',
+        'Optimized responsive layout and content structure for usability.',
+      ],
+      result: [
+        'Production-ready travel website with booking-ready UX.',
+      ],
+      features: [
+        'Responsive WordPress UI',
+        'Information architecture',
+        'Usability-focused booking pages',
+        'SEO-ready content structure',
+      ],
+    },
+    4: {
+      problem: [
+        'Needed a clear and simple booking workflow for trekking and adventure activities.',
+        'Wanted to receive booking inquiries instantly via WhatsApp rather than processing online payments.'
+      ],
+      solution: [
+        'Built a multi-step booking workflow using Next.js, React, Tailwind CSS, and Material UI.',
+        'Step 1: Users select activities/adventures they want.',
+        'Step 2: Users select the number of people for each activity.',
+        'Step 3: Display total amount dynamically based on selections.',
+        'Step 4: Collect personal details for the booking.',
+        'All booking information is sent as a structured message to WhatsApp for real-time notifications.',
+        'Used PHP & MySQL to handle backend logic and store booking inquiries.'
+      ],
+      result: [
+        'A fast, responsive, and mobile-friendly booking site.',
+        'Simplified booking flow with instant WhatsApp notifications.',
+        'No online payment required; admin can manage inquiries efficiently.'
+      ],
+      features: [
+        'Next.js + React frontend',
+        'Tailwind CSS responsive design',
+        'Material UI components for modern UI',
+        'Multi-step booking workflow',
+        'Dynamic total calculation',
+        'WhatsApp notifications for bookings',
+        'PHP & MySQL backend for storing inquiries',
+        'Performance-optimized and SEO-friendly'
+      ]
+    },
+    5: {
+      problem: [
+        'Needed a modern brand website for programs and events.',
+      ],
+      solution: [
+        'Designed and implemented a WordPress site with custom CSS/JS.',
+        'Improved UI clarity and page responsiveness across devices.',
+      ],
+      result: [
+        'A polished, modern web presence for Waters Gold.',
+      ],
+      features: [
+        'Custom CSS/JS UI polish',
+        'Responsive performance',
+        'Program-focused layout',
+      ],
+    },
+    6: {
+      problem: [
+        'Needed an e-commerce experience with rich product storytelling.',
+      ],
+      solution: [
+        'Implemented an Elementor-based storefront with custom styles.',
+      ],
+      result: [
+        'E-commerce website featuring product samples and brand story.',
+      ],
+      features: [
+        'E-commerce UX',
+        'Custom UI components',
+        'Responsive storefront',
+      ],
+    },
+  };
 
   const videoProjects = [
     {
@@ -147,24 +305,38 @@ const Portfolio = () => {
 
   const skills = [
     {
-      category: 'Frontend Development',
+      category: 'Frontend',
       icon: <Code className="w-6 h-6" />,
-      skills: ['React', 'JavaScript', 'TypeScript', 'Component-Based Architecture', 'Responsive Web Design', 'Performance Optimization']
+      skills: [
+        'React',
+        'Next.js (learning)',
+        'JavaScript',
+        'TypeScript',
+        'Tailwind CSS',
+        'Responsive Web Design',
+        'Performance Optimization',
+        'Component-Based Architecture',
+      ]
     },
     {
-      category: 'Full-Stack & Backend',
+      category: 'Tools',
+      icon: <Github className="w-6 h-6" />,
+      skills: ['Git', 'GitHub', 'Vercel Deployment']
+    },
+    {
+      category: 'Full-stack & APIs',
       icon: <Globe className="w-6 h-6" />,
-      skills: ['MERN Stack', 'MongoDB', 'Express', 'Node.js', 'REST APIs', 'WordPress']
+      skills: ['MERN Stack', 'MongoDB', 'Express', 'Node.js', 'REST APIs']
     },
     {
-      category: 'UI/UX & Design',
+      category: 'UI/UX & CMS (supporting)',
       icon: <Code className="w-6 h-6" />,
-      skills: ['Figma', 'UI/UX Design', 'Admin Dashboards', 'Content Management', 'SEO Optimization']
+      skills: ['Figma', 'UI/UX Design', 'Admin Dashboards', 'Content Management', 'WordPress', 'WooCommerce', 'SEO Optimization']
     },
     {
-      category: 'Additional & Creative',
+      category: 'Side Work (Creative)',
       icon: <Video className="w-6 h-6" />,
-      skills: ['Problem-Solving', 'Cross-functional Collaboration', 'Final Cut Pro (Side Projects)']
+      skills: ['Final Cut Pro (side projects)']
     }
   ];
 
@@ -176,6 +348,12 @@ const Portfolio = () => {
       location: 'Nepal',
       period: 'Jan 2024 - 2025',
       description: 'Built the initial company website using the MERN stack. Currently managing the live WordPress site, optimizing UX and content. Improved booking workflows, performance, and SEO visibility.',
+      highlights: [
+        'Built a production-ready MERN web application foundation for company bookings and workflows.',
+        'Managed the live WordPress experience, focusing on UI/UX, content clarity, and usability.',
+        'Improved booking flow usability and reduced friction in key user steps.',
+        'Optimized frontend performance and strengthened SEO visibility for important pages.',
+      ],
       technologies: ['MERN Stack', 'WordPress', 'React', 'Node.js', 'MongoDB', 'SEO']
     },
     {
@@ -185,6 +363,11 @@ const Portfolio = () => {
       location: 'Nepal',
       period: 'Feb 2022 - 2024',
       description: 'Managed frontend content and admin dashboards for digital campaigns. Optimized UI/UX of landing pages to improve user experience. Tracked performance metrics and coordinated updates with design and dev teams.',
+      highlights: [
+        'Owned frontend campaign updates and kept admin dashboards usable for the team.',
+        'Improved landing page UI/UX to increase clarity, engagement, and user experience.',
+        'Tracked performance metrics and coordinated fast iterations with design and development.',
+      ],
       technologies: ['UI/UX Design', 'Admin Dashboards', 'Content Management', 'Performance Analytics']
     },
     {
@@ -194,6 +377,11 @@ const Portfolio = () => {
       location: 'Nepal',
       period: 'Mar 2020 - Jan 2022',
       description: 'Developed and maintained business websites and landing pages. Implemented responsive UI designs and optimized site performance. Collaborated with clients to deliver functional, production-ready solutions.',
+      highlights: [
+        'Developed and maintained business websites and landing pages from requirements to production.',
+        'Implemented responsive UI and performance improvements for better loading and UX.',
+        'Collaborated with clients to deliver functional, production-ready solutions.',
+      ],
       technologies: ['Web Development', 'Responsive Design', 'Client Collaboration', 'Performance Optimization']
     }
   ];
@@ -248,7 +436,7 @@ const Portfolio = () => {
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
-            {['Home', 'About', 'Skills', 'Experience', 'Education', 'Projects', 'Video Editing', 'Contact'].map((item) => (
+            {['Home', 'About', 'Skills', 'Projects', 'Experience', 'Japan', 'Contact'].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -288,7 +476,7 @@ const Portfolio = () => {
             exit={{ opacity: 0, height: 0 }}
           >
             <div className="px-6 py-4 space-y-4">
-              {['Home', 'About', 'Skills', 'Experience', 'Education', 'Projects', 'Video Editing', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Projects', 'Experience', 'Japan', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -308,9 +496,9 @@ const Portfolio = () => {
   const Hero = () => (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-2xl opacity-60"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/20 rounded-full blur-2xl opacity-60"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500/20 rounded-full blur-2xl opacity-60"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
@@ -322,7 +510,7 @@ const Portfolio = () => {
             className="inline-block px-6 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/20 mb-8"
           >
             <span className="text-sm font-medium bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              ✨ Available for new opportunities
+              Available for frontend roles in Japan
             </span>
           </motion.div>
 
@@ -351,7 +539,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Frontend Engineer & Web Developer
+            Frontend Developer | React & Next.js
           </motion.h2>
 
           <motion.p
@@ -360,7 +548,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            Results-oriented IT and Web Engineer based in Tokyo, Japan. Seeking challenging roles to apply expertise in designing and developing websites, user-focused interfaces, and scalable web applications. Proven track record in frontend development, problem-solving, and cross-functional collaboration. Adept at utilising modern web technologies to optimise performance, usability, and digital efficiency.
+            Frontend engineer focused on React/TypeScript UI, production MERN work, and performance-focused UX. Based in Japan (Tokyo area). Open to React/Next.js roles.
           </motion.p>
 
           <motion.div
@@ -375,7 +563,7 @@ const Portfolio = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="relative z-10">View My Work</span>
+              <span className="relative z-10">View Projects</span>
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"
                 initial={{ x: "-100%" }}
@@ -390,7 +578,7 @@ const Portfolio = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              Get In Touch
+              Contact Me
             </motion.a>
           </motion.div>
 
@@ -401,8 +589,8 @@ const Portfolio = () => {
             transition={{ delay: 1.1 }}
           >
             {[
-              { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" />, label: "LinkedIn" },
               { href: "https://github.com/Prabin-496", icon: <Github className="w-5 h-5" />, label: "GitHub" },
+              { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" />, label: "LinkedIn" },
               { href: "https://www.instagram.com/prabin_496/", icon: <Instagram className="w-5 h-5" />, label: "Instagram" }
             ].map((social, index) => (
               <motion.a
@@ -426,8 +614,8 @@ const Portfolio = () => {
 
       <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0 }}
       >
         <ChevronDown className="w-6 h-6 text-gray-400" />
       </motion.div>
@@ -451,28 +639,42 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                About Me
+                About
               </span>
             </motion.h2>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
-              className="space-y-6"
+              className="space-y-4"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                I'm a Computer Science graduate (BSc Computing, London Metropolitan University) based in Ichikawa, Chiba, Japan. I specialise in designing and developing websites, user-focused interfaces, and scalable web applications. My core focus is frontend development with React, JavaScript, and TypeScript, along with MERN stack projects, UI/UX design (Figma), and responsive web solutions.
-              </p>
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                With experience as a Full-Stack Developer at Mantra Mountain, Campaign Manager at Basiyo, and Web Developer at S.A I.T Solution, I bring a proven track record in frontend development, problem-solving, and cross-functional collaboration. I'm actively learning Next.js and modern frontend practices to grow as an engineer.
-              </p>
-              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                Beyond web development, I enjoy video editing and content creation as a creative side project. I bring both technical depth and creative versatility to every project.
-              </p>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                <li className="text-lg">
+                  Computer Science graduate (BSc Computing, London Metropolitan University), based in <span className="font-semibold text-gray-800 dark:text-gray-200">Ichikawa, Chiba (Tokyo area)</span>.
+                </li>
+                <li className="text-lg">
+                  Frontend focus: <span className="font-semibold text-gray-800 dark:text-gray-200">React</span> with <span className="font-semibold text-gray-800 dark:text-gray-200">JavaScript/TypeScript</span>, building responsive, component-based UI.
+                </li>
+                <li className="text-lg">
+                  Real-world experience: <span className="font-semibold text-gray-800 dark:text-gray-200">Mantra Mountain</span> (MERN booking workflows + admin dashboard) and ongoing UI/UX improvements.
+                </li>
+                <li className="text-lg">
+                  Problem-solving mindset: I improve <span className="font-semibold text-gray-800 dark:text-gray-200">usability</span>, <span className="font-semibold text-gray-800 dark:text-gray-200">performance</span>, and <span className="font-semibold text-gray-800 dark:text-gray-200">SEO-ready UI</span>.
+                </li>
+                <li className="text-lg">
+                  Japanese advantage: <span className="font-semibold text-gray-800 dark:text-gray-200">JLPT N5–N4 (basic communication)</span> and <span className="font-semibold text-gray-800 dark:text-gray-200">English</span> proficiency for international teams.
+                </li>
+                <li className="text-lg">
+                  Next.js learning in progress, while continuing to ship production UI.
+                </li>
+                <li className="text-lg">
+                  Video editing stays as a creative side project (kept on this portfolio as additional work).
+                </li>
+              </ul>
             </motion.div>
 
             <motion.div
@@ -485,15 +687,15 @@ const Portfolio = () => {
               <div className="aspect-square rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/20 p-8">
                 <div className="w-full h-full rounded-2xl bg-gradient-to-br from-blue-400/10 to-purple-400/10 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-6xl mb-4">💻</div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">IT & Web Engineer</h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Specialized in MERN Stack, UI/UX Design, and Full-Stack Web Development. Proven track record in building scalable web applications and optimizing digital solutions.
+                    <div className="text-6xl mb-4">Frontend</div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Frontend Developer</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+                      React + TypeScript UI, MERN experience, Figma-driven UI/UX, and performance-focused implementation.
                     </p>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      <p>🎓 Bachelor's Degree in Computing</p>
-                      <p>📍 London Metropolitan University</p>
-                      <p>📍 Ichikawa, Chiba, Japan</p>
+                      <p>Education: Bachelor's Degree in Computing</p>
+                      <p>London Metropolitan University</p>
+                      <p>Ichikawa, Chiba, Japan</p>
                     </div>
                   </div>
                 </div>
@@ -617,9 +819,13 @@ const Portfolio = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                  {exp.description}
-                </p>
+                <ul className="text-gray-600 dark:text-gray-400 mb-6 space-y-2">
+                  {exp.highlights.map((h) => (
+                    <li key={h} className="leading-relaxed text-sm sm:text-base">
+                      - {h}
+                    </li>
+                  ))}
+                </ul>
                 <div className="flex flex-wrap gap-2">
                   {exp.technologies.map((tech) => (
                     <span
@@ -634,6 +840,66 @@ const Portfolio = () => {
             ))}
           </div>
         </motion.div>
+      </div>
+    </section>
+  );
+
+  const JapanReadiness = () => (
+    <section id="japan" className="py-24 relative">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/25 to-transparent dark:via-gray-900/30" />
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Japan Readiness
+            </span>
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            Hiring in Japan is a good fit. I can contribute immediately in frontend engineering and adapt quickly to team workflows.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+            <div className="text-3xl mb-4">Japan</div>
+            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Based in Japan</h3>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              <li>Ichikawa, Chiba (Tokyo area)</li>
+              <li>Available for frontend roles in Japan</li>
+              <li>Ready for interviews and onboarding</li>
+            </ul>
+          </div>
+
+          <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+            <div className="text-3xl mb-4">Languages</div>
+            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">English + Japanese</h3>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              {languages.map((lang) => (
+                <li key={lang.name}>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">{lang.name}:</span> {lang.level}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+            <div className="text-3xl mb-4">Team</div>
+            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Team-ready engineer</h3>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              <li>Frontend-focused mindset (React, TypeScript, performance)</li>
+              <li>Works well with designers (Figma/UI/UX)</li>
+              <li>Learning Next.js while building production UI</li>
+            </ul>
+            <div className="mt-6">
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+              >
+                Open to Frontend Roles (Japan)
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -774,7 +1040,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Web Development Projects
+                Featured Projects
               </span>
             </motion.h2>
             <motion.p
@@ -784,88 +1050,191 @@ const Portfolio = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              Full-stack and frontend projects built with React, MERN stack, and WordPress
+              Production-oriented work focused on frontend engineering, UX, and performance. Mantra Mountain is the featured full-stack application.
             </motion.p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                className="group bg-white/10 dark:bg-gray-800/30 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/20 shadow-2xl"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -5 }}
-              >
-                <div className="aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                  {project.image ? (
-                    <motion.img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.3 }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = PLACEHOLDER_IMAGE;
-                      }}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
-                      <ImageIcon className="w-16 h-16 mb-2" />
-                      <span className="text-sm">Image not available</span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {project.technologies.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-3 py-1 text-sm rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex gap-4">
-                    <motion.a
-                      href={project.liveLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Live Demo
-                    </motion.a>
-                    {project.githubLink && (
-                      <motion.a
-                        href={project.githubLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-semibold hover:border-blue-500 transition-all duration-300"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Github className="w-4 h-4" />
-                        Code
-                      </motion.a>
+          {(() => {
+            const featuredIds = [1, 2, 3, 4];
+            const featuredProjects = projects.filter((p) => featuredIds.includes(p.id));
+            const extraProjects = projects.filter((p) => !featuredIds.includes(p.id));
+
+            const renderCard = (project: any, isFeatured: boolean) => {
+              const narrative = projectNarratives[project.id];
+
+              return (
+                <motion.div
+                  key={project.id}
+                  className={`group bg-white/10 dark:bg-gray-800/30 rounded-3xl overflow-hidden border border-white/20 shadow-2xl ${
+                    project.id === 1 ? 'lg:col-span-2' : ''
+                  }`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="aspect-video overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    {project.image ? (
+                      <motion.img
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = PLACEHOLDER_IMAGE;
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
+                        <ImageIcon className="w-16 h-16 mb-2" />
+                        <span className="text-sm">Image not available</span>
+                      </div>
                     )}
                   </div>
+
+                  <div className="p-8">
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200">{project.title}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          {project.category ? `${project.category.toUpperCase()}` : ''}
+                        </p>
+                      </div>
+                      {isFeatured && (
+                        <span className="px-3 py-1 text-xs rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-gray-600 dark:text-gray-400 mb-5 leading-relaxed text-sm">
+                      {project.description}
+                    </p>
+
+                    {narrative && (
+                      <div className="grid md:grid-cols-3 gap-4 mb-6">
+                        <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-4 border border-white/10">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Problem</p>
+                          <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                            {narrative.problem.map((t) => (
+                              <li key={t}>- {t}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-4 border border-white/10">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Solution</p>
+                          <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                            {narrative.solution.map((t) => (
+                              <li key={t}>- {t}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-4 border border-white/10">
+                          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Result</p>
+                          <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                            {narrative.result.map((t) => (
+                              <li key={t}>- {t}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="mb-4">
+                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Tech stack</p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.map((tech: string) => (
+                          <span
+                            key={tech}
+                            className="px-3 py-1 text-sm rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {narrative?.features?.length ? (
+                      <div className="mb-6">
+                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Key features</p>
+                        <div className="flex flex-wrap gap-2">
+                          {narrative.features.map((f) => (
+                            <span
+                              key={f}
+                              className="px-3 py-1 text-sm rounded-full bg-white/20 dark:bg-gray-700/30 text-gray-700 dark:text-gray-300 border border-white/10"
+                            >
+                              {f}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    <div className="flex flex-wrap gap-4">
+                      <motion.a
+                        href={project.liveLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Live Demo
+                      </motion.a>
+                      {project.githubLink && project.githubLink !== '#' && (
+                        <motion.a
+                          href={project.githubLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-semibold hover:border-blue-500 transition-all duration-300"
+                        >
+                          <Github className="w-4 h-4" />
+                          GitHub
+                        </motion.a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            };
+
+            return (
+              <>
+                <div className="grid lg:grid-cols-2 gap-8 mb-16">
+                  {featuredProjects.map((project) => (
+                    <div key={project.id} className={project.id === 1 ? 'lg:col-span-2' : ''}>
+                      {renderCard(project, project.id === 1)}
+                    </div>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
-          </div>
+
+                {extraProjects.length > 0 && !showAllProjects && (
+                  <div className="flex justify-center mb-16">
+                    <button
+                      type="button"
+                      onClick={() => setShowAllProjects(true)}
+                      className="px-8 py-4 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-semibold hover:border-blue-500 transition-all duration-300"
+                    >
+                      Show more web projects
+                    </button>
+                  </div>
+                )}
+
+                {extraProjects.length > 0 && showAllProjects && (
+                  <div className="grid lg:grid-cols-2 gap-8 mb-16">
+                    {extraProjects.map((project) => renderCard(project, false))}
+                    <div className="lg:col-span-2 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowAllProjects(false)}
+                        className="px-8 py-4 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 font-semibold hover:border-blue-500 transition-all duration-300"
+                      >
+                        Show less
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
 
         </motion.div>
       </div>
@@ -1060,17 +1429,17 @@ const Portfolio = () => {
               </p>
               <div className="grid md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
-                  <div className="text-3xl mb-3">🎬</div>
+                  <div className="text-3xl mb-3">Video</div>
                   <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Video Editing</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Final Cut Pro Expert</p>
                 </div>
                 <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
-                  <div className="text-3xl mb-3">📊</div>
+                  <div className="text-3xl mb-3">Optimization</div>
                   <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Algorithm Knowledge</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Social Media Optimization</p>
                 </div>
                 <div className="bg-white/5 dark:bg-gray-700/20 rounded-2xl p-6">
-                  <div className="text-3xl mb-3">✍️</div>
+                  <div className="text-3xl mb-3">Content</div>
                   <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Content Creation</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Scripting & Strategy</p>
                 </div>
@@ -1124,7 +1493,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
               >
                 <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  Let's Connect
+                  Contact
                 </span>
               </motion.h2>
               <motion.p
@@ -1134,7 +1503,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                Looking for a Frontend Engineer or Web Developer? Open to opportunities in Tokyo and beyond. Let's connect!
+                Open to Frontend Developer opportunities in Japan (React / Next.js). Send a message or reach out via the links below.
               </motion.p>
             </div>
 
@@ -1151,7 +1520,7 @@ const Portfolio = () => {
                     Get in Touch
                   </h3>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    Open to Frontend Engineer, Web Developer, and related roles in Japan. I bring experience in React, MERN stack, UI/UX design (Figma), and building user-focused web applications. Let's discuss how I can contribute to your team!
+                    I build production-ready frontend UI with React/TypeScript and MERN experience, plus UI/UX work in Figma. Happy to discuss frontend roles in Japan and start quickly.
                   </p>
                 </div>
 
@@ -1168,6 +1537,12 @@ const Portfolio = () => {
                       label: 'LinkedIn',
                       value: 'Connect with me',
                       href: 'https://www.linkedin.com/in/prabin-parajuli-techie496/'
+                    },
+                    {
+                      icon: <Github className="w-6 h-6" />,
+                      label: 'GitHub',
+                      value: 'prabin-496',
+                      href: 'https://github.com/prabin-496'
                     },
                     {
                       icon: <Instagram className="w-6 h-6" />,
@@ -1366,14 +1741,15 @@ const Portfolio = () => {
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-      <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+      <div className="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-50 transition-colors duration-300">
         <Navigation />
         <Hero />
         <About />
         <Skills />
-        <Experience />
-        <EducationSection />
         <Projects />
+        <Experience />
+        <JapanReadiness />
+        <EducationSection />
         <VideoEditing />
         <Contact />
         <Footer />
