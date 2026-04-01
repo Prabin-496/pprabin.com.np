@@ -635,7 +635,7 @@
           transcriptionEl.textContent = cleanText.trim();
           transcriptionEl.classList.remove('muted');
           summaryEl.textContent = summaryList.length
-            ? summaryList.map(point => `• ${point}`).join('\\n')
+            ? summaryList.map(point => `• ${point}`).join('\n')
             : 'Summary unavailable.';
           summaryEl.classList.remove('muted');
           setStatus('done', 'Done');
@@ -655,7 +655,7 @@
           await navigator.clipboard.writeText(text);
           const original = label.textContent;
           label.textContent = 'Copied';
-          setTimeout(() => { label.textContent = 'Copy'; }, 1200);
+          setTimeout(() => { label.textContent = original; }, 1200);
         } catch (err) {
           showError('Clipboard copy failed. Please try again.');
         }
