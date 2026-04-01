@@ -388,7 +388,7 @@
       </div>
       <div class="info-row">
         <span class="pill">Model: whisper-large-v3-turbo → llama-3.3-70b-versatile</span>
-        <span class="pill">Language auto-detected · English output</span>
+        <span class="pill">Language auto-detected · English output (auto-translated)</span>
         <span class="pill">Audio: MediaRecorder · multipart/form-data</span>
       </div>
       <div id="errorBox" class="error"></div>
@@ -445,6 +445,7 @@
       let analyser = null;
       let dataArray = null;
       let rafId = null;
+      let recordingMimeType = 'audio/webm';
 
       const setStatus = (state, text) => {
         statusBadge.dataset.state = state;
@@ -523,6 +524,7 @@
 
         try {
           mediaRecorder = new MediaRecorder(stream);
+          recordingMimeType = mediaRecorder.mimeType || 'audio/webm';
         } catch (err) {
           showError('Recording is not supported in this browser.');
           stopStream();
@@ -568,7 +570,7 @@
         processing.style.display = 'inline-flex';
         clearError();
 
-        const audioBlob = new Blob(audioChunks, { type: mediaRecorder && mediaRecorder.mimeType ? mediaRecorder.mimeType : 'audio/webm' });
+        const audioBlob = new Blob(audioChunks, { type: recordingMimeType });
         const formData = new FormData();
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3-turbo');
