@@ -575,7 +575,7 @@
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3-turbo');
         formData.append('response_format', 'text');
-        // Groq expects translate flag as a string in multipart form-data (auto-translates non-English audio to English)
+        // Groq expects translate flag as a string in multipart form-data (per Groq docs; auto-translates non-English audio to English)
         formData.append('translate', 'true');
 
         let rawText = '';
