@@ -361,7 +361,7 @@
     <header>
       <div>
         <h1>Voice Transcriber & Summarizer</h1>
-        <p class="subtitle">Record speech in English, Japanese, or Nepali. Get a clean English transcript and quick bullet summary powered by Groq Whisper + LLaMA.</p>
+        <p class="subtitle">Record speech in English, Japanese, or Nepali. Get a clean English transcript and quick bullet summary powered by Groq Whisper + Llama.</p>
       </div>
       <div class="status" id="statusBadge" data-state="idle">
         <span class="status-dot"></span>
@@ -495,7 +495,7 @@
           stream = null;
         }
         if (audioContext) {
-          audioContext.close().catch(() => {});
+          audioContext.close().catch((err) => console.warn('AudioContext close failed', err));
           audioContext = null;
         }
         stopWaveform();
@@ -611,7 +611,7 @@
               messages: [
                 {
                   role: 'system',
-                  content: 'You are a helpful assistant. Given a raw transcription, return JSON with keys "transcription" (clean English transcription; fix grammar, remove filler words) and "summary" (array of concise bullet strings). Do not include code fences.'
+                  content: 'You are a helpful assistant. Given a raw transcription, return JSON with keys "transcription" (clean English transcription; fix grammar, remove filler words) and "summary" (array of concise bullet strings). If the input is empty or invalid, return transcription as an empty string and summary as an empty array. Do not include code fences.'
                 },
                 { role: 'user', content: rawText }
               ]
@@ -628,17 +628,18 @@
           let parsed = null;
           try {
             parsed = JSON.parse(content);
-          } catch {
-            parsed = null;
+          } catch (parseError) {
+            console.warn('LLM response parse error', parseError, content);
           }
 
-          const cleanText = parsed?.transcription || rawText || 'No transcription produced.';
-          const summaryList = parsed?.summary || [];
+          const cleanText = parsed?.transcription || (rawText && rawText.trim()) || 'No transcription produced.';
+          const summaryList = Array.isArray(parsed?.summary) ? parsed.summary : [];
+
           transcriptionEl.textContent = cleanText.trim();
           transcriptionEl.classList.remove('muted');
           summaryEl.textContent = summaryList.length
             ? summaryList.map(point => `• ${point}`).join('\n')
-            : 'Summary unavailable.';
+            : 'Summary unavailable (unexpected format).';
           summaryEl.classList.remove('muted');
           setStatus('done', 'Done');
         } catch (error) {
