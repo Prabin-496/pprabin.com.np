@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Transcriber | pprabin.com.np</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --panel: #0f1629;
+      --panel-2: #111a30;
+      --accent: #00d4ff;
+      --accent-soft: #7ad8ff33;
+      --text: #e8f1ff;
+      --muted: #9bb0c8;
+      --danger: #ff6b6b;
+      --success: #5cf2c7;
+      --card-border: 1px solid #1b2540;
+      --radius: 18px;
+      --shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(120% 120% at 50% 15%, rgba(0, 212, 255, 0.08), transparent 45%), var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 18px 64px;
+    }
+
+    .shell {
+      width: min(960px, 100%);
+      max-width: 820px;
+      background: linear-gradient(135deg, rgba(17, 26, 48, 0.95), rgba(12, 18, 34, 0.95));
+      border: var(--card-border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shell::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(60% 80% at 85% 20%, rgba(0, 212, 255, 0.12), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 620px;
+      line-height: 1.5;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.28);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 0.3px;
+      font-size: 13px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.6);
+    }
+
+    .status[data-state="idle"] .status-dot { background: var(--muted); }
+    .status[data-state="recording"] .status-dot { background: #ffb347; box-shadow: 0 0 16px rgba(255, 179, 71, 0.85); }
+    .status[data-state="processing"] .status-dot { background: var(--accent); }
+    .status[data-state="done"] .status-dot { background: var(--success); box-shadow: 0 0 14px rgba(92, 242, 199, 0.7); }
+    .status[data-state="error"] .status-dot { background: var(--danger); box-shadow: 0 0 14px rgba(255, 107, 107, 0.7); }
+
+    .panel {
+      margin-top: 28px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      border: var(--card-border);
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .record-btn {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 30%, #12e5ff, #0066ff);
+      color: #0a0e1a;
+      font-size: 32px;
+      cursor: pointer;
+      box-shadow: 0 12px 40px rgba(0, 212, 255, 0.35), inset 0 0 0 6px rgba(255, 255, 255, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .record-btn:hover { transform: translateY(-2px) scale(1.01); }
+    .record-btn:active { transform: scale(0.99); }
+    .record-btn.recording {
+      box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.35), 0 12px 40px rgba(0, 212, 255, 0.35), inset 0 0 0 6px rgba(255, 255, 255, 0.1);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.35), 0 12px 40px rgba(0, 212, 255, 0.35), inset 0 0 0 6px rgba(255, 255, 255, 0.1); }
+      70% { box-shadow: 0 0 0 18px rgba(0, 212, 255, 0.0), 0 12px 40px rgba(0, 212, 255, 0.35), inset 0 0 0 6px rgba(255, 255, 255, 0.14); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.0), 0 12px 40px rgba(0, 212, 255, 0.35), inset 0 0 0 6px rgba(255, 255, 255, 0.1); }
+    }
+
+    .control-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 180px;
+    }
+
+    .btn {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(135deg, rgba(17, 26, 48, 0.85), rgba(12, 18, 34, 0.85));
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, transform 0.1s ease, background 0.2s ease, color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn:hover { border-color: rgba(0, 212, 255, 0.45); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.stop {
+      background: linear-gradient(135deg, #ff6b6b, #ff416d);
+      border: none;
+      color: #0b0f18;
+      box-shadow: 0 8px 30px rgba(255, 107, 107, 0.35);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #14e1ff, #4a7bff);
+      color: #051020;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 212, 255, 0.28);
+    }
+
+    .waveform {
+      flex: 1;
+      min-width: 200px;
+      height: 96px;
+      background: var(--panel-2);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 14px 12px;
+      display: grid;
+      align-items: flex-end;
+      gap: 4px;
+      grid-template-columns: repeat(32, 1fr);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      overflow: hidden;
+    }
+
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, rgba(0, 212, 255, 0.95), rgba(0, 110, 255, 0.6));
+      height: 8px;
+      border-radius: 8px 8px 2px 2px;
+      opacity: 0.35;
+      transition: height 0.12s ease, opacity 0.12s ease;
+    }
+
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 0.3px;
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: var(--card-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 240px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .card-body {
+      background: var(--panel-2);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px;
+      min-height: 160px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      font-size: 15px;
+      letter-spacing: 0.1px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .error {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(255, 107, 107, 0.08);
+      color: #ffd9d9;
+      border: 1px solid rgba(255, 107, 107, 0.35);
+      border-radius: 12px;
+      display: none;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .loader {
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .processing {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 18px 12px 48px; }
+      .shell { padding: 22px; }
+      .controls { flex-direction: column; align-items: flex-start; }
+      .waveform { width: 100%; }
+      .control-buttons { width: 100%; flex-direction: row; }
+      .control-buttons .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>Voice Transcriber & Summarizer</h1>
+        <p class="subtitle">Record speech in English, Japanese, or Nepali. Get a clean English transcript and quick bullet summary powered by Groq Whisper + Llama.</p>
+      </div>
+      <div class="status" id="statusBadge" data-state="idle">
+        <span class="status-dot"></span>
+        <span id="statusText">Idle</span>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="controls">
+        <button class="record-btn" id="recordBtn" aria-label="Start recording">
+          🎙
+        </button>
+        <div class="control-buttons">
+          <button class="btn stop" id="stopBtn" disabled>Stop</button>
+          <button class="btn primary" id="clearBtn">Clear</button>
+        </div>
+        <div class="waveform" aria-hidden="true" id="waveform">
+          <!-- 32 bars -->
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+      </div>
+      <div class="info-row">
+        <span class="pill">Model: whisper-large-v3-turbo → llama-3.3-70b-versatile</span>
+        <span class="pill">Language auto-detected · English output (non-English speech automatically translated)</span>
+        <span class="pill">Audio: MediaRecorder · multipart/form-data</span>
+      </div>
+      <div id="errorBox" class="error"></div>
+      <div id="processing" class="processing" style="display:none;margin-top:12px;">
+        <span class="loader"></span>
+        <span>Processing audio with Groq...</span>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Transcription</h3>
+          <button class="btn" id="copyTranscriptionBtn" aria-label="Copy transcription">Copy</button>
+        </div>
+        <div class="card-body muted" id="transcriptionText">Clean transcription will appear here.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Summary</h3>
+          <button class="btn" id="copySummaryBtn" aria-label="Copy summary">Copy</button>
+        </div>
+        <div class="card-body muted" id="summaryText">Bullet-point summary will appear here.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const recordBtn = document.getElementById('recordBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const statusBadge = document.getElementById('statusBadge');
+      const statusText = document.getElementById('statusText');
+      const errorBox = document.getElementById('errorBox');
+      const processing = document.getElementById('processing');
+      const transcriptionEl = document.getElementById('transcriptionText');
+      const summaryEl = document.getElementById('summaryText');
+      const copyTranscriptionBtn = document.getElementById('copyTranscriptionBtn');
+      const copySummaryBtn = document.getElementById('copySummaryBtn');
+      const bars = Array.from(document.querySelectorAll('.bar'));
+
+      const API_KEY = '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';
+      const TRANSCRIBE_URL = 'https://api.groq.com/openai/v1/audio/transcriptions';
+      const CHAT_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let isRecording = false;
+      let isProcessing = false;
+      let stream = null;
+      let audioContext = null;
+      let analyser = null;
+      let dataArray = null;
+      let rafId = null;
+      let recordingMimeType = 'audio/webm';
+
+      const setStatus = (state, text) => {
+        statusBadge.dataset.state = state;
+        statusText.textContent = text;
+      };
+
+      const showError = (message) => {
+        errorBox.style.display = 'flex';
+        errorBox.textContent = message;
+        setStatus('error', 'Error');
+      };
+
+      const clearError = () => {
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
+      };
+
+      const resetWaveform = () => {
+        bars.forEach(bar => {
+          bar.style.height = '8px';
+          bar.style.opacity = '0.35';
+        });
+      };
+
+      const stopWaveform = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = null;
+        resetWaveform();
+      };
+
+      const drawWaveform = () => {
+        if (!analyser || !dataArray) return;
+        analyser.getByteFrequencyData(dataArray);
+        const step = Math.max(1, Math.floor(dataArray.length / bars.length));
+        bars.forEach((bar, i) => {
+          const value = dataArray[i * step] / 255;
+          const height = Math.max(6, value * 80);
+          bar.style.height = `${height}px`;
+          bar.style.opacity = (0.3 + value * 0.7).toFixed(2);
+        });
+        rafId = requestAnimationFrame(drawWaveform);
+      };
+
+      const stopStream = () => {
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          stream = null;
+        }
+        if (audioContext) {
+          audioContext.close().catch((err) => console.warn('AudioContext close failed', err));
+          audioContext = null;
+        }
+        stopWaveform();
+      };
+
+      const startRecording = async () => {
+        if (isRecording || isProcessing) return;
+        clearError();
+
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+          const friendly = err.name === 'NotAllowedError'
+            ? 'Microphone access was blocked. Please allow microphone permission to record.'
+            : 'Unable to access the microphone. Please check your input device.';
+          showError(friendly);
+          return;
+        }
+
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+
+        try {
+          mediaRecorder = new MediaRecorder(stream);
+          recordingMimeType = mediaRecorder.mimeType || 'audio/webm';
+        } catch (err) {
+          showError('Recording is not supported in this browser.');
+          stopStream();
+          return;
+        }
+
+        audioChunks = [];
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstart = () => {
+          isRecording = true;
+          recordBtn.classList.add('recording');
+          stopBtn.disabled = false;
+          setStatus('recording', 'Recording');
+          drawWaveform();
+        };
+
+        mediaRecorder.onstop = () => {
+          isRecording = false;
+          recordBtn.classList.remove('recording');
+          stopBtn.disabled = true;
+          stopWaveform();
+          processAudio();
+        };
+
+        mediaRecorder.start();
+      };
+
+      const stopRecording = () => {
+        if (!isRecording || !mediaRecorder) return;
+        mediaRecorder.stop();
+        stopStream();
+      };
+
+      const processAudio = async () => {
+        if (!audioChunks.length) return;
+        isProcessing = true;
+        setStatus('processing', 'Processing');
+        processing.style.display = 'inline-flex';
+        clearError();
+
+        const audioBlob = new Blob(audioChunks, { type: recordingMimeType });
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.webm');
+        formData.append('model', 'whisper-large-v3-turbo');
+        formData.append('response_format', 'text');
+        // Groq expects translate flag as a string in multipart form-data (per Groq docs; auto-translates non-English audio to English)
+        formData.append('translate', 'true');
+
+        let rawText = '';
+        try {
+          const response = await fetch(TRANSCRIBE_URL, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${API_KEY}` },
+            body: formData
+          });
+
+          if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || 'Transcription failed');
+          }
+          rawText = await response.text();
+        } catch (error) {
+          showError('Transcription error: ' + error.message);
+          isProcessing = false;
+          processing.style.display = 'none';
+          setStatus('error', 'Error');
+          return;
+        }
+
+        try {
+          const completion = await fetch(CHAT_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'llama-3.3-70b-versatile',
+              // Low temperature for deterministic summaries and more reliable JSON formatting
+              temperature: 0.2,
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are a helpful assistant. Given a raw transcription, return JSON with keys "transcription" (clean English transcription; fix grammar, remove filler words) and "summary" (array of concise bullet strings). If the input is empty or invalid, return transcription as an empty string and summary as an empty array. Do not include code fences.'
+                },
+                { role: 'user', content: rawText }
+              ]
+            })
+          });
+
+          if (!completion.ok) {
+            const errText = await completion.text();
+            throw new Error(errText || 'Summarization failed');
+          }
+
+          const data = await completion.json();
+          const content = data?.choices?.[0]?.message?.content || '';
+          let parsed = null;
+          try {
+            parsed = JSON.parse(content);
+          } catch (parseError) {
+            const truncated = typeof content === 'string' ? content.slice(0, 300) : '';
+            console.warn('LLM response parse error', parseError, truncated);
+          }
+
+          const cleanText = parsed?.transcription || (rawText && rawText.trim()) || 'No transcription produced.';
+          const summaryList = Array.isArray(parsed?.summary) ? parsed.summary : [];
+
+          transcriptionEl.textContent = cleanText.trim();
+          transcriptionEl.classList.remove('muted');
+          summaryEl.textContent = summaryList.length
+            ? summaryList.map(point => `• ${point}`).join('\n')
+            : 'Summary unavailable (unexpected format).';
+          summaryEl.classList.remove('muted');
+          setStatus('done', 'Done');
+        } catch (error) {
+          showError('Summarization error: ' + error.message);
+          setStatus('error', 'Error');
+        } finally {
+          isProcessing = false;
+          processing.style.display = 'none';
+          audioChunks = [];
+        }
+      };
+
+      const copyToClipboard = async (text, label) => {
+        if (!text || text.trim().length === 0) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          const original = label.textContent;
+          label.textContent = 'Copied';
+          setTimeout(() => { label.textContent = original; }, 1200);
+        } catch (err) {
+          showError('Clipboard copy failed. Please try again.');
+        }
+      };
+
+      recordBtn.addEventListener('click', startRecording);
+      stopBtn.addEventListener('click', stopRecording);
+      clearBtn.addEventListener('click', () => {
+        audioChunks = [];
+        transcriptionEl.textContent = 'Clean transcription will appear here.';
+        summaryEl.textContent = 'Bullet-point summary will appear here.';
+        transcriptionEl.classList.add('muted');
+        summaryEl.classList.add('muted');
+        clearError();
+        stopStream();
+        recordBtn.classList.remove('recording');
+        stopBtn.disabled = true;
+        setStatus('idle', 'Idle');
+      });
+
+      copyTranscriptionBtn.addEventListener('click', () => copyToClipboard(transcriptionEl.textContent, copyTranscriptionBtn));
+      copySummaryBtn.addEventListener('click', () => copyToClipboard(summaryEl.textContent, copySummaryBtn));
+
+      window.addEventListener('beforeunload', () => {
+        stopStream();
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
