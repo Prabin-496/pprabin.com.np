@@ -388,7 +388,7 @@
       </div>
       <div class="info-row">
         <span class="pill">Model: whisper-large-v3-turbo → llama-3.3-70b-versatile</span>
-        <span class="pill">Language auto-detected · English output (automatically translated)</span>
+        <span class="pill">Language auto-detected · English output (non-English speech automatically translated)</span>
         <span class="pill">Audio: MediaRecorder · multipart/form-data</span>
       </div>
       <div id="errorBox" class="error"></div>
@@ -575,6 +575,7 @@
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3-turbo');
         formData.append('response_format', 'text');
+        // Groq expects translate flag as a string in multipart form-data
         formData.append('translate', 'true');
 
         let rawText = '';
@@ -607,6 +608,7 @@
             },
             body: JSON.stringify({
               model: 'llama-3.3-70b-versatile',
+              // Low temperature for more deterministic, factual summaries
               temperature: 0.2,
               messages: [
                 {
@@ -629,7 +631,8 @@
           try {
             parsed = JSON.parse(content);
           } catch (parseError) {
-            console.warn('LLM response parse error', parseError, content);
+            const truncated = typeof content === 'string' ? content.slice(0, 300) : '';
+            console.warn('LLM response parse error', parseError, truncated);
           }
 
           const cleanText = parsed?.transcription || (rawText && rawText.trim()) || 'No transcription produced.';
