@@ -575,7 +575,7 @@
         formData.append('file', audioBlob, 'audio.webm');
         formData.append('model', 'whisper-large-v3-turbo');
         formData.append('response_format', 'text');
-        // Groq expects translate flag as a string in multipart form-data
+        // Groq expects translate flag as a string in multipart form-data (auto-translates non-English audio to English)
         formData.append('translate', 'true');
 
         let rawText = '';
@@ -608,7 +608,7 @@
             },
             body: JSON.stringify({
               model: 'llama-3.3-70b-versatile',
-              // Low temperature for more deterministic, factual summaries
+              // Low temperature for deterministic summaries and more reliable JSON formatting
               temperature: 0.2,
               messages: [
                 {
