@@ -19,7 +19,7 @@ const dataDir = dataDirEnv
 export const config = {
   port: Number(process.env.PORT) || 4100,
   nodeEnv: process.env.NODE_ENV || 'development',
-  geminiApiKey: process.env.GEMINI_API_KEY || 'AIzaSyBv8W5UjRfSviCFGGfg4PMp2v2WIzfgR10',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
   dataDir,
   dbPath: path.join(dataDir, 'voice-ai.db'),

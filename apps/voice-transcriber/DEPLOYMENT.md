@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Node.js 18+
-- [Google AI Studio](https://aistudio.google.com/) API key → `AIzaSyBv8W5UjRfSviCFGGfg4PMp2v2WIzfgR10`
+- [Google AI Studio](https://aistudio.google.com/) API key → ``
 - Hosting: **Vercel** (frontend) + **Railway** or **EC2** (backend)
 
 ---
