@@ -6,6 +6,9 @@
     "build:flashcards": "npm install --prefix flashcards/frontend && npm run build --prefix flashcards/frontend",
     "dev:flashcards": "npm run dev --prefix flashcards/frontend",
     "dev:flashcards-api": "npm run dev --prefix flashcards/backend",
+    "build:voice-ai": "npm install --prefix apps/voice-transcriber/frontend && npm run build --prefix apps/voice-transcriber/frontend",
+    "dev:voice-ai": "npm run dev --prefix apps/voice-transcriber/frontend",
+    "dev:voice-ai-api": "npm run --prefix apps/voice-transcriber/backend dev",
     "preview": "vite preview"
   },
   "dependencies": {

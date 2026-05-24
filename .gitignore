@@ -27,6 +27,12 @@ dist-ssr
 # Environment variables
 .env
 .env.local
+
+# Voice AI runtime data (SQLite + audio)
+apps/voice-transcriber/voice-ai-data/*
+!apps/voice-transcriber/voice-ai-data/.gitkeep
+apps/voice-transcriber/backend/node_modules/
+apps/voice-transcriber/frontend/node_modules/
 .env.development.local
 .env.test.local
 .env.production.local 
