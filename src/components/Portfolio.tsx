@@ -1694,7 +1694,24 @@ const Portfolio = () => {
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
               Frontend Engineer & Web Developer · Based in Tokyo, Japan
             </p>
-            <a href="/transcriber.html">AI Transcriber</a>
+            <div className="flex flex-wrap gap-4 mt-3 text-sm">
+              <a
+                href="/transcriber.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 dark:text-blue-400 hover:underline"
+              >
+                AI Transcriber
+              </a>
+              <a
+                href="/flashcards/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 dark:text-blue-400 hover:underline"
+              >
+                Japanese Flashcards
+              </a>
+            </div>
           </motion.div>
 
           <motion.div
