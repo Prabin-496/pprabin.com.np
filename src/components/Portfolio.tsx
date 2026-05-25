@@ -1696,12 +1696,12 @@ const Portfolio = () => {
             </p>
             <div className="flex flex-wrap gap-4 mt-3 text-sm">
               <a
-                href="/transcriber.html"
+                href="/voice-ai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 dark:text-blue-400 hover:underline"
               >
-                AI Transcriber
+                Voice AI
               </a>
               <a
                 href="/flashcards/"

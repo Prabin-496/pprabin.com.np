@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:flashcards && vite build",
+    "build": "npm run build:flashcards && npm run build:voice-ai && vite build",
     "build:flashcards": "npm install --prefix flashcards/frontend && npm run build --prefix flashcards/frontend",
     "dev:flashcards": "npm run dev --prefix flashcards/frontend",
     "dev:flashcards-api": "npm run dev --prefix flashcards/backend",

@@ -26,5 +26,5 @@ export const config = {
   audioDir: path.join(dataDir, 'audio'),
   corsOrigins: parseOrigins(process.env.CORS_ORIGINS),
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 60,
-  maxUploadMb: 25,
+  maxUploadMb: Number(process.env.MAX_UPLOAD_MB) || 50,
 };

@@ -77,26 +77,41 @@ npm run build:voice-ai
 
 ---
 
-## 5. Deploy backend on EC2 (24/7 free tier)
+## 5. Deploy backend on EC2 (ap-southeast-2)
 
-1. Launch **t2.micro** in your preferred region.
-2. Security group: inbound **4100** (or 80/443 behind Nginx).
-3. Attach IAM role **not required** (no AWS services — SQLite is local disk).
-4. SSH in:
+**Host:** `ec2-3-25-210-9.ap-southeast-2.compute.amazonaws.com` (`3.25.210.9`)
+
+1. Security group inbound: **22** (your IP), **80**, **443** (0.0.0.0/0). Do **not** expose 4100 publicly — Nginx proxies to localhost.
+2. IAM role for DynamoDB is **not required** for Voice AI (SQLite on disk). Flashcards API uses DynamoDB separately.
+3. DNS: create **A** record `api.pprabin.com.np` → `3.25.210.9`, then HTTPS:
 
 ```bash
-sudo dnf install -y nodejs npm git
-git clone <your-repo>
-cd pprabin.com.np/apps/voice-transcriber/backend
-npm ci
-cp .env.example .env
-nano .env   # GEMINI_API_KEY, CORS_ORIGINS
-sudo npm install -g pm2
-pm2 start src/server.js --name voice-ai
-pm2 save && pm2 startup
+sudo dnf install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d api.pprabin.com.np
 ```
 
-5. Test: `curl http://YOUR_IP:4100/health`
+4. From your laptop (repo root):
+
+```bash
+rsync -avz -e "ssh -i EC2_instance_key_pair.pem" \
+  --exclude node_modules --exclude .env \
+  apps/voice-transcriber/backend/ \
+  ec2-user@ec2-3-25-210-9.ap-southeast-2.compute.amazonaws.com:~/voice-ai-api/
+bash deploy/voice-ai/install-ec2.sh   # or run on server via SSH
+```
+
+5. On EC2, edit `~/voice-ai-api/.env` (never commit):
+
+```env
+GEMINI_API_KEY=...
+PORT=4100
+NODE_ENV=production
+DATA_DIR=/home/ec2-user/voice-ai-api/voice-ai-data
+CORS_ORIGINS=https://www.pprabin.com.np,https://pprabin.com.np
+MAX_UPLOAD_MB=50
+```
+
+6. Test: `curl http://127.0.0.1/health` on server, then `curl https://api.pprabin.com.np/health` after DNS + certbot.
 
 ---
 

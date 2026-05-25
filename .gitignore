@@ -28,6 +28,9 @@ dist-ssr
 .env
 .env.local
 
+# Local backups (agent/manual)
+.backups/
+
 # Voice AI runtime data (SQLite + audio)
 apps/voice-transcriber/voice-ai-data/*
 !apps/voice-transcriber/voice-ai-data/.gitkeep
