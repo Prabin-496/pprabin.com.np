@@ -1,6 +1,7 @@
 import { api, type Recording } from './api';
 import { ChunkedRecorder } from './recorder';
 import { cacheRecording, listCached } from './idb';
+import { getApiBaseUrlLabel } from '@shared/getApiBaseUrl';
 
 type Tab = 'record' | 'history' | 'transcript' | 'summary' | 'settings';
 
@@ -20,7 +21,7 @@ export function mountApp(root: HTMLElement): void {
     <div class="shell">
       <header class="header">
         <div>
-          <h1>Voice AI</h1>
+      
           <p class="subtitle">Personal transcriber — Japanese, English, Nepali (auto-detect). Powered by Gemini on your backend. Tap record, flip through results, export anytime.</p>
         </div>
         <div id="apiPill" class="pill">Connecting…</div>
@@ -333,7 +334,7 @@ export function mountApp(root: HTMLElement): void {
         <button type="button" class="btn" id="regSw">Enable offline shell</button>
       </section>
     `;
-    const apiUrl = import.meta.env.VITE_VOICE_AI_API_URL || '(same origin / dev proxy)';
+    const apiUrl = getApiBaseUrlLabel(import.meta.env.VITE_VOICE_AI_API_URL);
     (mainEl.querySelector('#apiUrl') as HTMLElement).textContent = apiUrl;
     (mainEl.querySelector('#geminiStatus') as HTMLElement).textContent = geminiOk ? 'Yes' : 'No — set GEMINI_API_KEY';
     mainEl.querySelector('#regSw')?.addEventListener('click', async () => {

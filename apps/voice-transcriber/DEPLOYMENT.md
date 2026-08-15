@@ -36,7 +36,11 @@ npm install
 npm run dev
 ```
 
-Open: http://localhost:5175/voice-ai/
+Open: http://localhost:5175/voice-ai/ (live UI + API proxy)
+
+**Or** with the main portfolio dev server (`npm run dev` on port **5174**):
+
+http://localhost:5174/voice-ai/ — same app from `public/voice-ai/` (also works as `/voice-ai/index.html`)
 
 ---
 

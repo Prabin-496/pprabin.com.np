@@ -1,5 +1,6 @@
-const API_BASE =
-  import.meta.env.VITE_FLASHCARDS_API_URL?.replace(/\/$/, '') || '';
+import { getApiBaseUrl } from '@shared/getApiBaseUrl';
+
+const API_BASE = getApiBaseUrl(import.meta.env.VITE_FLASHCARDS_API_URL);
 
 async function request(path, options = {}) {
   const url = `${API_BASE}${path}`;

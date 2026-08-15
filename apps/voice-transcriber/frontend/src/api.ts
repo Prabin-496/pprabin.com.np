@@ -1,4 +1,6 @@
-const API_BASE = (import.meta.env.VITE_VOICE_AI_API_URL || '').replace(/\/$/, '');
+import { getApiBaseUrl } from '@shared/getApiBaseUrl';
+
+const API_BASE = getApiBaseUrl(import.meta.env.VITE_VOICE_AI_API_URL);
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, options);

@@ -1695,14 +1695,14 @@ const Portfolio = () => {
               Frontend Engineer & Web Developer · Based in Tokyo, Japan
             </p>
             <div className="flex flex-wrap gap-4 mt-3 text-sm">
-              <a
+              {/* <a
                 href="/voice-ai/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 dark:text-blue-400 hover:underline"
               >
                 Voice AI
-              </a>
+              </a> */}
               <a
                 href="/flashcards/"
                 target="_blank"

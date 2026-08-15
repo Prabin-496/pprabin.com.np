@@ -8,15 +8,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   base: '/flashcards/',
+  resolve: {
+    alias: {
+      '@shared': path.resolve(__dirname, '../../shared'),
+    },
+  },
   build: {
     outDir: path.resolve(__dirname, '../../public/flashcards'),
     emptyOutDir: true,
   },
   server: {
-    port: 5174,
-    proxy: {
-      '/api': { target: 'http://localhost:4000', changeOrigin: true },
-      '/health': { target: 'http://localhost:4000', changeOrigin: true },
-    },
+    port: 5176,
+    strictPort: true,
   },
 });

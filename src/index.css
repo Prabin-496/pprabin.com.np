@@ -4,15 +4,65 @@
 
 @layer base {
   :root {
-    --primary: #3b82f6; /* Blue */
-    --secondary: #8b5cf6; /* Purple */
-    --background: #000000;
-    --text: #000000;
+    --ink: #111827;
+    --ink-soft: #374151;
+    --muted: #6b7280;
+    --paper: #f5f7fa;
+    --paper-deep: #e8eef5;
+    --line: #d7dee8;
+    --accent: #0f766e;
+    --accent-soft: #f0fdfa;
+    --surface: #ffffff;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 25%, white);
   }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/30 dark:bg-gray-800/30 backdrop-blur-md border border-gray-200/30 dark:border-gray-700/30 shadow-lg;
+  .font-display {
+    font-family: 'Fraunces', Georgia, serif;
+  }
+
+  .site-shell {
+    background:
+      radial-gradient(ellipse 70% 45% at 0% 0%, rgba(15, 118, 110, 0.07), transparent 55%),
+      radial-gradient(ellipse 50% 35% at 100% 5%, rgba(17, 24, 39, 0.04), transparent 50%),
+      linear-gradient(180deg, #f8fafc 0%, #f5f7fa 45%, #eef2f7 100%);
+    min-height: 100vh;
+  }
+
+  .section-rule {
+    @apply h-px w-12 bg-[var(--accent)];
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-md border border-[var(--line)] bg-white/70 px-2.5 py-1 text-xs font-medium text-[var(--ink-soft)];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-[var(--ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--accent)];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-[var(--ink)]/20 bg-transparent px-5 py-3 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)];
+  }
+
+  .panel {
+    @apply border border-[var(--line)] bg-[var(--surface)]/80;
   }
 }

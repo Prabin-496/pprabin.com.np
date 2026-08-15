@@ -37,7 +37,7 @@ cd apps/voice-transcriber/backend && npm install && npm run dev
 
 # 3. Frontend (new terminal)
 cd apps/voice-transcriber/frontend && npm install && npm run dev
-# Open http://localhost:5175/voice-ai/
+# Open http://localhost:5175/voice-ai/  — or http://localhost:5174/voice-ai/ via `npm run dev`
 ```
 
 ## Full guide

@@ -1,8 +1,11 @@
 {
   "routes": [
-    {
-      "src":"/[^.]+",
-      "dest":"/"
-    }
+    { "handle": "filesystem" },
+    { "src": "/voice-ai", "dest": "/voice-ai/index.html" },
+    { "src": "/voice-ai/", "dest": "/voice-ai/index.html" },
+    { "src": "/flashcards", "dest": "/flashcards/index.html" },
+    { "src": "/flashcards/", "dest": "/flashcards/index.html" },
+    { "src": "/transcriber.html", "dest": "/transcriber.html" },
+    { "src": "/[^.]+", "dest": "/" }
   ]
 }
