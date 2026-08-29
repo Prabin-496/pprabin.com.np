@@ -1,34 +1,39 @@
-export default function Flashcard({ card, flipped, onFlip }) {
-  if (!card) return null;
+export default function Flashcard({ card, question, revealed, onReveal }) {
+  if (!card || !question) return null;
 
   return (
-    <button
-      type="button"
-      className={`flashcard ${flipped ? 'is-flipped' : ''}`}
-      onClick={onFlip}
-      aria-pressed={flipped}
-      aria-label={flipped ? 'Hide answer' : 'Show answer'}
-    >
-      <div className="flashcard-inner">
-        <div className="flashcard-face flashcard-front">
-          <span className="label">Word</span>
-          <p className="word">{card.word}</p>
-          {card.pronunciation && (
-            <p className="pronunciation">{card.pronunciation}</p>
-          )}
-          <span className="tap">Tap to reveal</span>
-        </div>
-        <div className="flashcard-face flashcard-back">
-          <span className="label">Meaning</span>
-          <p className="meaning">{card.meaning}</p>
-          {card.hint && (
-            <div className="hint-box">
-              <span className="label">Hint</span>
-              <p>{card.hint}</p>
-            </div>
-          )}
-        </div>
+    <section className="flashcard" aria-live="polite">
+      <div className="flashcard-face flashcard-front">
+        <span className="label">Question type</span>
+        <p className="qtype">{question.questionType.replaceAll('_', ' ')}</p>
+        <p className="question">{question.prompt}</p>
+        {question.options?.length ? (
+          <div className="options" role="list">
+            {question.options.map((opt) => (
+              <span key={opt} className="option" role="listitem">{opt}</span>
+            ))}
+          </div>
+        ) : null}
+        {!revealed ? (
+          <button type="button" className="btn primary" onClick={onReveal}>Reveal answer</button>
+        ) : null}
       </div>
-    </button>
+
+      {revealed && (
+        <div className="flashcard-face flashcard-back">
+          <span className="label">Answer</span>
+          <p className="answer">{question.answer}</p>
+          {question.answerReading ? <p className="reading">{question.answerReading}</p> : null}
+          <div className="meta">
+            <p><strong>Word:</strong> {card.word}</p>
+            <p><strong>Meaning:</strong> {card.meaning}</p>
+            {card.exampleSentence ? <p><strong>Example:</strong> {card.exampleSentence}</p> : null}
+            {card.exampleSentenceMeaning ? <p><strong>Example meaning:</strong> {card.exampleSentenceMeaning}</p> : null}
+            {card.mnemonic ? <p><strong>Mnemonic:</strong> {card.mnemonic}</p> : null}
+            {card.workplaceRelevance ? <p><strong>Workplace:</strong> {card.workplaceRelevance}</p> : null}
+          </div>
+        </div>
+      )}
+    </section>
   );
 }

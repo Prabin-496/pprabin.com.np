@@ -7,11 +7,11 @@
     --ink: #111827;
     --ink-soft: #374151;
     --muted: #6b7280;
-    --paper: #f5f7fa;
-    --paper-deep: #e8eef5;
-    --line: #d7dee8;
-    --accent: #0f766e;
-    --accent-soft: #f0fdfa;
+    --paper: #f4f7fb;
+    --paper-deep: #ecf1f7;
+    --line: #d5ddea;
+    --accent: #155e75;
+    --accent-soft: #edf7fb;
     --surface: #ffffff;
   }
 
@@ -39,10 +39,7 @@
   }
 
   .site-shell {
-    background:
-      radial-gradient(ellipse 70% 45% at 0% 0%, rgba(15, 118, 110, 0.07), transparent 55%),
-      radial-gradient(ellipse 50% 35% at 100% 5%, rgba(17, 24, 39, 0.04), transparent 50%),
-      linear-gradient(180deg, #f8fafc 0%, #f5f7fa 45%, #eef2f7 100%);
+    background: linear-gradient(180deg, #f8fafc 0%, #f4f7fb 60%, #eef3f8 100%);
     min-height: 100vh;
   }
 

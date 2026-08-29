@@ -3,231 +3,348 @@ import { api } from './api';
 import Flashcard from './components/Flashcard';
 import AddCardForm from './components/AddCardForm';
 
+const MISTAKE_TYPES = [
+  'Meaning mistake',
+  'Reading mistake',
+  'Kanji mistake',
+  'Grammar mistake',
+  'Context mistake',
+  'Production mistake',
+  'Similar-word confusion',
+];
+
 export default function App() {
   const [cards, setCards] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [flipped, setFlipped] = useState(false);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [apiOk, setApiOk] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [apiOk, setApiOk] = useState(null);
-  const [view, setView] = useState('study');
+  const [view, setView] = useState('today');
 
-  const loadCards = useCallback(async () => {
+  const [sessionCardIds, setSessionCardIds] = useState([]);
+  const [seenCardIds, setSeenCardIds] = useState([]);
+  const [currentCard, setCurrentCard] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [mistakeTypes, setMistakeTypes] = useState([]);
+  const [sessionRecap, setSessionRecap] = useState({ learned: 0, strengthened: 0, needsReview: 0, mistakes: [] });
+  const [sessionDone, setSessionDone] = useState(false);
+  const [remaining, setRemaining] = useState(0);
+  const [sessionTotal, setSessionTotal] = useState(0);
+
+  const loadDeck = useCallback(async () => {
+    const { cards: list, nextCursor: cursor } = await api.listCards({ limit: 200 });
+    setCards(list);
+    setNextCursor(cursor);
+  }, []);
+
+  const loadSummary = useCallback(async () => {
+    const res = await api.getSummary();
+    setSummary(res);
+  }, []);
+
+  const loadAll = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const list = await api.listCards();
-      setCards(list);
-      setIndex((i) => (list.length ? Math.min(i, list.length - 1) : 0));
-      setFlipped(false);
+      await Promise.all([loadDeck(), loadSummary()]);
     } catch (e) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadDeck, loadSummary]);
 
   useEffect(() => {
-    api.health()
-      .then(() => setApiOk(true))
-      .catch(() => setApiOk(false));
-    loadCards();
-  }, [loadCards]);
+    api.health().then(() => setApiOk(true)).catch(() => setApiOk(false));
+    loadAll();
+  }, [loadAll]);
 
-  useEffect(() => {
-    const onKey = (e) => {
-      if (view !== 'study' || !cards.length) return;
-      if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        setFlipped((f) => !f);
-      }
-      if (e.key === 'ArrowRight') {
-        setFlipped(false);
-        setIndex((i) => (i + 1) % cards.length);
-      }
-      if (e.key === 'ArrowLeft') {
-        setFlipped(false);
-        setIndex((i) => (i - 1 + cards.length) % cards.length);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [view, cards.length]);
-
-  const current = cards[index] || null;
-
-  const progress = useMemo(() => {
-    if (!cards.length) return 0;
-    return Math.round(((index + 1) / cards.length) * 100);
-  }, [cards.length, index]);
-
-  const goNext = () => {
-    if (!cards.length) return;
-    setFlipped(false);
-    setIndex((i) => (i + 1) % cards.length);
+  const hydrateStarter = async () => {
+    try {
+      await api.bootstrap();
+      await loadAll();
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
-  const goPrev = () => {
-    if (!cards.length) return;
-    setFlipped(false);
-    setIndex((i) => (i - 1 + cards.length) % cards.length);
+  const loadNextQuestion = useCallback(async (overrideSeen, overrideSessionIds) => {
+    const seen = overrideSeen ?? seenCardIds;
+    const activeSessionIds = overrideSessionIds ?? sessionCardIds;
+    const res = await api.nextQuestion({ sessionCardIds: activeSessionIds, seenCardIds: seen });
+    if (res.done) {
+      setSessionDone(true);
+      setCurrentCard(null);
+      setCurrentQuestion(null);
+      setRemaining(0);
+      return;
+    }
+
+    setCurrentCard(res.card);
+    setCurrentQuestion(res.question);
+    setRemaining(res.remaining);
+    setSessionTotal(res.total);
+    setRevealed(false);
+    setUserAnswer('');
+    setMistakeTypes([]);
+  }, [seenCardIds, sessionCardIds]);
+
+  const startReview = async () => {
+    setError('');
+    setSessionDone(false);
+    setSessionRecap({ learned: 0, strengthened: 0, needsReview: 0, mistakes: [] });
+    try {
+      const session = await api.startSession(22);
+      setSessionCardIds(session.sessionCardIds);
+      setSeenCardIds([]);
+      setSummary((prev) => ({ ...prev, summary: session.summary, unlockLevel: session.unlockLevel }));
+      setView('today');
+      if (session.sessionCardIds.length) {
+        const seen = [];
+        setSeenCardIds(seen);
+        await loadNextQuestion(seen, session.sessionCardIds);
+      } else {
+        setSessionDone(true);
+      }
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
-  const shuffle = () => {
-    setCards((prev) => {
-      const next = [...prev];
-      for (let i = next.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [next[i], next[j]] = [next[j], next[i]];
-      }
-      return next;
-    });
-    setIndex(0);
-    setFlipped(false);
+  const toggleMistake = (type) => {
+    setMistakeTypes((prev) => (prev.includes(type) ? prev.filter((x) => x !== type) : [...prev, type]));
   };
+
+  const answerCard = useCallback(async (grade) => {
+    if (!currentCard || !currentQuestion) return;
+    try {
+      const res = await api.reviewCard({
+        cardId: currentCard.CardID,
+        grade,
+        questionType: currentQuestion.questionType,
+        mistakeTypes,
+        userAnswer,
+      });
+
+      const nextSeen = [...seenCardIds, currentCard.CardID];
+      setSeenCardIds(nextSeen);
+      setSessionRecap((prev) => ({
+        learned: prev.learned + (res.impact.learned ? 1 : 0),
+        strengthened: prev.strengthened + (res.impact.strengthened ? 1 : 0),
+        needsReview: prev.needsReview + (res.impact.needsReview ? 1 : 0),
+        mistakes: [...prev.mistakes, ...(res.impact.mistakes || [])].slice(-20),
+      }));
+
+      await loadSummary();
+      await loadDeck();
+      await loadNextQuestion(nextSeen);
+    } catch (e) {
+      setError(e.message);
+    }
+  }, [currentCard, currentQuestion, mistakeTypes, userAnswer, seenCardIds, loadSummary, loadDeck, loadNextQuestion]);
 
   const handleCreated = (card) => {
     setCards((prev) => [card, ...prev]);
-    setIndex(0);
-    setFlipped(false);
-    setView('study');
+    setView('deck');
+    loadSummary();
   };
 
   const handleDelete = async (CardID) => {
     if (!confirm('Delete this flashcard?')) return;
     try {
       await api.deleteCard(CardID);
-      await loadCards();
+      await loadAll();
     } catch (e) {
       setError(e.message);
     }
   };
 
+  const overview = useMemo(() => {
+    if (!summary) return null;
+    return [
+      { label: 'Due', value: summary.summary?.due ?? 0 },
+      { label: 'Weak', value: summary.summary?.weak ?? 0 },
+      { label: 'New', value: summary.summary?.new ?? 0 },
+      { label: 'Mastered', value: summary.summary?.mastered ?? 0 },
+    ];
+  }, [summary]);
+
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (view !== 'today' || !currentQuestion) return;
+      if (e.key.toLowerCase() === 'r') setRevealed(true);
+      if (!revealed) return;
+      if (e.key === '1') answerCard('again');
+      if (e.key === '2') answerCard('hard');
+      if (e.key === '3') answerCard('good');
+      if (e.key === '4') answerCard('easy');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [view, currentQuestion, revealed, answerCard]);
   return (
     <div className="app">
       <header className="header">
         <div>
-          <p className="eyebrow">独立アプリ · Standalone study tool</p>
-          <h1>Japanese Flashcards</h1>
-          <p className="subtitle">Tap the card to reveal the meaning. Build your own deck and memorize at your pace.</p>
+          <p className="eyebrow">Secondary product inside portfolio</p>
+          <h1>Japanese Cognitive Flashcards</h1>
+          <p className="subtitle">JLPT-focused review with workplace Japanese for cloud/infrastructure work. Active recall first, reveal after thinking.</p>
         </div>
         <div className={`api-pill ${apiOk === false ? 'api-pill--err' : apiOk ? 'api-pill--ok' : ''}`}>
           {apiOk === null && 'Connecting…'}
           {apiOk === true && 'API connected'}
-          {apiOk === false && 'API offline — check backend URL'}
+          {apiOk === false && 'API offline'}
         </div>
       </header>
 
       <nav className="tabs" aria-label="Views">
-        <button type="button" className={view === 'study' ? 'tab active' : 'tab'} onClick={() => setView('study')}>
-          Study
-        </button>
-        <button type="button" className={view === 'add' ? 'tab active' : 'tab'} onClick={() => setView('add')}>
-          Add card
-        </button>
-        <button type="button" className={view === 'deck' ? 'tab active' : 'tab'} onClick={() => setView('deck')}>
-          Deck ({cards.length})
-        </button>
+        <button type="button" className={view === 'today' ? 'tab active' : 'tab'} onClick={() => setView('today')}>Today</button>
+        <button type="button" className={view === 'add' ? 'tab active' : 'tab'} onClick={() => setView('add')}>Add card</button>
+        <button type="button" className={view === 'deck' ? 'tab active' : 'tab'} onClick={() => setView('deck')}>Deck ({cards.length})</button>
+        <button type="button" className={view === 'progress' ? 'tab active' : 'tab'} onClick={() => setView('progress')}>Progress</button>
       </nav>
 
       {error && (
         <div className="banner banner--error" role="alert">
           {error}
-          <button type="button" className="link-btn" onClick={loadCards}>
-            Retry
-          </button>
+          <button type="button" className="link-btn" onClick={loadAll}>Retry</button>
         </div>
       )}
 
-      {view === 'add' && (
-        <AddCardForm onCreated={handleCreated} onCancel={() => setView('study')} />
-      )}
+      {view === 'today' && (
+        <section className="study" aria-label="Today's review">
+          {loading ? <p className="muted">Loading…</p> : null}
 
-      {view === 'study' && (
-        <section className="study" aria-label="Study mode">
-          {loading ? (
-            <p className="muted center">Loading cards…</p>
-          ) : !cards.length ? (
-            <div className="empty">
-              <p>No cards yet. Add your first Japanese word!</p>
-              <button type="button" className="btn primary" onClick={() => setView('add')}>
-                Add a card
-              </button>
+          {overview ? (
+            <div className="stats-grid">
+              {overview.map((row) => (
+                <div key={row.label} className="stat-card">
+                  <p className="stat-label">{row.label}</p>
+                  <p className="stat-value">{row.value}</p>
+                </div>
+              ))}
             </div>
-          ) : (
+          ) : null}
+
+          <div className="panel actions-row">
+            <div>
+              <h2>Today's Review</h2>
+              <p className="muted">Unlock level: {summary?.unlockLevel ?? 1}. Weakness-first prioritization is automatic.</p>
+            </div>
+            <div className="row-gap">
+              <button type="button" className="btn primary" onClick={startReview}>Start review</button>
+              {!cards.length ? <button type="button" className="btn" onClick={hydrateStarter}>Load starter vocabulary</button> : null}
+            </div>
+          </div>
+
+          {currentQuestion && currentCard && !sessionDone ? (
             <>
               <div className="progress-row">
-                <span>
-                  Card {index + 1} / {cards.length}
-                </span>
+                <span>{sessionTotal - remaining + 1} / {sessionTotal} · Remaining {remaining - 1 >= 0 ? remaining - 1 : 0}</span>
                 <div className="progress-bar" aria-hidden>
-                  <div className="progress-fill" style={{ width: `${progress}%` }} />
+                  <div className="progress-fill" style={{ width: `${Math.round(((sessionTotal - remaining + 1) / Math.max(1, sessionTotal)) * 100)}%` }} />
                 </div>
               </div>
 
-              <Flashcard card={current} flipped={flipped} onFlip={() => setFlipped((f) => !f)} />
+              <Flashcard card={currentCard} question={currentQuestion} revealed={revealed} onReveal={() => setRevealed(true)} />
 
-              <p className="hint center">Tap card to flip · Space = flip · Arrow keys = navigate</p>
+              <div className="panel">
+                <label>
+                  Your answer (optional)
+                  <textarea value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} rows={2} placeholder="Type your recall attempt before grading" />
+                </label>
 
-              <div className="controls">
-                <button type="button" className="btn" onClick={goPrev}>
-                  Previous
-                </button>
-                <button type="button" className="btn" onClick={() => setFlipped((f) => !f)}>
-                  Flip
-                </button>
-                <button type="button" className="btn primary" onClick={goNext}>
-                  Next
-                </button>
-                <button type="button" className="btn ghost" onClick={shuffle}>
-                  Shuffle
-                </button>
+                <div className="mistake-grid" role="group" aria-label="Mistake types">
+                  {MISTAKE_TYPES.map((type) => (
+                    <button
+                      type="button"
+                      key={type}
+                      className={mistakeTypes.includes(type) ? 'pill active' : 'pill'}
+                      onClick={() => toggleMistake(type)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="muted small">Shortcuts: R reveal · 1 Again · 2 Hard · 3 Good · 4 Easy</p>
+                <div className="controls">
+                  <button type="button" className="btn danger" disabled={!revealed} onClick={() => answerCard('again')}>Again</button>
+                  <button type="button" className="btn" disabled={!revealed} onClick={() => answerCard('hard')}>Hard</button>
+                  <button type="button" className="btn primary" disabled={!revealed} onClick={() => answerCard('good')}>Good</button>
+                  <button type="button" className="btn primary alt" disabled={!revealed} onClick={() => answerCard('easy')}>Easy</button>
+                </div>
               </div>
             </>
-          )}
+          ) : null}
+
+          {sessionDone ? (
+            <div className="panel recap">
+              <h3>Session recap</h3>
+              <div className="stats-grid mini">
+                <div className="stat-card"><p className="stat-label">Learned</p><p className="stat-value">{sessionRecap.learned}</p></div>
+                <div className="stat-card"><p className="stat-label">Strengthened</p><p className="stat-value">{sessionRecap.strengthened}</p></div>
+                <div className="stat-card"><p className="stat-label">Needs review</p><p className="stat-value">{sessionRecap.needsReview}</p></div>
+                <div className="stat-card"><p className="stat-label">Tomorrow due</p><p className="stat-value">{summary?.summary?.due ?? 0}</p></div>
+              </div>
+              <p className="muted small">Mistakes tracked: {sessionRecap.mistakes.slice(-8).join(', ') || 'None in this session'}</p>
+            </div>
+          ) : null}
         </section>
       )}
 
+      {view === 'add' && <AddCardForm onCreated={handleCreated} onCancel={() => setView('today')} />}
+
       {view === 'deck' && (
         <section className="deck" aria-label="All cards">
-          {loading ? (
-            <p className="muted">Loading…</p>
-          ) : (
-            <ul className="deck-list">
-              {cards.map((c, i) => (
-                <li key={c.CardID} className="deck-item">
-                  <button
-                    type="button"
-                    className="deck-main"
-                    onClick={() => {
-                      setIndex(i);
-                      setFlipped(false);
-                      setView('study');
-                    }}
-                  >
-                    <span className="deck-word">{c.word}</span>
-                    <span className="deck-meaning">{c.meaning}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="btn danger small"
-                    onClick={() => handleDelete(c.CardID)}
-                    aria-label={`Delete ${c.word}`}
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ul className="deck-list">
+            {cards.map((c) => (
+              <li key={c.CardID} className="deck-item">
+                <div className="deck-main">
+                  <span className="deck-word">{c.word}</span>
+                  <span className="deck-meaning">{c.meaning}</span>
+                  <span className="muted small">{c.learningState} · Lv {c.level} · {c.jlptLevel} · next {c.nextReviewAt ? new Date(c.nextReviewAt).toLocaleDateString() : 'now'}</span>
+                </div>
+                <button type="button" className="btn danger small" onClick={() => handleDelete(c.CardID)} aria-label={`Delete ${c.word}`}>Delete</button>
+              </li>
+            ))}
+          </ul>
+          {nextCursor ? <p className="muted small">More cards exist. Increase API page size for full export views.</p> : null}
+        </section>
+      )}
+
+      {view === 'progress' && (
+        <section className="panel" aria-label="Progress dashboard">
+          <h2>Learning history</h2>
+          <p className="muted">Per-card review performance with mastery and next review schedule.</p>
+          <div className="progress-table" role="table" aria-label="Card progress table">
+            <div className="progress-head" role="row">
+              <span>Card</span><span>State</span><span>Accuracy</span><span>Reviews</span><span>Last</span><span>Next</span>
+            </div>
+            {cards.map((c) => {
+              const accuracy = c.reviews ? Math.round((c.correct / c.reviews) * 100) : 0;
+              return (
+                <div className="progress-row-item" role="row" key={`${c.CardID}-progress`}>
+                  <span>{c.word}</span>
+                  <span>{c.learningState}</span>
+                  <span>{accuracy}%</span>
+                  <span>{c.reviews}</span>
+                  <span>{c.lastReviewedAt ? new Date(c.lastReviewedAt).toLocaleDateString() : '-'}</span>
+                  <span>{c.nextReviewAt ? new Date(c.nextReviewAt).toLocaleDateString() : '-'}</span>
+                </div>
+              );
+            })}
+          </div>
         </section>
       )}
 
       <footer className="footer">
-        <a href="/" className="back-link">
-          ← Back to portfolio
-        </a>
-        <p className="muted small">Data stored in AWS DynamoDB · ap-southeast-2</p>
+        <a href="/" className="back-link">← Back to portfolio</a>
+        <p className="muted small">Persistent data: AWS DynamoDB · SRS + history enabled</p>
       </footer>
     </div>
   );
