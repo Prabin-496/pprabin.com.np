@@ -20,7 +20,7 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWl
 const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode] = useState(true);
+  const [isDarkMode] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
 
   useEffect(() => {
@@ -46,8 +46,8 @@ const Portfolio = () => {
 
   useEffect(() => {
     // Basic SEO for a Vite SPA (no framework head manager).
-    document.title = 'Prabin Parajuli | Frontend Developer (React & Next.js) - Japan';
-    const description = 'Frontend Developer portfolio: React/TypeScript, MERN projects, UI/UX work, and Next.js learning. Based in Japan (Ichikawa, Chiba). Open to Tokyo roles.';
+    document.title = 'Prabin Parajuli | Cloud Infrastructure & AWS Engineer - Japan';
+    const description = 'Cloud Infrastructure / AWS focused portfolio with full-stack foundation, Japanese learning system, and developer tooling projects. Based in Japan (Ichikawa, Chiba).';
 
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) {
@@ -305,42 +305,57 @@ const Portfolio = () => {
 
   const skills = [
     {
-      category: 'Frontend',
-      icon: <Code className="w-6 h-6" />,
+      category: 'Cloud / Infrastructure (Current)',
+      icon: <Globe className="w-6 h-6" />,
       skills: [
-        'React',
-        'Next.js (learning)',
-        'JavaScript',
-        'TypeScript',
-        'Tailwind CSS',
-        'Responsive Web Design',
-        'Performance Optimization',
-        'Component-Based Architecture',
+        'AWS Fundamentals',
+        'Cloud Infrastructure',
+        'Cloud Operations',
+        'Security / IAM',
+        'Monitoring',
+        'Deployment',
+        'Infrastructure Documentation',
+        'Migration Workflows (FSx / Robocopy)',
       ]
     },
     {
-      category: 'Tools',
+      category: 'Automation & Delivery',
       icon: <Github className="w-6 h-6" />,
-      skills: ['Git', 'GitHub', 'Vercel Deployment']
+      skills: ['Git', 'GitHub', 'DevOps Concepts', 'UAT / Testing', 'JP1 & Operational Workflow', 'QoS Awareness']
     },
     {
-      category: 'Full-stack & APIs',
-      icon: <Globe className="w-6 h-6" />,
-      skills: ['MERN Stack', 'MongoDB', 'Express', 'Node.js', 'REST APIs']
-    },
-    {
-      category: 'UI/UX & CMS (supporting)',
+      category: 'Full-stack Foundation',
       icon: <Code className="w-6 h-6" />,
-      skills: ['Figma', 'UI/UX Design', 'Admin Dashboards', 'Content Management', 'WordPress', 'WooCommerce', 'SEO Optimization']
+      skills: ['React', 'Next.js', 'JavaScript', 'TypeScript', 'Node.js', 'REST APIs', 'MERN Stack', 'MySQL']
     },
     {
-      category: 'Side Work (Creative)',
+      category: 'Web / UI Experience',
+      icon: <ImageIcon className="w-6 h-6" />,
+      skills: ['Tailwind CSS', 'Responsive Design', 'UI/UX Design', 'WordPress', 'WooCommerce', 'SEO Optimization']
+    },
+    {
+      category: 'Future Direction',
       icon: <Video className="w-6 h-6" />,
-      skills: ['Final Cut Pro (side projects)']
+      skills: ['Cloud Architecture', 'Developer Experience (DX)', 'Generative AI', 'AI-assisted Operations']
     }
   ];
 
   const workExperience = [
+    {
+      id: 0,
+      company: 'Current Professional Focus',
+      position: 'Cloud Infrastructure / AWS / Cloud DX Engineer',
+      location: 'Japan',
+      period: '2025 - Present',
+      description: 'Focused on cloud infrastructure operations and migration-oriented workflows while building a strong bridge between infrastructure and software delivery.',
+      highlights: [
+        'Hands-on focus on AWS, infrastructure operations, and deployment reliability.',
+        'Working with migration and file-server related workflows (including AWS FSx, Robocopy, and process documentation).',
+        'Supporting operational quality through monitoring, security/IAM awareness, UAT/testing, and incident-ready documentation.',
+        'Applying automation and developer-experience thinking to reduce manual operational friction.',
+      ],
+      technologies: ['AWS', 'Infrastructure', 'Cloud Operations', 'FSx', 'Robocopy', 'JP1', 'QoS', 'UAT', 'IAM', 'Monitoring', 'Automation']
+    },
     {
       id: 1,
       company: 'Mantra Mountain',
@@ -510,7 +525,7 @@ const Portfolio = () => {
             className="inline-block px-6 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full backdrop-blur-sm border border-white/20 mb-8"
           >
             <span className="text-sm font-medium bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              Available for frontend roles in Japan
+              Available for cloud & infrastructure roles in Japan
             </span>
           </motion.div>
 
@@ -539,7 +554,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Frontend Developer | React & Next.js
+            Cloud Infrastructure / AWS / Cloud DX Engineer
           </motion.h2>
 
           <motion.p
@@ -548,7 +563,7 @@ const Portfolio = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            Frontend engineer focused on React/TypeScript UI, production MERN work, and performance-focused UX. Based in Japan (Tokyo area). Open to React/Next.js roles.
+            Previously full-stack and frontend focused. Now working deeper on cloud infrastructure, AWS operations, migration workflows, and automation, while continuing to build software end-to-end.
           </motion.p>
 
           <motion.div
@@ -657,19 +672,19 @@ const Portfolio = () => {
                   Computer Science graduate (BSc Computing, London Metropolitan University), based in <span className="font-semibold text-gray-800 dark:text-gray-200">Ichikawa, Chiba (Tokyo area)</span>.
                 </li>
                 <li className="text-lg">
-                  Frontend focus: <span className="font-semibold text-gray-800 dark:text-gray-200">React</span> with <span className="font-semibold text-gray-800 dark:text-gray-200">JavaScript/TypeScript</span>, building responsive, component-based UI.
+                  Current direction: <span className="font-semibold text-gray-800 dark:text-gray-200">Cloud Infrastructure / AWS / Cloud DX</span> with focus on practical operations, migration reliability, and documentation.
                 </li>
                 <li className="text-lg">
-                  Real-world experience: <span className="font-semibold text-gray-800 dark:text-gray-200">Mantra Mountain</span> (MERN booking workflows + admin dashboard) and ongoing UI/UX improvements.
+                  Infrastructure topics in active practice: <span className="font-semibold text-gray-800 dark:text-gray-200">AWS, IAM/Security, monitoring, deployment, file-server migration (FSx), JP1, Robocopy, QoS, UAT/testing</span>.
                 </li>
                 <li className="text-lg">
-                  Problem-solving mindset: I improve <span className="font-semibold text-gray-800 dark:text-gray-200">usability</span>, <span className="font-semibold text-gray-800 dark:text-gray-200">performance</span>, and <span className="font-semibold text-gray-800 dark:text-gray-200">SEO-ready UI</span>.
+                  Previous foundation remains strong: <span className="font-semibold text-gray-800 dark:text-gray-200">React, Next.js, TypeScript, Node.js, MERN, REST APIs, MySQL, WordPress, UI/UX</span>.
                 </li>
                 <li className="text-lg">
                   Japanese advantage: <span className="font-semibold text-gray-800 dark:text-gray-200">JLPT N5–N4 (basic communication)</span> and <span className="font-semibold text-gray-800 dark:text-gray-200">English</span> proficiency for international teams.
                 </li>
                 <li className="text-lg">
-                  Next.js learning in progress, while continuing to ship production UI.
+                  Ongoing trajectory: Cloud + AI + DX tooling with strong software engineering fundamentals.
                 </li>
                 <li className="text-lg">
                   Video editing stays as a creative side project (kept on this portfolio as additional work).
@@ -687,10 +702,10 @@ const Portfolio = () => {
               <div className="aspect-square rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/20 p-8">
                 <div className="w-full h-full rounded-2xl bg-gradient-to-br from-blue-400/10 to-purple-400/10 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-6xl mb-4">Frontend</div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Frontend Developer</h3>
+                    <div className="text-6xl mb-4">Cloud</div>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Cloud Infrastructure Engineer</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
-                      React + TypeScript UI, MERN experience, Figma-driven UI/UX, and performance-focused implementation.
+                      Current focus on AWS, cloud operations, infrastructure migration, and automation with full-stack development as a core strength.
                     </p>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       <p>Education: Bachelor's Degree in Computing</p>
@@ -855,7 +870,7 @@ const Portfolio = () => {
             </span>
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Hiring in Japan is a good fit. I can contribute immediately in frontend engineering and adapt quickly to team workflows.
+            Hiring in Japan is a strong fit. I can contribute in cloud/infrastructure operations now while continuing to deliver software solutions.
           </p>
         </div>
 
@@ -865,7 +880,7 @@ const Portfolio = () => {
             <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Based in Japan</h3>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
               <li>Ichikawa, Chiba (Tokyo area)</li>
-              <li>Available for frontend roles in Japan</li>
+              <li>Available for cloud & infrastructure roles in Japan</li>
               <li>Ready for interviews and onboarding</li>
             </ul>
           </div>
@@ -886,16 +901,16 @@ const Portfolio = () => {
             <div className="text-3xl mb-4">Team</div>
             <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Team-ready engineer</h3>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>Frontend-focused mindset (React, TypeScript, performance)</li>
+              <li>Cloud-infrastructure mindset (operations, migration, reliability)</li>
               <li>Works well with designers (Figma/UI/UX)</li>
-              <li>Learning Next.js while building production UI</li>
+              <li>Keeps full-stack skills active for cloud + development hybrid work</li>
             </ul>
             <div className="mt-6">
               <a
                 href="#contact"
                 className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
               >
-                Open to Frontend Roles (Japan)
+                Open to Cloud/AWS Roles (Japan)
               </a>
             </div>
           </div>
@@ -1503,7 +1518,7 @@ const Portfolio = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
               >
-                Open to Frontend Developer opportunities in Japan (React / Next.js). Send a message or reach out via the links below.
+                Open to Cloud Infrastructure / AWS / Cloud DX opportunities in Japan. Also available for roles blending cloud and software development.
               </motion.p>
             </div>
 
@@ -1520,7 +1535,7 @@ const Portfolio = () => {
                     Get in Touch
                   </h3>
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                    I build production-ready frontend UI with React/TypeScript and MERN experience, plus UI/UX work in Figma. Happy to discuss frontend roles in Japan and start quickly.
+                    I build practical systems across cloud operations and software. Current emphasis is AWS/infrastructure reliability, migration support, and documentation, backed by full-stack delivery experience.
                   </p>
                 </div>
 
@@ -1692,7 +1707,7 @@ const Portfolio = () => {
               Prabin.Parajuli
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-              Frontend Engineer & Web Developer · Based in Tokyo, Japan
+              Cloud Infrastructure & AWS-focused Engineer · Based in Tokyo, Japan
             </p>
             <div className="flex flex-wrap gap-4 mt-3 text-sm">
               {/* <a
@@ -1704,9 +1719,7 @@ const Portfolio = () => {
                 Voice AI
               </a> */}
               <a
-                href="/flashcards/"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/flashcards"
                 className="text-blue-500 dark:text-blue-400 hover:underline"
               >
                 Japanese Flashcards

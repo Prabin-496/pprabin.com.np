@@ -33,7 +33,7 @@ export function createApp() {
 
   app.use((err, _req, res, _next) => {
     console.error(err);
-    const status = err.$metadata?.httpStatusCode === 400 ? 400 : 500;
+    const status = err.statusCode || (err.$metadata?.httpStatusCode === 400 ? 400 : 500);
     res.status(status).json({
       error: status === 500 ? 'Internal server error' : err.message,
       message: config.nodeEnv === 'development' ? err.message : undefined,

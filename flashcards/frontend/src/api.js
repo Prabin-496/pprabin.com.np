@@ -27,7 +27,22 @@ async function request(path, options = {}) {
 
 export const api = {
   health: () => request('/health'),
-  listCards: () => request('/api/cards').then((d) => d.cards),
+  listCards: ({ limit = 200, cursor } = {}) =>
+    request(`/api/cards?limit=${limit}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`),
+  getSummary: () => request('/api/cards/summary'),
+  bootstrap: () => request('/api/cards/bootstrap', { method: 'POST' }),
+  startSession: (count = 22) =>
+    request('/api/cards/session/start', { method: 'POST', body: JSON.stringify({ count }) }),
+  nextQuestion: ({ sessionCardIds, seenCardIds }) =>
+    request('/api/cards/session/next', {
+      method: 'POST',
+      body: JSON.stringify({ sessionCardIds, seenCardIds }),
+    }),
+  reviewCard: ({ cardId, grade, questionType, mistakeTypes, userAnswer }) =>
+    request(`/api/cards/${cardId}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ grade, questionType, mistakeTypes, userAnswer }),
+    }),
   createCard: (payload) =>
     request('/api/cards', { method: 'POST', body: JSON.stringify(payload) }),
   deleteCard: (CardID) => request(`/api/cards/${CardID}`, { method: 'DELETE' }),
