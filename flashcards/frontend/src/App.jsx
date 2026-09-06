@@ -64,8 +64,16 @@ export default function App() {
     setLoading(true);
     setError('');
     try {
-      const [info] = await Promise.all([api.health()]);
+      const info = await api.health();
       setHealth(info);
+      // Health answers 200 even when the database is unreachable, and says
+      // why. Report that instead of letting every following call fail with a
+      // bare "Internal server error".
+      if (info?.db && info.db.connected === false) {
+        setError(`Storage unavailable (${info.db.error}). ${info.db.hint || ''}`.trim());
+        setDecks([]);
+        return;
+      }
       await refreshDecks();
     } catch (e) {
       setError(e.message);
