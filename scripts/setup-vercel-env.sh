@@ -78,12 +78,15 @@ fi
 # --------------------------------------------------------------- write ---
 
 # `vercel env add` refuses to overwrite, so drop any existing value first.
+# Older CLI versions prompt for confirmation instead of taking a flag, so the
+# answer is piped in rather than passed as one.
 set_var() {
   local name="$1" value="$2" env
   for env in "${ENVIRONMENTS[@]}"; do
-    vercel env rm "$name" "$env" --yes >/dev/null 2>&1 || true
-    printf '%s' "$value" | vercel env add "$name" "$env" >/dev/null 2>&1 \
-      || die "Failed to set $name for $env."
+    printf 'y\n' | vercel env rm "$name" "$env" >/dev/null 2>&1 || true
+    printf '%s' "$value" | vercel env add "$name" "$env" >/dev/null 2>&1 || die \
+      "Could not set $name for $env. Add it by hand at
+   Vercel → your project → Settings → Environment Variables."
   done
   printf '  set %s\n' "$name"
 }
