@@ -1,396 +1,724 @@
-import { api, type Recording } from './api';
-import { ChunkedRecorder } from './recorder';
-import { cacheRecording, listCached } from './idb';
-import { getApiBaseUrlLabel } from '@shared/getApiBaseUrl';
+/**
+ * App shell: state, routing and the wiring between storage, the recorder and
+ * the pipeline.
+ *
+ * The whole app is local-first. There is no account and no server database —
+ * sessions live in IndexedDB on this device, the Gemini key is stored here too
+ * and sent per request, and the server only ever sees a chunk of audio on its
+ * way to Gemini. That is what lets the app work the moment a key is pasted in.
+ */
 
-type Tab = 'record' | 'history' | 'transcript' | 'summary' | 'settings';
+import * as db from './db';
+import type { SessionRow, Settings } from './db';
+import * as api from './api';
+import * as pipeline from './pipeline';
+import { LiveRecorder, isIos } from './recorder';
+import type { RecorderState } from './recorder';
+import { glossaryCsv, renderSession, transcriptText } from './session-view';
+import type { SessionTab } from './session-view';
+import { wavHeader } from './split/wav';
+import { bytes, clock, copy, download, duration, escapeHtml, on, when } from './ui';
+
+type Route = 'home' | 'session' | 'settings' | 'record';
+
+interface State {
+  route: Route;
+  sessionId: string | null;
+  tab: SessionTab;
+  showOriginal: boolean;
+  sessions: SessionRow[];
+  settings: Settings;
+  health: api.Health | null;
+  progress: pipeline.Progress | null;
+  error: string;
+  notice: string;
+  recorderState: RecorderState;
+  recorderDetail: string;
+  recorderElapsed: number;
+  level: number;
+}
 
 export function mountApp(root: HTMLElement): void {
-  let activeTab: Tab = 'record';
-  let recordings: Recording[] = [];
-  let current: Recording | null = null;
-  let apiOk = false;
-  let geminiOk = false;
-  let recordingId: string | null = null;
-  let chunksUploaded = 0;
-  let processing = false;
-  let recorder: ChunkedRecorder | null = null;
-  let levelBars: HTMLDivElement[] = [];
+  const state: State = {
+    route: 'home',
+    sessionId: null,
+    tab: 'overview',
+    showOriginal: true,
+    sessions: [],
+    settings: db.DEFAULT_SETTINGS,
+    health: null,
+    progress: null,
+    error: '',
+    notice: '',
+    recorderState: 'idle',
+    recorderDetail: '',
+    recorderElapsed: 0,
+    level: 0,
+  };
 
-  root.innerHTML = `
-    <div class="shell">
-      <header class="header">
-        <div>
-      
-          <p class="subtitle">Personal transcriber — Japanese, English, Nepali (auto-detect). Powered by Gemini on your backend. Tap record, flip through results, export anytime.</p>
-        </div>
-        <div id="apiPill" class="pill">Connecting…</div>
-      </header>
+  let recorder: LiveRecorder | null = null;
+  let liveSessionId: string | null = null;
+  let recorderTimer: ReturnType<typeof setInterval> | null = null;
 
-      <div class="banner warn">
-        <strong>iPhone note:</strong> Safari cannot record indefinitely in the background. Keep the screen on while recording; chunks save every ~45s so you won't lose progress if you pause or stop.
+  /* ------------------------------------------------------------ rendering */
+
+  const render = () => {
+    root.innerHTML = `
+      <div class="shell">
+        ${renderHeader()}
+        ${state.error ? `<div class="banner err">${escapeHtml(state.error)}<button type="button" class="link-btn" data-action="dismiss-error">Dismiss</button></div>` : ''}
+        ${state.notice ? `<div class="banner ok">${escapeHtml(state.notice)}</div>` : ''}
+        ${state.progress ? renderProgress(state.progress) : ''}
+        <main>${renderRoute()}</main>
       </div>
+    `;
+    bind();
+  };
 
-      <nav class="tabs" id="tabs"></nav>
-      <div id="error" class="banner err hidden"></div>
-      <main id="main"></main>
-      <p class="footer-note">Isolated module · API key stays on server · Data in <code>voice-ai-data/</code> on your backend host</p>
+  const renderHeader = () => {
+    const keyed = Boolean(state.settings.apiKey || state.health?.geminiConfigured);
+    return `
+      <header class="app-head">
+        <button type="button" class="brand" data-action="home">
+          <span class="dot"></span> Voice AI
+        </button>
+        <div class="head-actions">
+          <span class="pill ${keyed ? 'ok' : 'err'}" data-action="settings">
+            ${keyed ? 'Ready' : 'Add API key'}
+          </span>
+          <button type="button" class="icon-btn" data-action="settings" aria-label="Settings">⚙</button>
+        </div>
+      </header>
+    `;
+  };
+
+  const renderProgress = (progress: pipeline.Progress) => {
+    const pct = progress.chunkTotal
+      ? Math.round((progress.chunkDone / progress.chunkTotal) * 100)
+      : 0;
+    const eta =
+      progress.etaSeconds && progress.phase === 'transcribing'
+        ? ` · about ${duration(progress.etaSeconds)} left`
+        : '';
+
+    return `
+      <div class="progress-bar ${progress.phase}">
+        <div class="fill" style="width:${pct}%"></div>
+        <div class="progress-text">
+          ${escapeHtml(progress.message)}${escapeHtml(eta)}
+          ${progress.chunkTotal ? ` · ${progress.chunkDone}/${progress.chunkTotal}` : ''}
+          ${
+            progress.phase === 'transcribing' || progress.phase === 'summarising'
+              ? '<button type="button" class="link-btn" data-action="pause-run">Pause</button>'
+              : ''
+          }
+        </div>
+      </div>
+    `;
+  };
+
+  const renderRoute = () => {
+    if (state.route === 'settings') return renderSettings();
+    if (state.route === 'record') return renderRecord();
+    if (state.route === 'session') return renderSessionRoute();
+    return renderHome();
+  };
+
+  /* ---------------------------------------------------------------- home */
+
+  const renderHome = () => `
+    <div class="actions-grid">
+      <button type="button" class="big-action primary" data-action="import">
+        <span class="big-icon">↑</span>
+        <strong>Import a recording</strong>
+        <small>Voice Memos, or any audio file. Handles a full 8-hour day.</small>
+      </button>
+      <button type="button" class="big-action" data-action="go-record">
+        <span class="big-icon">●</span>
+        <strong>Record now</strong>
+        <small>${isIos() ? 'Screen must stay on — see the note inside.' : 'Records while this tab stays open.'}</small>
+      </button>
     </div>
+    <input type="file" id="fileInput" accept="audio/*,.m4a,.mp3,.wav,.aac,.mp4" hidden />
+
+    ${
+      isIos()
+        ? `<div class="banner info how-to">
+            <strong>For a whole workday:</strong> record with the iPhone's own Voice Memos app —
+            it keeps running in your pocket with the screen locked — then come back here and
+            import the file. Safari cannot hold the microphone in the background, so that is the
+            only way to capture eight hours.
+          </div>`
+        : ''
+    }
+
+    <h2 class="section-title">Recordings</h2>
+    ${
+      state.sessions.length
+        ? `<ul class="sessions">${state.sessions.map(renderSessionCard).join('')}</ul>`
+        : `<p class="muted empty">Nothing yet. Import a recording to get started.</p>`
+    }
   `;
 
-  const tabsEl = root.querySelector('#tabs') as HTMLElement;
-  const mainEl = root.querySelector('#main') as HTMLElement;
-  const errorEl = root.querySelector('#error') as HTMLElement;
-  const apiPill = root.querySelector('#apiPill') as HTMLElement;
+  const renderSessionCard = (session: SessionRow) => {
+    const badge =
+      session.status === 'done'
+        ? ''
+        : `<span class="chip ${session.status === 'error' ? 'err' : 'warn'}">${escapeHtml(session.status)}</span>`;
 
-  const tabLabels: { id: Tab; label: string }[] = [
-    { id: 'record', label: 'Record' },
-    { id: 'history', label: 'History' },
-    { id: 'transcript', label: 'Transcript' },
-    { id: 'summary', label: 'Summary' },
-    { id: 'settings', label: 'Settings' },
-  ];
-
-  const showError = (msg: string) => {
-    errorEl.textContent = msg;
-    errorEl.classList.remove('hidden');
+    return `
+      <li class="session-card" data-id="${escapeHtml(session.id)}">
+        <div class="card-main" data-action="open-session">
+          <strong>${escapeHtml(session.analysis?.title || session.title)}</strong>
+          <p class="meta">
+            ${escapeHtml(when(session.createdAt))} · ${escapeHtml(duration(session.totalDurationSec))}
+            ${session.languages.length ? ` · ${escapeHtml(session.languages.join(', '))}` : ''}
+            ${badge}
+          </p>
+          ${session.analysis?.summary ? `<p class="snippet">${escapeHtml(session.analysis.summary)}</p>` : ''}
+        </div>
+        <button type="button" class="icon-btn danger" data-action="delete-session" aria-label="Delete">×</button>
+      </li>
+    `;
   };
-  const clearError = () => errorEl.classList.add('hidden');
 
-  const renderTabs = () => {
-    tabsEl.innerHTML = tabLabels
-      .map(
-        (t) =>
-          `<button type="button" class="tab ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}">${t.label}</button>`
-      )
-      .join('');
-    tabsEl.querySelectorAll('.tab').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeTab = (btn as HTMLElement).dataset.tab as Tab;
-        renderTabs();
-        renderMain();
-      });
+  /* ------------------------------------------------------------- session */
+
+  let sessionCache: { chunks: db.ChunkRow[]; segments: db.TranscriptSegment[] } = {
+    chunks: [],
+    segments: [],
+  };
+
+  const renderSessionRoute = () => {
+    const session = state.sessions.find((item) => item.id === state.sessionId);
+    if (!session) return `<p class="muted">That recording is gone.</p>`;
+
+    return renderSession({
+      session,
+      chunks: sessionCache.chunks,
+      segments: sessionCache.segments,
+      tab: state.tab,
+      showOriginal: state.showOriginal,
     });
   };
 
-  const copyText = async (text: string) => {
-    if (!text) return;
-    await navigator.clipboard.writeText(text);
-  };
-
-  const exportTxt = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  };
-
-  const exportJson = (filename: string, data: unknown) => {
-    exportTxt(filename, JSON.stringify(data, null, 2));
-  };
-
-  const loadRecordings = async () => {
-    try {
-      const { recordings: list } = await api.list();
-      recordings = list;
-      for (const r of list) await cacheRecording(r);
-    } catch {
-      recordings = (await listCached()) as Recording[];
-    }
-  };
-
-  const selectRecording = async (id: string) => {
-    try {
-      const { recording } = await api.get(id);
-      current = recording;
-      await cacheRecording(recording);
-    } catch (e) {
-      showError((e as Error).message);
-    }
-    renderMain();
-  };
+  /* -------------------------------------------------------------- record */
 
   const renderRecord = () => {
-    const isRec = recorder?.state === 'recording';
-    const isPaused = recorder?.state === 'paused';
+    const active = state.recorderState !== 'idle';
 
-    mainEl.innerHTML = `
-      <section class="panel">
-        <div class="record-row">
-          <button type="button" class="record-btn ${isRec ? 'recording' : ''}" id="micBtn" aria-label="Record">🎙</button>
-          <div class="waveform" id="waveform"></div>
+    return `
+      <button type="button" class="link-btn" data-action="home">← All recordings</button>
+
+      <div class="recorder ${state.recorderState}">
+        <div class="level-ring" style="--level:${state.level.toFixed(3)}">
+          <button type="button" class="record-btn" data-action="${active ? 'stop-record' : 'start-record'}">
+            ${active ? '■' : '●'}
+          </button>
         </div>
-        <div class="btn-row">
-          <button type="button" class="btn primary" id="startBtn" ${processing ? 'disabled' : ''}>Record</button>
-          <button type="button" class="btn" id="pauseBtn" ${!isRec ? 'disabled' : ''}>Pause</button>
-          <button type="button" class="btn" id="resumeBtn" ${!isPaused ? 'disabled' : ''}>Resume</button>
-          <button type="button" class="btn danger" id="stopBtn" ${recorder?.state === 'idle' ? 'disabled' : ''}>Stop & Process</button>
-        </div>
-        <p class="progress" id="progress">Chunks uploaded: ${chunksUploaded}</p>
-      </section>
-    `;
-
-    const wf = mainEl.querySelector('#waveform') as HTMLElement;
-    wf.innerHTML = Array.from({ length: 32 }, () => '<div class="bar"></div>').join('');
-    levelBars = Array.from(wf.querySelectorAll('.bar')) as HTMLDivElement[];
-
-    const startSession = async () => {
-      clearError();
-      processing = true;
-      renderRecord();
-      try {
-        const { recording } = await api.create(`Session ${new Date().toLocaleString()}`);
-        recordingId = recording.id;
-        current = recording;
-        chunksUploaded = 0;
-        recorder = new ChunkedRecorder(
-          async (blob, index) => {
-            if (!recordingId) return;
-            try {
-              await api.uploadChunk(recordingId, index, blob, recorder?.mimeType || 'audio/webm');
-              chunksUploaded++;
-              const prog = mainEl.querySelector('#progress');
-              if (prog) prog.textContent = `Chunks uploaded: ${chunksUploaded}`;
-            } catch (e) {
-              showError(`Chunk ${index} failed: ${(e as Error).message}`);
-            }
-          },
-          (levels) => {
-            levelBars.forEach((bar, i) => {
-              const v = levels[i] ?? 0;
-              bar.style.height = `${Math.max(6, v * 80)}px`;
-              bar.style.opacity = String(0.3 + v * 0.7);
-            });
-          }
-        );
-        await recorder.start();
-      } catch (e) {
-        showError((e as Error).message);
-        recordingId = null;
-        recorder = null;
-      }
-      processing = false;
-      renderRecord();
-    };
-
-    const stopSession = async () => {
-      if (!recorder || !recordingId) return;
-      processing = true;
-      renderRecord();
-      try {
-        await recorder.stop();
-        recorder = null;
-        const { recording } = await api.finalize(recordingId);
-        current = recording;
-        recordingId = null;
-        await loadRecordings();
-        activeTab = 'transcript';
-        renderTabs();
-      } catch (e) {
-        showError((e as Error).message);
-      }
-      processing = false;
-      renderTabs();
-      renderMain();
-    };
-
-    mainEl.querySelector('#startBtn')?.addEventListener('click', startSession);
-    mainEl.querySelector('#micBtn')?.addEventListener('click', () => {
-      if (recorder?.state === 'idle' || !recorder) startSession();
-      else if (recorder.state === 'recording') recorder.pause();
-      else if (recorder.state === 'paused') recorder.resume();
-      renderRecord();
-    });
-    mainEl.querySelector('#pauseBtn')?.addEventListener('click', () => {
-      recorder?.pause();
-      renderRecord();
-    });
-    mainEl.querySelector('#resumeBtn')?.addEventListener('click', () => {
-      recorder?.resume();
-      renderRecord();
-    });
-    mainEl.querySelector('#stopBtn')?.addEventListener('click', stopSession);
-  };
-
-  const renderHistory = () => {
-    mainEl.innerHTML = `
-      <section class="panel">
-        <input type="search" class="search" id="searchInput" placeholder="Search transcripts…" />
-        <ul class="list" id="histList"></ul>
-        <div class="btn-row">
-          <button type="button" class="btn danger" id="delBtn" ${current ? '' : 'disabled'}>Delete selected</button>
-        </div>
-      </section>
-    `;
-    const list = mainEl.querySelector('#histList') as HTMLElement;
-    if (!recordings.length) {
-      list.innerHTML = '<li class="muted">No recordings yet</li>';
-    } else {
-      list.innerHTML = recordings
-        .map(
-          (r) => `
-        <li class="${current?.id === r.id ? 'active' : ''}" data-id="${r.id}">
-          <strong>${escapeHtml(r.title)}</strong><br/>
-          <small>${r.status} · ${r.detected_language || '—'} · ${new Date(r.created_at).toLocaleString()}</small>
-        </li>`
-        )
-        .join('');
-      list.querySelectorAll('li[data-id]').forEach((li) => {
-        li.addEventListener('click', () => selectRecording((li as HTMLElement).dataset.id!));
-      });
-    }
-    mainEl.querySelector('#searchInput')?.addEventListener('input', async (e) => {
-      const q = (e.target as HTMLInputElement).value.trim();
-      if (!q) {
-        await loadRecordings();
-      } else {
-        try {
-          const { recordings: found } = await api.search(q);
-          recordings = found;
-        } catch {
-          /* keep local */
+        <p class="timer">${escapeHtml(clock(state.recorderElapsed))}</p>
+        <p class="recorder-state">${escapeHtml(labelForRecorder(state.recorderState))}</p>
+        ${state.recorderDetail ? `<p class="note">${escapeHtml(state.recorderDetail)}</p>` : ''}
+        ${
+          active
+            ? `<div class="btn-row">
+                 <button type="button" class="btn" data-action="${
+                   state.recorderState === 'paused' ? 'resume-record' : 'pause-record'
+                 }">${state.recorderState === 'paused' ? 'Resume' : 'Pause'}</button>
+                 <button type="button" class="btn danger" data-action="stop-record">Stop &amp; process</button>
+               </div>`
+            : ''
         }
+      </div>
+
+      <div class="banner warn">
+        <strong>Before you rely on this:</strong> your phone shows a recording indicator while the
+        microphone is live, and that cannot be turned off — it is enforced by iOS, not by this app.
+        Recording colleagues is also governed by your company's policy, so it is worth a look
+        before this becomes a daily habit.
+      </div>
+
+      ${
+        isIos()
+          ? `<div class="banner info">
+              iOS ends the microphone as soon as Safari is backgrounded or the screen locks, so
+              this screen has to stay open and awake. The app holds a wake lock and picks recording
+              back up automatically if it gets interrupted, but the time it was away is lost.
+              For a full day, use Voice Memos and import instead.
+            </div>`
+          : ''
       }
-      renderHistory();
-    });
-    mainEl.querySelector('#delBtn')?.addEventListener('click', async () => {
-      if (!current) return;
-      if (!confirm('Delete this recording permanently?')) return;
-      await api.remove(current.id);
-      current = null;
-      await loadRecordings();
-      renderHistory();
-    });
+    `;
   };
 
-  const renderTranscript = () => {
-    const r = current;
-    mainEl.innerHTML = `
-      <div class="cards">
-        ${card('Full transcript (original)', r?.raw_transcript, 'raw')}
-        ${card('English translation', r?.translated_english, 'en')}
-        ${card('Cleaned English', r?.cleaned_english, 'clean')}
-      </div>
-      <div class="btn-row">
-        <button type="button" class="btn" id="copyRaw">Copy original</button>
-        <button type="button" class="btn" id="copyEn">Copy English</button>
-        <button type="button" class="btn" id="expTxt">Export TXT</button>
-        <button type="button" class="btn" id="expJson">Export JSON</button>
-      </div>
-    `;
-    if (!r) {
-      mainEl.querySelector('.cards')!.innerHTML =
-        '<p class="muted">Select a recording from History or create a new one.</p>';
-      return;
-    }
-    mainEl.querySelector('#copyRaw')?.addEventListener('click', () => copyText(r.raw_transcript || ''));
-    mainEl.querySelector('#copyEn')?.addEventListener('click', () => copyText(r.cleaned_english || r.translated_english || ''));
-    mainEl.querySelector('#expTxt')?.addEventListener('click', () => {
-      exportTxt(`transcript-${r.id}.txt`, [r.raw_transcript, r.translated_english, r.cleaned_english].filter(Boolean).join('\n\n---\n\n'));
-    });
-    mainEl.querySelector('#expJson')?.addEventListener('click', () => exportJson(`transcript-${r.id}.json`, r));
-  };
+  const labelForRecorder = (recorderState: RecorderState) =>
+    ({
+      idle: 'Ready',
+      recording: 'Recording',
+      paused: 'Paused',
+      interrupted: 'Interrupted — reopen this screen to continue',
+    })[recorderState];
 
-  const renderSummary = () => {
-    const r = current;
-    const s = r?.summary;
-    mainEl.innerHTML = `
-      <div class="cards">
-        ${card('Quick summary', s?.summary, 'sum')}
-        ${card('Detailed summary', s?.detailed_summary, 'det')}
-        ${card('Key points', s?.key_points?.map((p) => `• ${p}`).join('\n'), 'kp')}
-        ${card('Action items', s?.action_items?.map((p) => `• ${p}`).join('\n'), 'ai')}
-        ${card('Important terms', s?.important_terms?.join(', '), 'terms')}
-        ${card('Follow-up questions', s?.follow_up_questions?.map((p) => `• ${p}`).join('\n'), 'fq')}
-        ${card('Meeting notes', s?.meeting_notes, 'notes')}
-      </div>
-      <div class="btn-row">
-        <button type="button" class="btn" id="expSum">Export summary JSON</button>
-      </div>
-    `;
-    if (!s) {
-      mainEl.querySelector('.cards')!.insertAdjacentHTML(
-        'afterbegin',
-        '<p class="muted">Process a recording first to generate summaries.</p>'
-      );
-    }
-    mainEl.querySelector('#expSum')?.addEventListener('click', () => {
-      if (s) exportJson(`summary-${r?.id}.json`, s);
-    });
-  };
+  /* ------------------------------------------------------------ settings */
 
   const renderSettings = () => {
-    mainEl.innerHTML = `
-      <section class="panel">
-        <h3 style="margin-top:0">Settings</h3>
-        <p class="muted">API: <code id="apiUrl"></code></p>
-        <p class="muted">Gemini configured: <strong id="geminiStatus"></strong></p>
-        <p class="muted">Chunk interval: ~45 seconds (auto-save)</p>
-        <p class="muted">Languages: Japanese, English, Nepali — automatic detection</p>
-        <h4>Install as app (PWA)</h4>
-        <p class="muted">On iPhone: Share → Add to Home Screen. On desktop: install icon in address bar.</p>
-        <button type="button" class="btn" id="regSw">Enable offline shell</button>
+    const { settings, health } = state;
+
+    return `
+      <button type="button" class="link-btn" data-action="home">← All recordings</button>
+      <h2 class="section-title">Settings</h2>
+
+      <section class="block">
+        <h3>Gemini API key</h3>
+        ${
+          health?.geminiConfigured
+            ? `<p class="muted">A key is configured on the server, so you don't need one here.</p>`
+            : `<p class="muted">
+                 Free, no card needed: open
+                 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>,
+                 create a key, and paste it below. It is stored only on this device and sent with
+                 each request — it is never saved on the server.
+               </p>`
+        }
+        <input type="password" class="input" id="apiKey" placeholder="AIza…"
+               value="${escapeHtml(settings.apiKey)}" autocomplete="off" spellcheck="false" />
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-action="save-key">Save key</button>
+          <button type="button" class="btn" data-action="test-key">Test it</button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h3>Model</h3>
+        <select class="input" id="model">
+          ${(health?.models || [settings.model])
+            .map(
+              (model) =>
+                `<option value="${escapeHtml(model)}" ${model === settings.model ? 'selected' : ''}>${escapeHtml(model)}</option>`
+            )
+            .join('')}
+        </select>
+        <p class="muted">
+          <code>gemini-2.5-flash</code> is the right default. <code>flash-lite</code> stretches the
+          free daily quota further on a very long day; <code>pro</code> reads tone more carefully
+          but has a much smaller free allowance.
+        </p>
+      </section>
+
+      <section class="block">
+        <h3>About you</h3>
+        <p class="muted">Used to judge which parts are aimed at you and what you should do next.</p>
+        <input type="text" class="input" id="profileName" placeholder="Your name as colleagues say it"
+               value="${escapeHtml(settings.profileName)}" />
+        <input type="text" class="input" id="profileRole" placeholder="Your role, e.g. backend engineer"
+               value="${escapeHtml(settings.profileRole)}" />
+        <label class="check">
+          <input type="checkbox" id="assumeNoJapanese" ${settings.assumeNoJapanese ? 'checked' : ''} />
+          Explain Japanese as if I barely know any
+        </label>
+      </section>
+
+      <section class="block">
+        <h3>Processing</h3>
+        <label class="field">
+          <span>Chunk length</span>
+          <select class="input" id="chunkSeconds">
+            ${[180, 300, 420, 600]
+              .map(
+                (value) =>
+                  `<option value="${value}" ${value === settings.chunkSeconds ? 'selected' : ''}>${value / 60} minutes</option>`
+              )
+              .join('')}
+          </select>
+        </label>
+        <p class="muted">
+          Longer chunks mean fewer requests against the free daily quota; shorter ones give tighter
+          timestamps. Five minutes is a good balance for an all-day recording.
+        </p>
+        <label class="field">
+          <span>Keep recordings for</span>
+          <select class="input" id="retentionDays">
+            ${[3, 7, 14, 30, 0]
+              .map(
+                (value) =>
+                  `<option value="${value}" ${value === settings.retentionDays ? 'selected' : ''}>${
+                    value ? `${value} days` : 'Until I delete them'
+                  }</option>`
+              )
+              .join('')}
+          </select>
+        </label>
+        <div class="btn-row">
+          <button type="button" class="btn primary" data-action="save-settings">Save settings</button>
+        </div>
+      </section>
+
+      <section class="block">
+        <h3>Storage</h3>
+        <p class="muted" id="storageLine">Checking…</p>
+        <p class="muted">
+          Transcripts and summaries stay on this device. Audio is deleted as soon as a recording
+          has been processed, and whole sessions are removed once they pass the retention window.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="btn danger" data-action="delete-all">Delete everything</button>
+        </div>
       </section>
     `;
-    const apiUrl = getApiBaseUrlLabel(import.meta.env.VITE_VOICE_AI_API_URL);
-    (mainEl.querySelector('#apiUrl') as HTMLElement).textContent = apiUrl;
-    (mainEl.querySelector('#geminiStatus') as HTMLElement).textContent = geminiOk ? 'Yes' : 'No — set GEMINI_API_KEY';
-    mainEl.querySelector('#regSw')?.addEventListener('click', async () => {
-      if ('serviceWorker' in navigator) {
-        await navigator.serviceWorker.register('/voice-ai/sw.js', { scope: '/voice-ai/' });
-        alert('Service worker registered for /voice-ai/');
-      }
+  };
+
+  /* -------------------------------------------------------------- actions */
+
+  const bind = () => {
+    on(root, '[data-action="home"], .brand', 'click', () => go('home'));
+    on(root, '[data-action="settings"]', 'click', () => go('settings'));
+    on(root, '[data-action="go-record"]', 'click', () => go('record'));
+    on(root, '[data-action="dismiss-error"]', 'click', () => {
+      state.error = '';
+      render();
+    });
+    on(root, '[data-action="back"]', 'click', () => go('home'));
+
+    on(root, '[data-action="import"]', 'click', () => {
+      root.querySelector<HTMLInputElement>('#fileInput')?.click();
+    });
+    const fileInput = root.querySelector<HTMLInputElement>('#fileInput');
+    fileInput?.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) void startImport(file);
+    });
+
+    on(root, '[data-action="open-session"]', 'click', (element) => {
+      const id = element.closest<HTMLElement>('[data-id]')?.dataset.id;
+      if (id) void openSession(id);
+    });
+    on(root, '[data-action="delete-session"]', 'click', (element, event) => {
+      event.stopPropagation();
+      const id = element.closest<HTMLElement>('[data-id]')?.dataset.id;
+      if (id) void removeSession(id);
+    });
+
+    on(root, '[data-tab]', 'click', (element) => {
+      state.tab = element.dataset.tab as SessionTab;
+      render();
+    });
+    on(root, '[data-action="toggle-original"]', 'click', () => {
+      state.showOriginal = !state.showOriginal;
+      render();
+    });
+
+    on(root, '[data-action="resume"]', 'click', () => {
+      if (state.sessionId) void run(state.sessionId);
+    });
+    on(root, '[data-action="pause-run"]', 'click', () => pipeline.cancelRun());
+
+    bindExports();
+    bindRecorder();
+    bindSettings();
+  };
+
+  const bindExports = () => {
+    const session = state.sessions.find((item) => item.id === state.sessionId);
+    if (!session) return;
+
+    on(root, '[data-action="copy-transcript"]', 'click', async () => {
+      const ok = await copy(transcriptText(session, sessionCache.segments));
+      flash(ok ? 'Transcript copied.' : 'Could not reach the clipboard.');
+    });
+    on(root, '[data-action="export-txt"]', 'click', () => {
+      download(`${slug(session.title)}-transcript.txt`, transcriptText(session, sessionCache.segments));
+    });
+    on(root, '[data-action="export-json"]', 'click', () => {
+      download(
+        `${slug(session.title)}.json`,
+        JSON.stringify({ session, segments: sessionCache.segments }, null, 2),
+        'application/json'
+      );
+    });
+    on(root, '[data-action="export-glossary"]', 'click', () => {
+      download(`${slug(session.title)}-japanese.csv`, glossaryCsv(session.analysis), 'text/csv');
     });
   };
 
-  const renderMain = () => {
-    if (activeTab === 'record') renderRecord();
-    else if (activeTab === 'history') renderHistory();
-    else if (activeTab === 'transcript') renderTranscript();
-    else if (activeTab === 'summary') renderSummary();
-    else renderSettings();
+  const bindRecorder = () => {
+    on(root, '[data-action="start-record"]', 'click', () => void startRecording());
+    on(root, '[data-action="stop-record"]', 'click', () => void stopRecording());
+    on(root, '[data-action="pause-record"]', 'click', () => {
+      recorder?.pause();
+      render();
+    });
+    on(root, '[data-action="resume-record"]', 'click', () => {
+      recorder?.resume();
+      render();
+    });
   };
 
-  const init = async () => {
-    renderTabs();
+  const bindSettings = () => {
+    on(root, '[data-action="save-key"]', 'click', async () => {
+      const value = root.querySelector<HTMLInputElement>('#apiKey')?.value.trim() || '';
+      await saveSettings({ apiKey: value });
+      flash(value ? 'Key saved on this device.' : 'Key cleared.');
+    });
+
+    on(root, '[data-action="test-key"]', 'click', async () => {
+      const value = root.querySelector<HTMLInputElement>('#apiKey')?.value.trim() || '';
+      if (!value && !state.health?.geminiConfigured) return fail('Paste a key first.');
+      flash('Checking the key…');
+      try {
+        // A one-second silent WAV is the cheapest possible real request.
+        await api.transcribe({
+          apiKey: value,
+          model: state.settings.model,
+          blob: silentWav(),
+          mimeType: 'audio/wav',
+          offsetSeconds: 0,
+        });
+        flash('The key works.');
+      } catch (err) {
+        fail(err instanceof Error ? err.message : 'The key could not be verified.');
+      }
+    });
+
+    on(root, '[data-action="save-settings"]', 'click', async () => {
+      const value = <T extends HTMLElement>(id: string) => root.querySelector<T>(`#${id}`);
+      await saveSettings({
+        model: value<HTMLSelectElement>('model')?.value || state.settings.model,
+        profileName: value<HTMLInputElement>('profileName')?.value.trim() || '',
+        profileRole: value<HTMLInputElement>('profileRole')?.value.trim() || '',
+        assumeNoJapanese: value<HTMLInputElement>('assumeNoJapanese')?.checked ?? true,
+        chunkSeconds: Number(value<HTMLSelectElement>('chunkSeconds')?.value) || 300,
+        retentionDays: Number(value<HTMLSelectElement>('retentionDays')?.value ?? 7),
+      });
+      flash('Settings saved.');
+    });
+
+    on(root, '[data-action="delete-all"]', 'click', async () => {
+      if (!confirm('Delete every recording, transcript and summary on this device?')) return;
+      for (const session of state.sessions) await db.deleteSession(session.id);
+      await refresh();
+      flash('Everything deleted.');
+    });
+
+    void showStorage();
+  };
+
+  const showStorage = async () => {
+    const line = root.querySelector('#storageLine');
+    if (!line) return;
+    const estimate = await db.storageEstimate();
+    line.textContent = estimate
+      ? `${bytes(estimate.usage)} used of about ${bytes(estimate.quota)} available.`
+      : 'This browser does not report storage usage.';
+  };
+
+  /* --------------------------------------------------------------- flows */
+
+  const startImport = async (file: File) => {
+    state.error = '';
     try {
-      const h = await api.health();
-      apiOk = h.ok;
-      geminiOk = h.geminiConfigured;
-      apiPill.textContent = apiOk ? (geminiOk ? 'API ready' : 'API up · no Gemini key') : 'API offline';
-      apiPill.className = `pill ${apiOk && geminiOk ? 'ok' : 'err'}`;
-    } catch {
-      apiPill.textContent = 'API offline';
-      apiPill.className = 'pill err';
+      const id = await pipeline.importFile(file, state.settings, onProgress);
+      await refresh();
+      await openSession(id);
+      await run(id);
+    } catch (err) {
+      fail(err instanceof Error ? err.message : String(err));
     }
-    await loadRecordings();
-    renderMain();
+  };
+
+  const run = async (sessionId: string) => {
+    if (pipeline.activeSessionId()) return fail('Something else is already being processed.');
+    if (!state.settings.apiKey && !state.health?.geminiConfigured) {
+      go('settings');
+      return fail('Add your Gemini API key first.');
+    }
+
+    try {
+      await pipeline.runSession(sessionId, state.settings, onProgress);
+    } catch (err) {
+      fail(err instanceof Error ? err.message : String(err));
+    } finally {
+      state.progress = null;
+      await refresh();
+      if (state.sessionId) await loadSessionDetail(state.sessionId);
+      render();
+    }
+  };
+
+  const onProgress = (progress: pipeline.Progress) => {
+    state.progress = progress.phase === 'done' ? null : progress;
+    // Re-render just the bar while a long run is going, rather than the page.
+    const bar = root.querySelector('.progress-bar');
+    if (bar && state.progress) {
+      bar.outerHTML = renderProgress(state.progress);
+      on(root, '[data-action="pause-run"]', 'click', () => pipeline.cancelRun());
+      return;
+    }
+    render();
+  };
+
+  const startRecording = async () => {
+    try {
+      liveSessionId = await pipeline.startLiveSession(state.settings);
+
+      recorder = new LiveRecorder(
+        {
+          onSegment: async (segment) => {
+            if (!liveSessionId) return;
+            try {
+              await pipeline.appendLiveSegment(liveSessionId, segment);
+            } catch (err) {
+              // Losing a segment must not stop the recording that is still running.
+              console.error('[app] could not store segment', err);
+            }
+          },
+          onLevel: (rms) => {
+            state.level = Math.min(1, rms * 6);
+            const ring = root.querySelector<HTMLElement>('.level-ring');
+            if (ring) ring.style.setProperty('--level', state.level.toFixed(3));
+          },
+          onStateChange: (recorderState, detail) => {
+            state.recorderState = recorderState;
+            state.recorderDetail = detail || '';
+            render();
+          },
+        },
+        state.settings.chunkSeconds
+      );
+
+      await recorder.start();
+      recorderTimer = setInterval(() => {
+        state.recorderElapsed = recorder?.elapsedSeconds || 0;
+        const timer = root.querySelector('.timer');
+        if (timer) timer.textContent = clock(state.recorderElapsed);
+      }, 1000);
+      await refresh();
+    } catch (err) {
+      fail(
+        err instanceof Error && err.name === 'NotAllowedError'
+          ? 'Microphone access was refused. Allow it in your browser settings and try again.'
+          : `Could not start recording: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  };
+
+  const stopRecording = async () => {
+    if (!recorder || !liveSessionId) return;
+    const sessionId = liveSessionId;
+
+    if (recorderTimer) clearInterval(recorderTimer);
+    recorderTimer = null;
+
+    await recorder.stop();
+    recorder = null;
+    liveSessionId = null;
+    state.recorderElapsed = 0;
+
+    await refresh();
+    await openSession(sessionId);
+    await run(sessionId);
+  };
+
+  const openSession = async (id: string) => {
+    state.sessionId = id;
+    state.route = 'session';
+    state.tab = 'overview';
+    await loadSessionDetail(id);
+    render();
+  };
+
+  const loadSessionDetail = async (id: string) => {
+    const [chunks, segments] = await Promise.all([db.listChunks(id), db.listSegments(id)]);
+    sessionCache = { chunks, segments };
+  };
+
+  const removeSession = async (id: string) => {
+    if (!confirm('Delete this recording and everything derived from it?')) return;
+    await db.deleteSession(id);
+    if (state.sessionId === id) {
+      state.sessionId = null;
+      state.route = 'home';
+    }
+    await refresh();
+  };
+
+  /* ---------------------------------------------------------------- utils */
+
+  const go = (route: Route) => {
+    state.route = route;
+    state.error = '';
+    render();
+  };
+
+  const fail = (message: string) => {
+    state.error = message;
+    render();
+  };
+
+  const flash = (message: string) => {
+    state.notice = message;
+    render();
+    setTimeout(() => {
+      if (state.notice !== message) return;
+      state.notice = '';
+      render();
+    }, 3000);
+  };
+
+  const saveSettings = async (patch: Partial<Settings>) => {
+    state.settings = { ...state.settings, ...patch };
+    await db.saveSettings(state.settings);
+    render();
+  };
+
+  const refresh = async () => {
+    state.sessions = await db.listSessions();
+    render();
+  };
+
+  /* ----------------------------------------------------------------- init */
+
+  const init = async () => {
+    state.settings = await db.loadSettings();
+    render();
+
+    // Retention runs before anything else, so old meetings never linger.
+    await db.pruneOldSessions(state.settings.retentionDays);
+    state.sessions = await db.listSessions();
+
+    try {
+      state.health = await api.health();
+    } catch {
+      state.health = null;
+    }
+    render();
+
     if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.register('/voice-ai/sw.js', { scope: '/voice-ai/' }).catch(() => {});
     }
+
+    // Warn rather than lose work if a run is in flight when the tab closes.
+    window.addEventListener('beforeunload', (event) => {
+      if (!pipeline.activeSessionId() && !recorder) return;
+      event.preventDefault();
+      event.returnValue = '';
+    });
   };
 
-  init();
+  void init();
 }
 
-function card(title: string, body?: string | null, id?: string): string {
-  const content = body?.trim() || '—';
-  return `
-    <article class="card">
-      <div class="card-head">
-        <h3 class="card-title">${escapeHtml(title)}</h3>
-      </div>
-      <div class="card-body ${content === '—' ? 'muted' : ''}" id="${id || ''}">${escapeHtml(content)}</div>
-    </article>
-  `;
-}
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 48) || 'recording';
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+/** One second of digital silence — the smallest valid request for a key test. */
+function silentWav(): Blob {
+  const sampleRate = 8000;
+  const body = new Uint8Array(new ArrayBuffer(sampleRate * 2));
+  return new Blob([wavHeader({ channels: 1, sampleRate, bitsPerSample: 16 }, body.length), body], {
+    type: 'audio/wav',
+  });
 }

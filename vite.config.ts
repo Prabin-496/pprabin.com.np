@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,6 +64,18 @@ function publicSubappRewrites(): Plugin {
  * `res.status().json()`), so local dev matches deployed behaviour.
  */
 function apiFunctions(): Plugin {
+  /**
+   * Vite only exposes `VITE_`-prefixed vars, and only to the client bundle.
+   * The API handlers are ordinary Node code reading `process.env`, so mirror
+   * `.env` into it here — otherwise secrets like DOCS_PASSCODE are simply
+   * absent in dev and every gated route answers "not configured".
+   */
+  const loadDotEnv = (mode: string) => {
+    for (const [key, value] of Object.entries(loadEnv(mode, __dirname, ''))) {
+      if (process.env[key] === undefined) process.env[key] = value;
+    }
+  };
+
   const handleApi = async (req: any, res: any, next: () => void) => {
     const rawUrl: string = req.url ?? '';
     if (!rawUrl.startsWith('/api/')) return next();
@@ -128,6 +140,9 @@ function apiFunctions(): Plugin {
   return {
     name: 'api-functions',
     enforce: 'pre',
+    config(_config, { mode }) {
+      loadDotEnv(mode);
+    },
     configureServer(server) {
       server.middlewares.use(handleApi);
     },

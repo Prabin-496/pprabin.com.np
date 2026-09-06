@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, X } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 import SectionHeader from './SectionHeader';
+import Modal from '../ui/Modal';
 import { projects, projectNarratives, PLACEHOLDER_IMAGE } from '../content/portfolio';
 
 const INITIAL_COUNT = 3;
@@ -105,82 +106,55 @@ export default function Projects() {
 
       <AnimatePresence>
         {openProject && narrative ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center p-4"
-            style={{ background: 'rgba(4, 7, 14, 0.78)', backdropFilter: 'blur(6px)' }}
-            onClick={() => setOpenId(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${openProject.title} case study`}
+          <Modal
+            onClose={() => setOpenId(null)}
+            label={`${openProject.title} case study`}
+            header={
+              <>
+                <h3 className="font-display truncate text-2xl font-semibold">{openProject.title}</h3>
+                <p className="mt-1 text-sm" style={{ color: 'var(--muted)' }}>
+                  {openProject.description}
+                </p>
+              </>
+            }
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97, y: 12 }}
-              transition={{ duration: 0.22 }}
-              onClick={(e) => e.stopPropagation()}
-              className="card max-h-[86vh] w-full max-w-3xl overflow-y-auto"
-            >
-              <div
-                className="sticky top-0 flex items-start justify-between gap-4 p-6 pb-4"
-                style={{ background: 'var(--surface)', borderBottom: '1px solid var(--line)' }}
-              >
-                <div>
-                  <h3 className="font-display text-2xl font-semibold">{openProject.title}</h3>
-                  <p className="mt-1 text-sm" style={{ color: 'var(--muted)' }}>{openProject.description}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setOpenId(null)}
-                  className="grid h-9 w-9 flex-none place-items-center rounded-lg"
-                  style={{ border: '1px solid var(--line)', color: 'var(--ink-soft)' }}
-                  aria-label="Close case study"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+            <div className="space-y-7 p-6">
+              <Block title="Problem" items={narrative.problem} />
+              <Block title="Approach" items={narrative.solution} />
+              <Block title="Result" items={narrative.result} />
+
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
+                  Key features
+                </h4>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {narrative.features.map((feature) => (
+                    <li key={feature} className="tag tag-accent">{feature}</li>
+                  ))}
+                </ul>
               </div>
 
-              <div className="space-y-7 p-6 pt-5">
-                <Block title="Problem" items={narrative.problem} />
-                <Block title="Approach" items={narrative.solution} />
-                <Block title="Result" items={narrative.result} />
-
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
-                    Key features
-                  </h4>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {narrative.features.map((feature) => (
-                      <li key={feature} className="tag tag-accent">{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
-                    Stack
-                  </h4>
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {openProject.technologies.map((tech) => (
-                      <li key={tech} className="tag">{tech}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="flex flex-wrap gap-3 pt-1">
-                  <a href={openProject.liveLink} target="_blank" rel="noreferrer" className="btn btn-primary">
-                    <ExternalLink className="h-4 w-4" /> Visit site
-                  </a>
-                  <a href={openProject.githubLink} target="_blank" rel="noreferrer" className="btn btn-secondary">
-                    <Github className="h-4 w-4" /> GitHub
-                  </a>
-                </div>
+              <div>
+                <h4 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
+                  Stack
+                </h4>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {openProject.technologies.map((tech) => (
+                    <li key={tech} className="tag">{tech}</li>
+                  ))}
+                </ul>
               </div>
-            </motion.div>
-          </motion.div>
+
+              <div className="flex flex-wrap gap-3 pt-1">
+                <a href={openProject.liveLink} target="_blank" rel="noreferrer" className="btn btn-primary">
+                  <ExternalLink className="h-4 w-4" /> Visit site
+                </a>
+                <a href={openProject.githubLink} target="_blank" rel="noreferrer" className="btn btn-secondary">
+                  <Github className="h-4 w-4" /> GitHub
+                </a>
+              </div>
+            </div>
+          </Modal>
         ) : null}
       </AnimatePresence>
     </section>

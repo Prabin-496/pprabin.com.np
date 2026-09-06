@@ -37,20 +37,46 @@ export default function Nav({ theme, onToggleTheme }: Props) {
     return () => observer.disconnect();
   }, []);
 
+  // An open drawer must not survive Escape or a jump to desktop width, where it
+  // is hidden by CSS but still holds the page scroll lock.
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    const desktop = window.matchMedia('(min-width: 1280px)');
+    const onBreakpoint = () => desktop.matches && setOpen(false);
+
+    document.addEventListener('keydown', onKeyDown);
+    desktop.addEventListener('change', onBreakpoint);
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      desktop.removeEventListener('change', onBreakpoint);
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <header
-      className="no-print fixed inset-x-0 top-0 z-50 transition-all"
+      className="no-print fixed inset-x-0 top-0 z-50"
       style={{
-        background: scrolled ? 'color-mix(in srgb, var(--bg) 82%, transparent)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(14px)' : 'none',
-        borderBottom: `1px solid ${scrolled ? 'var(--line)' : 'transparent'}`,
+        background: scrolled || open ? 'color-mix(in srgb, var(--bg) 80%, transparent)' : 'transparent',
+        backdropFilter: scrolled || open ? 'blur(14px)' : 'none',
+        WebkitBackdropFilter: scrolled || open ? 'blur(14px)' : 'none',
+        borderBottom: `1px solid ${scrolled || open ? 'var(--line)' : 'transparent'}`,
+        transition: 'background 0.25s ease, border-color 0.25s ease',
       }}
     >
       <nav className="shell flex h-16 items-center justify-between gap-4" aria-label="Main">
         <a href="#home" className="flex items-center gap-2.5 font-semibold" style={{ color: 'var(--ink)' }}>
           <span
-            className="grid h-8 w-8 place-items-center rounded-lg text-sm font-bold text-white"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))' }}
+            className="grid h-8 w-8 place-items-center rounded-lg text-sm font-bold"
+            style={{ background: 'var(--accent)', color: 'var(--accent-ink)' }}
             aria-hidden
           >
             P
@@ -58,12 +84,14 @@ export default function Nav({ theme, onToggleTheme }: Props) {
           <span className="hidden sm:inline">{profile.name}</span>
         </a>
 
-        <ul className="hidden items-center gap-1 lg:flex">
+        {/* Nine links need xl to breathe; below that they live in the drawer. */}
+        <ul className="hidden items-center gap-0.5 xl:flex">
           {navLinks.map((link) => (
             <li key={link.id}>
               <a
                 href={`#${link.id}`}
-                className="rounded-md px-3 py-2 text-sm transition"
+                aria-current={active === link.id ? 'true' : undefined}
+                className="block rounded-md px-3 py-2 text-sm transition"
                 style={{
                   color: active === link.id ? 'var(--accent)' : 'var(--ink-soft)',
                   background: active === link.id ? 'var(--accent-soft)' : 'transparent',
@@ -79,8 +107,7 @@ export default function Nav({ theme, onToggleTheme }: Props) {
           <button
             type="button"
             onClick={onToggleTheme}
-            className="grid h-9 w-9 place-items-center rounded-lg transition"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink-soft)' }}
+            className="icon-btn"
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -93,8 +120,7 @@ export default function Nav({ theme, onToggleTheme }: Props) {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-lg lg:hidden"
-            style={{ border: '1px solid var(--line)', color: 'var(--ink-soft)' }}
+            className="icon-btn xl:hidden"
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
           >
@@ -104,15 +130,22 @@ export default function Nav({ theme, onToggleTheme }: Props) {
       </nav>
 
       {open ? (
-        <div className="lg:hidden" style={{ background: 'var(--bg-elevated)', borderTop: '1px solid var(--line)' }}>
+        <div
+          className="max-h-[calc(100vh-4rem)] overflow-y-auto xl:hidden"
+          style={{ background: 'var(--bg-elevated)', borderTop: '1px solid var(--line)' }}
+        >
           <ul className="shell grid gap-1 py-4">
             {navLinks.map((link) => (
               <li key={link.id}>
                 <a
                   href={`#${link.id}`}
                   onClick={() => setOpen(false)}
+                  aria-current={active === link.id ? 'true' : undefined}
                   className="block rounded-md px-3 py-2.5 text-sm"
-                  style={{ color: active === link.id ? 'var(--accent)' : 'var(--ink-soft)' }}
+                  style={{
+                    color: active === link.id ? 'var(--accent)' : 'var(--ink-soft)',
+                    background: active === link.id ? 'var(--accent-soft)' : 'transparent',
+                  }}
                 >
                   {link.label}
                 </a>

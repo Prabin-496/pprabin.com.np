@@ -3,61 +3,81 @@
 @tailwind utilities;
 
 /*
- * Design tokens. Every colour is defined on :root (dark, the default) and
- * overridden under [data-theme="light"], so the theme toggle never needs to
- * touch component code.
+ * Design tokens.
+ *
+ * Every colour is defined on :root (dark, the default) and overridden under
+ * [data-theme="light"], so the theme toggle never touches component code. Only
+ * the values change between themes — the token names mean the same thing in
+ * both, which is what keeps a component readable without checking the palette.
+ *
+ * The palette is a neutral graphite base with a single teal accent. One accent
+ * is deliberate: colour then means "this is interactive or important" rather
+ * than decoration, and the page stays legible when a section gets dense.
  */
 @layer base {
   :root {
-    --bg: #070b14;
-    --bg-elevated: #0d1322;
-    --surface: #111829;
-    --surface-2: #16203a;
-    --line: #1f2a44;
-    --line-strong: #2c3a5c;
+    --bg: #0a0c0f;
+    --bg-elevated: #0f1216;
+    --surface: #14181d;
+    --surface-2: #1a1f26;
+    --line: #23292f;
+    --line-strong: #333b44;
 
-    --ink: #e9eefb;
-    --ink-soft: #aab6d4;
-    --muted: #7f8cae;
+    --ink: #f2f4f6;
+    --ink-soft: #b3bcc4;
+    --muted: #7d8792;
 
-    --accent: #5b9dff;
-    --accent-strong: #7c6bff;
-    --accent-soft: rgba(91, 157, 255, 0.12);
-    --success: #3ddc9a;
-    --warning: #ffb454;
+    --accent: #2dd4bf;
+    --accent-hover: #5eead4;
+    --accent-ink: #04211d; /* text on an accent-filled surface */
+    --accent-soft: rgba(45, 212, 191, 0.13);
 
-    --grid-line: rgba(255, 255, 255, 0.028);
-    --glow: radial-gradient(900px 480px at 15% -10%, rgba(91, 157, 255, 0.16), transparent 60%),
-            radial-gradient(760px 420px at 88% 4%, rgba(124, 107, 255, 0.14), transparent 58%);
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-    --radius: 14px;
+    --scrim: rgba(6, 8, 10, 0.72);
+    --grid-line: rgba(255, 255, 255, 0.022);
+    --wash: radial-gradient(1000px 520px at 12% -8%, rgba(45, 212, 191, 0.07), transparent 62%);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.42);
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 18px;
+
     color-scheme: dark;
   }
 
   [data-theme='light'] {
-    --bg: #f7f9fc;
+    --bg: #fbfbf9;
     --bg-elevated: #ffffff;
     --surface: #ffffff;
-    --surface-2: #f1f5fb;
-    --line: #dfe6f2;
-    --line-strong: #c6d2e6;
+    --surface-2: #f4f4f1;
+    --line: #e5e4df;
+    --line-strong: #d0cfc8;
 
-    --ink: #0d1526;
-    --ink-soft: #3d4b66;
-    --muted: #66748f;
+    --ink: #14181d;
+    --ink-soft: #454e57;
+    --muted: #6d757e;
 
-    --accent: #1f6feb;
-    --accent-strong: #6748e8;
-    --accent-soft: rgba(31, 111, 235, 0.09);
+    --accent: #0d9488;
+    --accent-hover: #0f766e;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(13, 148, 136, 0.1);
 
-    --grid-line: rgba(13, 21, 38, 0.035);
-    --glow: radial-gradient(900px 480px at 15% -10%, rgba(31, 111, 235, 0.09), transparent 60%),
-            radial-gradient(760px 420px at 88% 4%, rgba(103, 72, 232, 0.08), transparent 58%);
+    --success: #059669;
+    --warning: #b45309;
+    --danger: #dc2626;
 
-    --shadow-sm: 0 1px 2px rgba(13, 21, 38, 0.06);
-    --shadow: 0 18px 44px rgba(13, 21, 38, 0.1);
+    --scrim: rgba(20, 24, 29, 0.42);
+    --grid-line: rgba(20, 24, 29, 0.03);
+    --wash: radial-gradient(1000px 520px at 12% -8%, rgba(13, 148, 136, 0.06), transparent 62%);
+
+    --shadow-sm: 0 1px 2px rgba(20, 24, 29, 0.05);
+    --shadow: 0 14px 36px rgba(20, 24, 29, 0.09);
+
     color-scheme: light;
   }
 
@@ -75,12 +95,26 @@
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  /*
+   * Theme swap: transition only the properties that actually change, and only
+   * on elements carrying a themed colour. A blanket `transition: all` here
+   * makes every hover and layout change on the page feel laggy.
+   */
+  body,
+  .card,
+  .panel,
+  .tag,
+  .chip,
+  .field,
+  .icon-btn {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   }
 
   ::selection {
     background: var(--accent);
-    color: #fff;
+    color: var(--accent-ink);
   }
 
   :focus-visible {
@@ -104,12 +138,30 @@
 
   .site-shell {
     min-height: 100vh;
-    background-image:
-      var(--glow),
+    position: relative;
+    isolation: isolate;
+  }
+
+  /*
+   * Background texture as a fixed pseudo-element rather than a fixed
+   * background-image: `background-attachment: fixed` repaints the whole layer
+   * on every scroll frame, which is the most expensive thing a page like this
+   * can do on mobile.
+   */
+  .site-shell::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      var(--wash),
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-    background-size: auto, 56px 56px, 56px 56px;
-    background-attachment: fixed, scroll, scroll;
+    background-size: auto, 64px 64px, 64px 64px;
+    /* Fade the grid out down the page so it reads as texture, not a table. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 40%, transparent 92%);
   }
 
   .shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
@@ -119,14 +171,14 @@
   .section { @apply relative py-20 sm:py-28; }
 
   .eyebrow {
-    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em];
+    @apply inline-flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em];
     color: var(--accent);
   }
 
   .section-title {
-    @apply font-display text-3xl font-semibold leading-tight sm:text-4xl lg:text-[2.75rem];
+    @apply font-display text-3xl font-semibold leading-[1.12] sm:text-4xl lg:text-[2.7rem];
     color: var(--ink);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.022em;
   }
 
   .section-lead {
@@ -140,22 +192,25 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
+  .card-hover {
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
   .card-hover:hover {
     border-color: var(--line-strong);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow);
   }
 
   .panel {
     background: var(--surface-2);
     border: 1px solid var(--line);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
   }
 
-  /* --- tags & pills --- */
+  /* --- tags, chips & pills --- */
 
   .tag {
     @apply inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium;
@@ -166,59 +221,106 @@
 
   .tag-accent {
     background: var(--accent-soft);
-    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
     color: var(--accent);
+  }
+
+  /* Toggleable filter button — a chip that can be pressed, unlike .tag. */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--line-strong); color: var(--ink); }
+
+  .chip-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .chip-active:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--accent-ink);
+  }
+
+  .chip-count {
+    @apply text-[0.65rem] font-semibold tabular-nums;
+    opacity: 0.65;
   }
 
   .status-pill {
     @apply inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium;
     background: color-mix(in srgb, var(--success) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--success) 34%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 32%, transparent);
     color: var(--success);
   }
 
   .status-dot {
     @apply inline-block h-1.5 w-1.5 rounded-full;
     background: var(--success);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 22%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
   }
 
   /* --- buttons --- */
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold;
     border: 1px solid transparent;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+      transform 0.18s ease;
   }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn:not(:disabled):active { transform: translateY(1px); }
 
+  /* Flat fill, not a gradient: crisp at any size, and it reads as one
+     deliberate accent rather than decoration. */
   .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-    color: #fff;
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 30%, transparent);
+    background: var(--accent);
+    color: var(--accent-ink);
   }
-  .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.07); }
+  .btn-primary:not(:disabled):hover { background: var(--accent-hover); }
 
   .btn-secondary {
     background: var(--surface);
     border-color: var(--line-strong);
     color: var(--ink);
   }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-secondary:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
 
-  .btn-ghost {
-    color: var(--ink-soft);
-  }
+  .btn-ghost { color: var(--ink-soft); }
   .btn-ghost:hover { color: var(--accent); }
+
+  /* Square icon-only control — nav toggles, dialog close, social links. */
+  .icon-btn {
+    @apply grid h-9 w-9 place-items-center rounded-lg;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    transition: border-color 0.18s ease, color 0.18s ease, background-color 0.18s ease;
+  }
+  .icon-btn:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+    background: var(--surface);
+  }
 
   /* --- forms --- */
 
   .field {
-    @apply w-full rounded-lg px-4 py-3 text-sm transition;
+    @apply w-full rounded-lg px-4 py-3 text-sm;
     background: var(--bg-elevated);
     border: 1px solid var(--line);
     color: var(--ink);
   }
   .field::placeholder { color: var(--muted); }
-  .field:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
 
   .field-label {
     @apply mb-2 block text-xs font-semibold uppercase tracking-wider;
@@ -243,7 +345,7 @@
   .timeline-dot {
     @apply absolute left-0 top-1.5 h-3 w-3 rounded-full;
     background: var(--accent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
   }
 }
 
@@ -257,7 +359,7 @@
   .bg-surface-2 { background: var(--surface-2); }
 
   .gradient-text {
-    background: linear-gradient(120deg, var(--accent), var(--accent-strong));
+    background: linear-gradient(100deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--ink)));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -267,7 +369,7 @@
   @media print {
     .no-print { display: none !important; }
     body { background: #fff; color: #000; }
-    .site-shell { background: none; }
+    .site-shell::before { display: none; }
     .card, .panel { border-color: #ccc; box-shadow: none; }
   }
 }

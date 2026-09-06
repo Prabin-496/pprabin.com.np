@@ -38,11 +38,11 @@ export default function VideoWork() {
                 />
                 <span
                   className="absolute inset-0 grid place-items-center opacity-0 transition group-hover:opacity-100"
-                  style={{ background: 'rgba(4, 7, 14, 0.45)' }}
+                  style={{ background: 'var(--scrim)' }}
                 >
                   <span
-                    className="grid h-14 w-14 place-items-center rounded-full text-white"
-                    style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-strong))' }}
+                    className="grid h-14 w-14 place-items-center rounded-full"
+                    style={{ background: 'var(--accent)', color: 'var(--accent-ink)' }}
                   >
                     <Play className="ml-0.5 h-6 w-6" fill="currentColor" />
                   </span>

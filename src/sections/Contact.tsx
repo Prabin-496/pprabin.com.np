@@ -148,8 +148,8 @@ export default function Contact() {
               <p
                 className="mt-4 flex items-start gap-2 rounded-lg p-3 text-sm"
                 style={{
-                  background: 'color-mix(in srgb, var(--warning) 14%, transparent)',
-                  color: 'var(--warning)',
+                  background: 'color-mix(in srgb, var(--danger) 12%, transparent)',
+                  color: 'var(--danger)',
                 }}
                 role="alert"
               >

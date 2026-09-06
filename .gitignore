@@ -39,3 +39,19 @@ apps/voice-transcriber/frontend/node_modules/
 .env.development.local
 .env.test.local
 .env.production.local 
+# Private identity / company documents (National ID, PAN, signature, share
+# records). This repo is PUBLIC — these must never be committed. They are
+# served at runtime from a private S3 bucket via /api/documents.
+# See docs/private-documents.md.
+portfolio/certificates/MMNT docs IMP need passport/
+private/
+
+# Local working copy of the certificate downloads. `public/certificates/` is
+# the committed, deployed copy — see scripts/sync-certificates.mjs.
+portfolio/certificates/
+
+# AWS credential exports. `aws configure` and the IAM console both hand these
+# out as CSV; one committed to a public repo is a compromised account.
+*accessKeys*.csv
+*credentials*.csv
+*.pem

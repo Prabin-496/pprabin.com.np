@@ -8,6 +8,13 @@ const SOCIALS = [
   { href: profile.links.photography, Icon: Camera, label: 'Photography' },
 ];
 
+/** Same-page destinations worth a direct link from the footer. */
+const RESOURCES = [
+  { href: '#certificates', label: 'Certificates' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#projects', label: 'Projects' },
+];
+
 const TOOLS = [
   { href: '/flashcards', label: 'Japanese Flashcards' },
   { href: '/voice-ai/', label: 'Voice AI Transcriber' },
@@ -17,8 +24,8 @@ export default function Footer() {
   return (
     <footer className="no-print" style={{ borderTop: '1px solid var(--line)' }}>
       <div className="shell py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="lg:col-span-2">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="sm:col-span-2">
             <p className="font-display text-lg font-semibold" style={{ color: 'var(--ink)' }}>
               {profile.name}
             </p>
@@ -47,6 +54,25 @@ export default function Footer() {
               ))}
             </ul>
           </nav>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
+              Credentials
+            </p>
+            <ul className="mt-4 space-y-2">
+              {RESOURCES.map((item) => (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    className="text-sm transition hover:opacity-80"
+                    style={{ color: item.href === '#certificates' ? 'var(--accent)' : 'var(--ink-soft)' }}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>
@@ -85,8 +111,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="grid h-9 w-9 place-items-center rounded-lg transition"
-                  style={{ border: '1px solid var(--line)', color: 'var(--ink-soft)' }}
+                  className="icon-btn"
                 >
                   <Icon className="h-4 w-4" />
                 </a>

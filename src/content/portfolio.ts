@@ -474,8 +474,8 @@ export const builtHere = [
     title: 'Voice AI Transcriber',
     href: '/voice-ai/',
     description:
-      'Chunked browser recording with Gemini transcription and summarisation, backed by SQLite and an installable PWA shell.',
-    stack: ['Gemini', 'Express', 'SQLite', 'PWA'],
+      'Imports an 8-hour recording, splits it in the browser without decoding it, and returns a mixed Japanese/English/Nepali transcript, summary and speaker read. Local-first: nothing is stored server-side.',
+    stack: ['Gemini', 'AAC remux', 'IndexedDB', 'PWA'],
   },
 ];
 
@@ -487,5 +487,6 @@ export const navLinks = [
   { id: 'projects', label: 'Projects' },
   { id: 'video-editing', label: 'Video' },
   { id: 'japan', label: 'Japan' },
+  { id: 'certificates', label: 'Certificates' },
   { id: 'contact', label: 'Contact' },
 ];

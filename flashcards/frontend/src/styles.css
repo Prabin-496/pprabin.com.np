@@ -1,19 +1,21 @@
 /* Japanese Flashcards — Anki-style study UI */
 
 :root {
-  --bg: #0b1020;
-  --bg-soft: #121933;
-  --panel: #161f3d;
-  --panel-2: #1c2749;
-  --line: #263257;
-  --ink: #e8ecf8;
-  --ink-dim: #98a3c4;
-  --accent: #6ea8ff;
-  --accent-2: #8b7cff;
-  --new: #57b6ff;
-  --learn: #ff9f43;
-  --review: #46d39a;
-  --danger: #ff6b7a;
+  /* Graphite + teal, matching the portfolio at pprabin.com.np. */
+  --bg: #0a0c0f;
+  --bg-soft: #0f1216;
+  --panel: #14181d;
+  --panel-2: #1a1f26;
+  --line: #23292f;
+  --ink: #f2f4f6;
+  --ink-dim: #7d8792;
+  --accent: #2dd4bf;
+  --accent-2: #5eead4;
+  --accent-ink: #04211d;
+  --new: #38bdf8;
+  --learn: #fbbf24;
+  --review: #34d399;
+  --danger: #f87171;
   --radius: 14px;
   --radius-sm: 9px;
   --shadow: 0 12px 34px rgba(0, 0, 0, 0.36);
@@ -25,8 +27,8 @@
 body {
   margin: 0;
   background:
-    radial-gradient(1100px 620px at 12% -8%, #1b2551 0%, transparent 60%),
-    radial-gradient(900px 520px at 92% 0%, #241d4d 0%, transparent 55%),
+    radial-gradient(1100px 620px at 12% -8%, rgba(45, 212, 191, 0.09) 0%, transparent 60%),
+    radial-gradient(900px 520px at 92% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 55%),
     var(--bg);
   color: var(--ink);
   font-family: Outfit, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -60,7 +62,7 @@ body {
   display: grid; place-items: center;
   border-radius: 13px;
   background: linear-gradient(140deg, var(--accent), var(--accent-2));
-  color: #0b1020;
+  color: var(--accent-ink);
   font-size: 24px; font-weight: 700;
   box-shadow: var(--shadow);
 }
@@ -82,7 +84,7 @@ body {
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .tab:hover:not(:disabled) { color: var(--ink); border-color: var(--accent); }
-.tab.active { background: linear-gradient(140deg, var(--accent), var(--accent-2)); color: #0b1020; font-weight: 600; border-color: transparent; }
+.tab.active { background: linear-gradient(140deg, var(--accent), var(--accent-2)); color: var(--accent-ink); font-weight: 600; border-color: transparent; }
 .tab:disabled { opacity: 0.36; cursor: not-allowed; }
 
 .deck-crumb {
@@ -160,7 +162,7 @@ label.inline select { width: auto; }
 }
 .btn:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); }
 .btn:disabled { opacity: 0.42; cursor: not-allowed; }
-.btn.primary { background: linear-gradient(140deg, var(--accent), var(--accent-2)); color: #0b1020; font-weight: 600; border-color: transparent; }
+.btn.primary { background: linear-gradient(140deg, var(--accent), var(--accent-2)); color: var(--accent-ink); font-weight: 600; border-color: transparent; }
 .btn.danger { color: var(--danger); }
 
 .link-btn {
@@ -548,7 +550,7 @@ label.inline select { width: auto; }
   transition: border-color 0.15s;
 }
 .learned-deck:hover { border-color: var(--accent); }
-.learned-deck.is-active { border-color: var(--accent); background: rgba(110, 168, 255, 0.12); }
+.learned-deck.is-active { border-color: var(--accent); background: rgba(45, 212, 191, 0.12); }
 .learned-deck-name { font-weight: 600; }
 .learned-deck-count { justify-self: end; font-size: 0.82rem; color: var(--ink-dim); }
 .learned-deck-count b { color: var(--accent); font-size: 1.05rem; }

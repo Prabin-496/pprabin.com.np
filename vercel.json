@@ -2,8 +2,7 @@
   "routes": [
     { "handle": "filesystem" },
 
-    { "src": "/api/voice/health/?$", "dest": "/api/voice?path=health" },
-    { "src": "/api/recordings/?$", "dest": "/api/voice?path=" },
+    { "src": "/api/voice/(.*)$", "dest": "/api/voice?path=$1" },
     { "src": "/api/recordings/(.*)$", "dest": "/api/voice?path=$1" },
 
     { "src": "/api/(.*)", "dest": "/api/$1" },

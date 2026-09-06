@@ -140,23 +140,31 @@ is no dev proxy. Put the same variables in a local `.env` for `vercel dev`.
 
 ## Architecture notes
 
-**Voice AI was ported off EC2.** The Express + `better-sqlite3` backend needed a
-persistent disk, which serverless does not have. Two things made the port clean:
+**Voice AI is local-first and stores nothing server-side.** It was ported off
+EC2 (Express + `better-sqlite3`, which needed a persistent disk), then off
+DynamoDB as well. The DynamoDB version was what returned 500s in production: it
+needed AWS credentials that had gone stale, and for a private single-user tool
+it bought nothing over the browser's own storage.
 
-- Stored audio was never served back to the browser — it was read once, handed
-  to Gemini, and forgotten. So audio is now streamed straight through and never
-  persisted at all.
-- Uploads are base64 JSON instead of multipart, removing `multer` and the need
-  to spool to disk. A 45-second Opus chunk is ~200 KB (~270 KB base64), far
-  under Vercel's 4.5 MB request-body limit.
+- Sessions, transcripts, summaries and the Gemini API key all live in IndexedDB
+  on the device. `api/voice.js` is a stateless proxy — audio goes straight
+  through to Gemini and is never written down.
+- The key is sent per request as `x-gemini-key`. `GEMINI_API_KEY` on the server
+  still works and takes precedence, but leaving it unset means the deployment
+  cannot spend anyone's quota but the caller's own.
+- Audio uploads are raw bytes rather than base64 JSON: a third smaller, and
+  clear of any body-parser size limit.
+- Long recordings are split **in the browser** by re-framing AAC out of the MP4
+  container, so an 8-hour file never has to be decoded. See
+  `apps/voice-transcriber/README.md`.
 
-All `/api/recordings/*` routes are handled by the single `api/voice.js`
-function. Vercel Hobby allows **12 serverless functions per deployment**; the
-project now uses **10**. Splitting the voice routes across five files would have
-put it at 13 and broken the deploy.
+All `/api/recordings/*` and `/api/voice/*` routes are handled by the single
+`api/voice.js` function. Vercel Hobby allows **12 serverless functions per
+deployment**; the project uses **10**.
 
-`apps/voice-transcriber/backend/` is now unused in production. It still works
-for local development; delete it if you would rather not maintain two copies.
+The old `apps/voice-transcriber/backend/` Express server has been removed — it
+was two rewrites out of date and its deployment guide pointed at infrastructure
+that no longer exists.
 
 ## Free-tier limits worth knowing
 
@@ -164,7 +172,7 @@ for local development; delete it if you would rather not maintain two copies.
 |---|---|
 | Vercel Hobby | 100 GB bandwidth/mo, 12 functions, 60s max duration |
 | DynamoDB | 25 GB storage, perpetual; 25 RCU/WCU only in **provisioned** mode |
-| Gemini API | free-tier rate limits per minute/day |
+| Gemini API | ~10 requests/min, a few hundred/day on the free tier |
 | Resend | 3,000 emails/mo, 100/day |
 
 ### What the flashcards actually cost

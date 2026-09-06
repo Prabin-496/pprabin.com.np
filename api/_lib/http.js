@@ -31,6 +31,26 @@ export function readBody(req) {
   return req.body;
 }
 
+/**
+ * Raw request bytes, for routes that take binary rather than JSON.
+ *
+ * @vercel/node hands back a Buffer for content types it doesn't recognise, but
+ * behaviour differs between `vercel dev` and the deployed runtime, so this
+ * falls back to draining the stream itself when the body wasn't pre-read.
+ * Sending audio as raw bytes rather than base64 JSON keeps a chunk ~25% smaller
+ * and out of reach of any body-parser size cap.
+ */
+export async function readRawBody(req) {
+  if (Buffer.isBuffer(req.body)) return req.body;
+  if (typeof req.body === 'string') return Buffer.from(req.body, 'binary');
+
+  const parts = [];
+  for await (const part of req) {
+    parts.push(typeof part === 'string' ? Buffer.from(part) : part);
+  }
+  return Buffer.concat(parts);
+}
+
 export function methodNotAllowed(res, allowed) {
   res.setHeader('Allow', allowed.join(', '));
   res.status(405).json({ error: `Method not allowed. Use ${allowed.join(', ')}.` });
@@ -46,6 +66,9 @@ export function handler(fn) {
       console.error('[anki-api]', req.url, err);
       res.status(status).json({
         error: status === 500 ? 'Internal server error' : err.message,
+        // The client queue branches on this: RATE_LIMITED and UPSTREAM_DOWN are
+        // worth waiting out, NO_API_KEY is not.
+        code: err.code,
         detail: process.env.NODE_ENV === 'development' ? err.message : undefined,
       });
     }

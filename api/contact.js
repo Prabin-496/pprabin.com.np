@@ -40,31 +40,54 @@ export default handler(async (req, res) => {
   const at = new Date().toISOString();
   const id = randomUUID();
 
-  await ddb.send(
-    new PutCommand({
-      TableName: TABLE,
-      Item: {
-        PK: 'CONTACT',
-        SK: `${at}#${id}`,
-        id,
-        at,
-        name,
-        email,
-        message,
-        userAgent: String(req.headers['user-agent'] || '').slice(0, 300),
-        // Vercel forwards the client IP here; useful only for abuse triage.
-        ip: String(req.headers['x-forwarded-for'] || '').split(',')[0].trim(),
-      },
-    })
-  );
+  /*
+   * Two independent delivery paths: the table and the email. Neither is
+   * awaited before the other is attempted, and neither failing on its own
+   * loses the message — a DynamoDB outage used to 500 the whole request even
+   * when email was configured and would have worked.
+   */
+  const [stored, delivered] = await Promise.all([
+    ddb
+      .send(
+        new PutCommand({
+          TableName: TABLE,
+          Item: {
+            PK: 'CONTACT',
+            SK: `${at}#${id}`,
+            id,
+            at,
+            name,
+            email,
+            message,
+            userAgent: String(req.headers['user-agent'] || '').slice(0, 300),
+            // Vercel forwards the client IP here; useful only for abuse triage.
+            ip: String(req.headers['x-forwarded-for'] || '').split(',')[0].trim(),
+          },
+        })
+      )
+      .then(() => true)
+      .catch((err) => {
+        console.error('[contact] could not store message:', err.message);
+        return false;
+      }),
+    sendEmail({ name, email, message, at }).catch((err) => {
+      console.error('[contact] email delivery failed:', err.message);
+      return false;
+    }),
+  ]);
 
-  const delivered = await sendEmail({ name, email, message, at }).catch((err) => {
-    // A delivery failure must not lose the message — it is already stored.
-    console.error('[contact] email delivery failed:', err.message);
-    return false;
-  });
+  // Only a total failure is reported as one, so the form can fall back to the
+  // mailto link instead of telling someone their message went through when it
+  // reached nowhere at all.
+  if (!stored && !delivered) {
+    res.status(502).json({
+      error: 'Message could not be delivered right now',
+      code: 'DELIVERY_FAILED',
+    });
+    return;
+  }
 
-  res.status(201).json({ ok: true, id, delivered });
+  res.status(201).json({ ok: true, id, stored, delivered });
 });
 
 async function listMessages(req, res) {

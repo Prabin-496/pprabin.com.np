@@ -2,18 +2,25 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:flashcards && npm run build:voice-ai && vite build",
+    "build": "npm run generate:certificates && npm run typecheck && npm run build:flashcards && npm run build:voice-ai && vite build",
     "build:flashcards": "npm install --prefix flashcards/frontend && npm run build --prefix flashcards/frontend",
     "dev:flashcards": "npm run dev --prefix flashcards/frontend",
     "dev:flashcards-api": "npm run dev --prefix flashcards/backend",
     "build:voice-ai": "npm install --prefix apps/voice-transcriber/frontend && npm run build --prefix apps/voice-transcriber/frontend",
     "dev:voice-ai": "npm run dev --prefix apps/voice-transcriber/frontend",
-    "dev:voice-ai-api": "npm run --prefix apps/voice-transcriber/backend dev",
-    "preview": "vite preview"
+    "check:voice-ai": "npm run --prefix apps/voice-transcriber/frontend check",
+    "preview": "vite preview",
+    "sync:certificates": "node scripts/sync-certificates.mjs",
+    "check:certificates": "node scripts/generate-certificates.mjs --check",
+    "upload:private-docs": "node scripts/upload-private-docs.mjs",
+    "typecheck": "tsc --noEmit",
+    "generate:certificates": "node scripts/generate-certificates.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1127.0",
+    "@aws-sdk/client-s3": "^3.1127.0",
     "@aws-sdk/lib-dynamodb": "^3.1127.0",
+    "@aws-sdk/s3-request-presigner": "^3.1127.0",
     "@google/generative-ai": "^0.24.0",
     "@heroicons/react": "^2.0.0",
     "framer-motion": "^10.18.0",
