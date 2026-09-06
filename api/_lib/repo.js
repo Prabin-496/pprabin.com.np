@@ -49,8 +49,20 @@ export async function putDeck(deck) {
 
 export async function deleteDeck(deckId) {
   const cards = await allCardsInDeck(deckId);
+  // Daily counters live under their own partition. Left behind, a deck
+  // re-created with the same name inherits the old "already done today" and
+  // refuses to serve new cards.
+  const counters = await ddb.send(
+    new QueryCommand({
+      TableName: TABLE,
+      KeyConditionExpression: 'PK = :pk',
+      ExpressionAttributeValues: { ':pk': `STATS#${deckId}` },
+      ProjectionExpression: 'PK, SK',
+    })
+  );
   await batchDelete([
     ...cards.map((c) => keys.card(deckId, c.cardId)),
+    ...(counters.Items || []).map(({ PK, SK }) => ({ PK, SK })),
     keys.deck(deckId),
   ]);
   return cards.length;
@@ -178,8 +190,16 @@ export async function allInQueue(deckId, queue) {
   return out;
 }
 
-/** Count of cards in a queue (no item payload transferred). */
-export async function countQueue(deckId, queue, { dueBefore } = {}) {
+/**
+ * Count of cards in a queue (no item payload transferred).
+ *
+ * `limit` stops early and returns exactly `limit`. DynamoDB charges a COUNT
+ * query for every item it walks, so an unbounded count of the N2 deck's new
+ * pile reads all 1,905 cards. When the caller only needs "is there at least
+ * one more than today's cap", pass the cap.
+ */
+export async function countQueue(deckId, queue, { dueBefore, limit } = {}) {
+  if (limit != null && limit <= 0) return 0;
   let total = 0;
   let ExclusiveStartKey;
   do {
@@ -192,10 +212,12 @@ export async function countQueue(deckId, queue, { dueBefore } = {}) {
           ? { ':pk': queueGsi(deckId, queue), ':due': dueBefore }
           : { ':pk': queueGsi(deckId, queue) },
         Select: 'COUNT',
+        ...(limit != null ? { Limit: limit - total } : {}),
         ExclusiveStartKey,
       })
     );
     total += res.Count || 0;
+    if (limit != null && total >= limit) return limit;
     ExclusiveStartKey = res.LastEvaluatedKey;
   } while (ExclusiveStartKey);
   return total;

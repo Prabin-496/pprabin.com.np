@@ -49,7 +49,25 @@ Save the access key ID and secret; they go in the next step.
 
 ---
 
-## 3. Environment variables (Vercel → Settings → Environment Variables)
+## 3. Environment variables
+
+The fastest route — reads the AWS key pair from `~/.aws/credentials` and pipes
+it into Vercel, so the secret is never typed into a terminal or pasted
+anywhere:
+
+```bash
+npx vercel login                 # once
+./scripts/setup-vercel-env.sh    # sets all four, offers a passcode + deploy
+```
+
+It also offers to set `STUDY_PASSCODE`. Do set one: without it, anyone who
+opens the deployed site can edit or delete your decks.
+
+To check what a deployment actually has, call `GET /api/health` — it reports
+which of these variables are present (never their values) and the exact AWS
+error if the table cannot be read.
+
+### Or set them by hand (Vercel → Settings → Environment Variables)
 
 ### Required — flashcards, contact form, voice
 | Variable | Value | Where to get it |
@@ -145,6 +163,36 @@ for local development; delete it if you would rather not maintain two copies.
 | Service | Limit |
 |---|---|
 | Vercel Hobby | 100 GB bandwidth/mo, 12 functions, 60s max duration |
-| DynamoDB | 25 GB + 25 RCU/WCU, perpetual |
+| DynamoDB | 25 GB storage, perpetual; 25 RCU/WCU only in **provisioned** mode |
 | Gemini API | free-tier rate limits per minute/day |
 | Resend | 3,000 emails/mo, 100/day |
+
+### What the flashcards actually cost
+
+The `AnkiFlashcards` table is in **on-demand** mode. Storage (4.8 MB against a
+25 GB perpetual allowance) is free; requests are not — on-demand has no
+always-free request allowance, so reads are billed per use. The volume is what
+matters, and the volume is tiny:
+
+| Operation | Read units | Note |
+|---|---|---|
+| Answer a card | ~1.5 | was ~100 — the new-card count is now bounded by the daily cap instead of walking all 1,905 N2 cards |
+| Load the deck screen | ~270 | counts every deck's unseen pile exactly, because the deck cards and the exam countdown both display it |
+| Open the Learned screen | proportional to words **studied**, not deck size |
+
+At a normal study pace that lands in the low tens of thousands of read units a
+month, against pricing quoted per *million*. Removing the N3/N4/N5/kana decks
+would cut the deck-screen figure by about half, but it is not worth doing for
+cost reasons. If you want to anyway:
+
+```bash
+curl -X DELETE "https://www.pprabin.com.np/api/decks?deckId=jlpt-n3" \
+  -H "X-Study-Key: <your STUDY_PASSCODE>"
+```
+
+They can always be reinstalled from the Decks screen — the vocabulary ships in
+`api/_lib/data/`, and cards are keyed by word so nothing duplicates.
+
+Switching the table to provisioned 25 RCU/25 WCU would make it literally $0,
+but the deck screen's ~270-unit burst would throttle against a 25 RCU ceiling.
+On-demand is the right mode here.

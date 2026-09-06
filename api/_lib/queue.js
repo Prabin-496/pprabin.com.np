@@ -16,16 +16,21 @@ export async function buildQueueState(deck, config, now = new Date(), { excludeC
   const nowIso = now.toISOString();
   const deckId = deck.deckId;
 
-  const [learn, relearn, reviewDue, newTotal, reviewDueCount, today] = await Promise.all([
+  const [learn, relearn, reviewDue, reviewDueCount, today] = await Promise.all([
     queryQueue(deckId, 'learn', { dueBefore: nowIso, limit: 20 }),
     queryQueue(deckId, 'relearn', { dueBefore: nowIso, limit: 20 }),
     queryQueue(deckId, 'review', { dueBefore: nowIso, limit: 60 }),
-    countQueue(deckId, 'new'),
     countQueue(deckId, 'review', { dueBefore: nowIso }),
     getCounts(deckId),
   ]);
 
-  const newLeft = Math.max(0, Math.min(newTotal, cfg.newPerDay - today.newDone));
+  // How many new cards today's cap still allows. Counting the whole unseen
+  // pile here would read all 1,905 N2 cards on every single answer to produce
+  // a number that is then clamped to at most `newPerDay`, so the count stops
+  // at the cap. The exact pile size is only fetched below, when the deck runs
+  // out and the finished screen actually shows it.
+  const newCap = Math.max(0, cfg.newPerDay - (today.newDone || 0));
+  const newLeft = await countQueue(deckId, 'new', { limit: newCap });
   const revLeft = Math.max(0, Math.min(reviewDueCount, cfg.revPerDay - today.revDone));
 
   // GSI1 is eventually consistent, so a card answered a moment ago can still
@@ -38,11 +43,14 @@ export async function buildQueueState(deck, config, now = new Date(), { excludeC
     new: newLeft,
     learn: learning.length,
     review: revLeft,
-    newTotal,
     reviewDue: reviewDueCount,
   };
 
   const card = await pickNext({ deckId, learning, reviews, newLeft, counts, today, now, cfg, excludeCardId });
+
+  // Only the "deck finished" screen reports the size of the unseen pile, so
+  // that is the only time it is worth paying to count it.
+  counts.newTotal = card ? null : await countQueue(deckId, 'new');
 
   return {
     config: cfg,
