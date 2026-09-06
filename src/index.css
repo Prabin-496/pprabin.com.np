@@ -2,64 +2,272 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens. Every colour is defined on :root (dark, the default) and
+ * overridden under [data-theme="light"], so the theme toggle never needs to
+ * touch component code.
+ */
 @layer base {
   :root {
-    --ink: #111827;
-    --ink-soft: #374151;
-    --muted: #6b7280;
-    --paper: #f4f7fb;
-    --paper-deep: #ecf1f7;
-    --line: #d5ddea;
-    --accent: #155e75;
-    --accent-soft: #edf7fb;
-    --surface: #ffffff;
+    --bg: #070b14;
+    --bg-elevated: #0d1322;
+    --surface: #111829;
+    --surface-2: #16203a;
+    --line: #1f2a44;
+    --line-strong: #2c3a5c;
+
+    --ink: #e9eefb;
+    --ink-soft: #aab6d4;
+    --muted: #7f8cae;
+
+    --accent: #5b9dff;
+    --accent-strong: #7c6bff;
+    --accent-soft: rgba(91, 157, 255, 0.12);
+    --success: #3ddc9a;
+    --warning: #ffb454;
+
+    --grid-line: rgba(255, 255, 255, 0.028);
+    --glow: radial-gradient(900px 480px at 15% -10%, rgba(91, 157, 255, 0.16), transparent 60%),
+            radial-gradient(760px 420px at 88% 4%, rgba(124, 107, 255, 0.14), transparent 58%);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    --radius: 14px;
+    color-scheme: dark;
   }
+
+  [data-theme='light'] {
+    --bg: #f7f9fc;
+    --bg-elevated: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f1f5fb;
+    --line: #dfe6f2;
+    --line-strong: #c6d2e6;
+
+    --ink: #0d1526;
+    --ink-soft: #3d4b66;
+    --muted: #66748f;
+
+    --accent: #1f6feb;
+    --accent-strong: #6748e8;
+    --accent-soft: rgba(31, 111, 235, 0.09);
+
+    --grid-line: rgba(13, 21, 38, 0.035);
+    --glow: radial-gradient(900px 480px at 15% -10%, rgba(31, 111, 235, 0.09), transparent 60%),
+            radial-gradient(760px 420px at 88% 4%, rgba(103, 72, 232, 0.08), transparent 58%);
+
+    --shadow-sm: 0 1px 2px rgba(13, 21, 38, 0.06);
+    --shadow: 0 18px 44px rgba(13, 21, 38, 0.1);
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 84px;
   }
 
   body {
     margin: 0;
-    font-family: 'Outfit', system-ui, sans-serif;
-    background: var(--paper);
+    font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bg);
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--accent) 25%, white);
+    background: var(--accent);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Respect users who ask for less motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer components {
-  .font-display {
-    font-family: 'Fraunces', Georgia, serif;
-  }
+  .font-display { font-family: 'Fraunces', Georgia, serif; }
 
   .site-shell {
-    background: linear-gradient(180deg, #f8fafc 0%, #f4f7fb 60%, #eef3f8 100%);
     min-height: 100vh;
+    background-image:
+      var(--glow),
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: auto, 56px 56px, 56px 56px;
+    background-attachment: fixed, scroll, scroll;
   }
 
-  .section-rule {
-    @apply h-px w-12 bg-[var(--accent)];
+  .shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+
+  /* --- section scaffolding --- */
+
+  .section { @apply relative py-20 sm:py-28; }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em];
+    color: var(--accent);
   }
 
-  .tag {
-    @apply inline-flex items-center rounded-md border border-[var(--line)] bg-white/70 px-2.5 py-1 text-xs font-medium text-[var(--ink-soft)];
+  .section-title {
+    @apply font-display text-3xl font-semibold leading-tight sm:text-4xl lg:text-[2.75rem];
+    color: var(--ink);
+    letter-spacing: -0.02em;
   }
 
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md bg-[var(--ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--accent)];
+  .section-lead {
+    @apply mt-4 max-w-3xl text-base leading-relaxed sm:text-lg;
+    color: var(--ink-soft);
   }
 
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border border-[var(--ink)]/20 bg-transparent px-5 py-3 text-sm font-semibold text-[var(--ink)] transition hover:border-[var(--accent)] hover:text-[var(--accent)];
+  /* --- surfaces --- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card-hover:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
   }
 
   .panel {
-    @apply border border-[var(--line)] bg-[var(--surface)]/80;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  /* --- tags & pills --- */
+
+  .tag {
+    @apply inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .tag-accent {
+    background: var(--accent-soft);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    color: var(--accent);
+  }
+
+  .status-pill {
+    @apply inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium;
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 34%, transparent);
+    color: var(--success);
+  }
+
+  .status-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full;
+    background: var(--success);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 22%, transparent);
+  }
+
+  /* --- buttons --- */
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #fff;
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.07); }
+
+  .btn-secondary {
+    background: var(--surface);
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-ghost {
+    color: var(--ink-soft);
+  }
+  .btn-ghost:hover { color: var(--accent); }
+
+  /* --- forms --- */
+
+  .field {
+    @apply w-full rounded-lg px-4 py-3 text-sm transition;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .field::placeholder { color: var(--muted); }
+  .field:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .field-label {
+    @apply mb-2 block text-xs font-semibold uppercase tracking-wider;
+    color: var(--muted);
+  }
+
+  /* --- misc --- */
+
+  .rule { height: 1px; background: var(--line); }
+
+  .link-underline {
+    color: var(--accent);
+    text-decoration: none;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.25s ease;
+  }
+  .link-underline:hover { background-size: 100% 1px; }
+
+  .timeline-dot {
+    @apply absolute left-0 top-1.5 h-3 w-3 rounded-full;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+}
+
+@layer utilities {
+  .text-ink { color: var(--ink); }
+  .text-ink-soft { color: var(--ink-soft); }
+  .text-muted { color: var(--muted); }
+  .text-accent { color: var(--accent); }
+  .border-line { border-color: var(--line); }
+  .bg-surface { background: var(--surface); }
+  .bg-surface-2 { background: var(--surface-2); }
+
+  .gradient-text {
+    background: linear-gradient(120deg, var(--accent), var(--accent-strong));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hide decorative chrome when printing a CV copy of the page. */
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; color: #000; }
+    .site-shell { background: none; }
+    .card, .panel { border-color: #ccc; box-shadow: none; }
   }
 }

@@ -80,8 +80,8 @@
 // //                   {
 // //                     icon: '📧',
 // //                     label: 'Email',
-// //                     value: 'prabinparajuli496@gmail.com',
-// //                     href: 'mailto:prabinparajuli496@gmail.com'
+// //                     value: 'prabin.parajuli.jp@gmail.com',
+// //                     href: 'mailto:prabin.parajuli.jp@gmail.com'
 // //                   },
 // //                   {
 // //                     icon: '💼',
@@ -93,7 +93,7 @@
 // //                     icon: '📸',
 // //                     label: 'Instagram',
 // //                     value: '@mantramountain',
-// //                     href: 'https://www.instagram.com/prabin_496/'
+// //                     href: 'https://www.instagram.com/prabi.jp/'
 // //                   }
 // //                 ].map((contact, index) => (
 // //                   <motion.a

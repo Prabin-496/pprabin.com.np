@@ -606,7 +606,7 @@ const Portfolio = () => {
             {[
               { href: "https://github.com/Prabin-496", icon: <Github className="w-5 h-5" />, label: "GitHub" },
               { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" />, label: "LinkedIn" },
-              { href: "https://www.instagram.com/prabin_496/", icon: <Instagram className="w-5 h-5" />, label: "Instagram" }
+              { href: "https://www.instagram.com/prabi.jp/", icon: <Instagram className="w-5 h-5" />, label: "Instagram" }
             ].map((social, index) => (
               <motion.a
                 key={social.label}
@@ -1544,8 +1544,8 @@ const Portfolio = () => {
                     {
                       icon: <Mail className="w-6 h-6" />,
                       label: 'Email',
-                      value: 'prabinparajuli496@gmail.com',
-                      href: 'mailto:prabinparajuli496@gmail.com'
+                      value: 'prabin.parajuli.jp@gmail.com',
+                      href: 'mailto:prabin.parajuli.jp@gmail.com'
                     },
                     {
                       icon: <Linkedin className="w-6 h-6" />,
@@ -1562,8 +1562,8 @@ const Portfolio = () => {
                     {
                       icon: <Instagram className="w-6 h-6" />,
                       label: 'Instagram',
-                      value: '@prabin_496',
-                      href: 'https://www.instagram.com/prabin_496/'
+                      value: '@prabi.jp',
+                      href: 'https://www.instagram.com/prabi.jp/'
                     }
                   ].map((contact, index) => (
                     <motion.a
@@ -1737,7 +1737,7 @@ const Portfolio = () => {
             {[
               { href: "https://www.linkedin.com/in/prabin-parajuli-techie496/", icon: <Linkedin className="w-5 h-5" /> },
               { href: "https://github.com/prabin-496", icon: <Github className="w-5 h-5" /> },
-              { href: "https://www.instagram.com/prabin_496/", icon: <Instagram className="w-5 h-5" /> },
+              { href: "https://www.instagram.com/prabi.jp/", icon: <Instagram className="w-5 h-5" /> },
               { href: "https://www.instagram.com/prabininthecity/", icon: <Camera className="w-5 h-5" /> }
             ].map((social, index) => (
               <motion.a

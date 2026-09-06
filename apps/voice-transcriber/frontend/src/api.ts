@@ -48,8 +48,21 @@ export interface SummaryPayload {
   vocabulary?: string[];
 }
 
+/** FileReader gives a data: URL; the API wants the payload without the prefix. */
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read audio chunk'));
+    reader.onload = () => {
+      const result = String(reader.result || '');
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
 export const api = {
-  health: () => request<{ ok: boolean; geminiConfigured: boolean }>('/health'),
+  health: () => request<{ ok: boolean; geminiConfigured: boolean }>('/api/voice/health'),
   list: () => request<{ recordings: Recording[] }>('/api/recordings'),
   search: (q: string) =>
     request<{ recordings: Recording[] }>(`/api/recordings/search?q=${encodeURIComponent(q)}`),
@@ -62,13 +75,14 @@ export const api = {
       body: JSON.stringify({ title }),
     }),
   uploadChunk: async (recordingId: string, chunkIndex: number, blob: Blob, mimeType: string) => {
-    const fd = new FormData();
-    fd.append('audio', blob, `chunk-${chunkIndex}.webm`);
-    fd.append('chunkIndex', String(chunkIndex));
-    fd.append('mimeType', mimeType);
+    // Sent as base64 JSON rather than multipart: the serverless handler has no
+    // disk to spool an upload to, and a 45s Opus chunk stays well under the
+    // 4.5 MB request-body limit even after base64 expansion.
+    const audio = await blobToBase64(blob);
     return request<{ chunk: unknown }>(`/api/recordings/${recordingId}/chunks`, {
       method: 'POST',
-      body: fd,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chunkIndex, mimeType, audio }),
     });
   },
   finalize: (id: string) =>

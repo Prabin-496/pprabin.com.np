@@ -1,11 +1,22 @@
 {
   "routes": [
     { "handle": "filesystem" },
+
+    { "src": "/api/voice/health/?$", "dest": "/api/voice?path=health" },
+    { "src": "/api/recordings/?$", "dest": "/api/voice?path=" },
+    { "src": "/api/recordings/(.*)$", "dest": "/api/voice?path=$1" },
+
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/voice-ai", "dest": "/voice-ai/index.html" },
     { "src": "/voice-ai/", "dest": "/voice-ai/index.html" },
     { "src": "/flashcards", "dest": "/flashcards/index.html" },
     { "src": "/flashcards/", "dest": "/flashcards/index.html" },
     { "src": "/transcriber.html", "dest": "/transcriber.html" },
     { "src": "/[^.]+", "dest": "/" }
-  ]
+  ],
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60
+    }
+  }
 }
