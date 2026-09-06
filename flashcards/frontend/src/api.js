@@ -88,6 +88,9 @@ export const api = {
   deleteCard: (deckId, cardId) =>
     request(`/cards?${qs({ deck: deckId, cardId })}`, { method: 'DELETE' }),
 
+  /** Words already studied, across every deck or one of them. */
+  learned: (params) => request(`/learned?${qs(params)}`),
+
   stats: (deckId, days = 120) => request(`/stats?${qs({ deck: deckId, days })}`),
   seed: (level, offset = 0, force = false) =>
     request('/seed', { method: 'POST', body: { level, offset, force } }),

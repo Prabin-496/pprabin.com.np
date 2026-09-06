@@ -24,13 +24,21 @@ async function getDecks(req, res) {
   const withCounts = await Promise.all(
     decks.map(async (deck) => {
       const cfg = withDefaults({ ...globalConfig, ...(deck.config || {}) });
-      const [newTotal, learn, relearn, reviewDue, suspended, today] = await Promise.all([
+      const [
+        newTotal, learn, relearn, reviewDue, suspended, today,
+        learnTotal, relearnTotal, reviewTotal,
+      ] = await Promise.all([
         countQueue(deck.deckId, 'new'),
         countQueue(deck.deckId, 'learn', { dueBefore: now }),
         countQueue(deck.deckId, 'relearn', { dueBefore: now }),
         countQueue(deck.deckId, 'review', { dueBefore: now }),
         countQueue(deck.deckId, 'suspended'),
         getCounts(deck.deckId),
+        // Queue totals (not just what is due) — a card only reaches these by
+        // being answered, so together they are the words already learned.
+        countQueue(deck.deckId, 'learn'),
+        countQueue(deck.deckId, 'relearn'),
+        countQueue(deck.deckId, 'review'),
       ]);
 
       // Daily caps are what the user actually sees on the deck screen.
@@ -47,6 +55,11 @@ async function getDecks(req, res) {
           newTotal,
           reviewDue,
           suspended,
+          // Words that have left the new pile — a card only reaches these
+          // queues by being answered. `graduated` are the ones past the
+          // learning steps and now on a days-scale interval.
+          learned: learnTotal + relearnTotal + reviewTotal,
+          graduated: reviewTotal,
         },
         today,
       };

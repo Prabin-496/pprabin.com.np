@@ -17,13 +17,20 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
   const [busy, setBusy] = useState(false);
   const [streak, setStreak] = useState(0);
   const [tally, setTally] = useState({ right: 0, wrong: 0 });
+  const [loadError, setLoadError] = useState('');
+  const [saveError, setSaveError] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError('');
     try {
       const res = await api.study(deck.deckId, 'quiz');
       setState(res);
       setPicked(null);
+    } catch (e) {
+      // Without this the promise rejects unhandled and the screen renders
+      // blank — the failure has to be visible and retryable.
+      setLoadError(e.message || 'Could not load the next card.');
     } finally {
       setLoading(false);
     }
@@ -38,6 +45,7 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
       if (picked !== null || busy || !state?.quiz) return;
       const correct = index === state.quiz.answerIndex;
       setPicked(index);
+      setSaveError('');
       setStreak((s) => (correct ? s + 1 : 0));
       setTally((t) => ({ right: t.right + (correct ? 1 : 0), wrong: t.wrong + (correct ? 0 : 1) }));
 
@@ -54,8 +62,11 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
         // Hold the feedback on screen; `next` advances to the queued question.
         setState((prev) => ({ ...prev, _next: res }));
         onDeckChanged();
-      } catch {
-        setPicked(null);
+      } catch (e) {
+        // Keep the answer on screen. Clearing it would let the same card be
+        // graded a second time, which is how one word ends up with a run of
+        // duplicate reviews when a save is slow rather than actually lost.
+        setSaveError(e.message || 'Could not save that answer.');
       } finally {
         setBusy(false);
       }
@@ -68,7 +79,20 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
     if (!queued) return;
     setState(queued);
     setPicked(null);
+    setSaveError('');
   }, [state]);
+
+  /**
+   * After a failed save, reload from the server instead of re-answering. If
+   * the answer did land, the reload picks up the real next card; if it did
+   * not, the same card comes back and can be answered once.
+   */
+  const recover = useCallback(async () => {
+    setSaveError('');
+    setPicked(null);
+    await load();
+    onDeckChanged();
+  }, [load, onDeckChanged]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -91,6 +115,20 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
   }, [picked, next, choose, state]);
 
   if (loading) return <p className="muted">Loading…</p>;
+
+  if (loadError) {
+    return (
+      <div className="done-card">
+        <h2>Could not load this deck</h2>
+        <p className="muted">{loadError}</p>
+        <div className="row-gap">
+          <button type="button" className="btn primary" onClick={load}>Try again</button>
+          <button type="button" className="btn" onClick={onSwitchMode}>Classic cards</button>
+        </div>
+      </div>
+    );
+  }
+
   if (!state) return null;
 
   const { quiz, card, counts } = state;
@@ -196,10 +234,22 @@ export default function Quiz({ deck, guard, onDeckChanged, onSwitchMode }) {
             ) : null}
           </div>
 
-          <button type="button" className="btn primary quiz-next" onClick={next} disabled={busy}>
-            {busy ? 'Saving…' : 'Continue'}
-          </button>
-          <p className="muted small">Press Enter to continue</p>
+          {saveError ? (
+            <>
+              <p className="quiz-save-error" role="alert">{saveError}</p>
+              <button type="button" className="btn primary quiz-next" onClick={recover}>
+                Reload this deck
+              </button>
+              <p className="muted small">Your earlier answers are already saved.</p>
+            </>
+          ) : (
+            <>
+              <button type="button" className="btn primary quiz-next" onClick={next} disabled={busy}>
+                {busy ? 'Saving…' : 'Continue'}
+              </button>
+              <p className="muted small">Press Enter to continue</p>
+            </>
+          )}
         </div>
       ) : (
         <p className="muted small quiz-hint">Tap an answer, or press 1–4</p>

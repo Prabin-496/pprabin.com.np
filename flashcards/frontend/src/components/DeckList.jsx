@@ -96,7 +96,8 @@ export default function DeckList({ decks, config, onOpen, onRefresh, guard }) {
               </div>
 
               <div className="deck-meta muted small">
-                {counts.newTotal} unseen · {counts.reviewDue} scheduled
+                <b className="deck-learned">{counts.learned ?? 0} learned</b>
+                {' · '}{counts.newTotal} unseen · {counts.reviewDue} scheduled
                 {counts.suspended ? ` · ${counts.suspended} suspended` : ''}
               </div>
 
@@ -109,6 +110,7 @@ export default function DeckList({ decks, config, onOpen, onRefresh, guard }) {
                 >
                   {ready ? 'Study' : 'Done for today'}
                 </button>
+                <button type="button" className="btn" onClick={() => onOpen(deck, 'learned')}>Learned</button>
                 <button type="button" className="btn" onClick={() => onOpen(deck, 'browse')}>Browse</button>
                 <button type="button" className="btn" onClick={() => onOpen(deck, 'stats')}>Stats</button>
                 <button type="button" className="btn" onClick={() => onOpen(deck, 'add')}>Add</button>

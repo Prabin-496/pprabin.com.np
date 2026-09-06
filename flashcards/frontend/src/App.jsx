@@ -4,6 +4,7 @@ import DeckList from './components/DeckList';
 import Study from './components/Study';
 import Quiz from './components/Quiz';
 import Browser from './components/Browser';
+import Learned from './components/Learned';
 import Stats from './components/Stats';
 import AddCards from './components/AddCards';
 import Settings from './components/Settings';
@@ -12,11 +13,15 @@ import PasscodeGate from './components/PasscodeGate';
 const VIEWS = {
   decks: 'Decks',
   study: 'Study',
+  learned: 'Learned',
   browse: 'Browse',
   stats: 'Stats',
   add: 'Add',
   settings: 'Settings',
 };
+
+/** Views that stand on their own — the rest need a deck to be open first. */
+const DECKLESS_VIEWS = ['decks', 'learned', 'settings'];
 
 export default function App() {
   const [view, setView] = useState('decks');
@@ -115,7 +120,7 @@ export default function App() {
               key={key}
               type="button"
               className={view === key ? 'tab active' : 'tab'}
-              disabled={key !== 'decks' && key !== 'settings' && !deckForView}
+              disabled={!DECKLESS_VIEWS.includes(key) && !deckForView}
               onClick={() => setView(key)}
             >
               {label}
@@ -176,6 +181,16 @@ export default function App() {
               onSwitchMode={switchMode}
             />
           )
+        ) : null}
+
+        {!loading && view === 'learned' ? (
+          <Learned
+            key={`learned-${activeDeck?.deckId || 'all'}`}
+            decks={decks}
+            initialDeckId={activeDeck?.deckId || 'all'}
+            guard={guard}
+            onChanged={refreshDecks}
+          />
         ) : null}
 
         {!loading && view === 'browse' && deckForView ? (

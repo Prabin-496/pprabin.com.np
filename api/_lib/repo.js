@@ -151,6 +151,33 @@ export async function queryQueue(deckId, queue, { limit = 50, dueBefore } = {}) 
   return (res.Items || []).map(stripKeys);
 }
 
+/**
+ * Every card sitting in one queue, paged through GSI1.
+ *
+ * `queryQueue` caps at a single page because the study loop only ever wants
+ * the next handful. The learned-words screen wants the whole queue, and for a
+ * 1,905-card deck reading it through the index (learn/review only) is far
+ * cheaper than `allCardsInDeck`, which drags every unseen card along too.
+ */
+export async function allInQueue(deckId, queue) {
+  const out = [];
+  let ExclusiveStartKey;
+  do {
+    const res = await ddb.send(
+      new QueryCommand({
+        TableName: TABLE,
+        IndexName: 'GSI1',
+        KeyConditionExpression: 'GSI1PK = :pk',
+        ExpressionAttributeValues: { ':pk': queueGsi(deckId, queue) },
+        ExclusiveStartKey,
+      })
+    );
+    out.push(...(res.Items || []).map(stripKeys));
+    ExclusiveStartKey = res.LastEvaluatedKey;
+  } while (ExclusiveStartKey);
+  return out;
+}
+
 /** Count of cards in a queue (no item payload transferred). */
 export async function countQueue(deckId, queue, { dueBefore } = {}) {
   let total = 0;

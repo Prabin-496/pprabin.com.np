@@ -134,7 +134,7 @@ persistent disk, which serverless does not have. Two things made the port clean:
 
 All `/api/recordings/*` routes are handled by the single `api/voice.js`
 function. Vercel Hobby allows **12 serverless functions per deployment**; the
-project now uses **9**. Splitting the voice routes across five files would have
+project now uses **10**. Splitting the voice routes across five files would have
 put it at 13 and broken the deploy.
 
 `apps/voice-transcriber/backend/` is now unused in production. It still works

@@ -115,6 +115,16 @@ async function update(req, res) {
   } else if (action === 'reset') {
     // Forget everything the scheduler knows and send it back to new.
     next = { ...next, ...newCardState(card.pos ?? 0) };
+  } else if (action === 'study-now') {
+    // Pull a word back into today's queue without discarding what the
+    // scheduler already knows about it: only the due date moves.
+    next.due = new Date().toISOString();
+    delete next.buriedUntil;
+    if (card.queue === 'suspended' || card.queue === 'buried') {
+      next.queue = card.type === 'new' ? 'new' : card.type;
+      next.isLeech = false;
+      next.tags = (card.tags || []).filter((t) => t !== 'leech');
+    }
   } else {
     const fields = ['expression', 'reading', 'meaning', 'partOfSpeech', 'exampleSentence',
       'exampleMeaning', 'notes', 'mnemonic', 'kanjiBreakdown', 'romaji'];
