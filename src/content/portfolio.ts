@@ -17,6 +17,7 @@ import gym from '../Assets/optimized/gymThumbnail.webp';
 import loseWeight from '../Assets/optimized/how to lose weight.webp';
 import market from '../Assets/optimized/market.webp';
 import handpan from '../Assets/optimized/handpan.webp';
+import do101 from '../Assets/optimized/do101.webp';
 
 export const PLACEHOLDER_IMAGE =
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZSBub3QgYXZhaWxhYmxlPC90ZXh0Pjwvc3ZnPg==';
@@ -204,6 +205,17 @@ export const workExperience = [
 
 export const projects = [
   {
+    id: 7,
+    title: 'DO101',
+    description:
+      'A free online tools platform: 28 tools across image, text, developer, calculator, productivity and game categories. Almost everything runs client-side, so files never leave the visitor\'s device.',
+    image: do101,
+    technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Canvas API', 'Web Workers', 'SEO'],
+    liveLink: 'https://www.do101.online',
+    githubLink: 'https://github.com/prabin-496',
+    category: 'product',
+  },
+  {
     id: 1,
     title: 'Mantra Mountain',
     description:
@@ -270,6 +282,31 @@ export const projectNarratives: Record<
   number,
   { problem: string[]; solution: string[]; result: string[]; features: string[] }
 > = {
+  7: {
+    problem: [
+      'Everyday tool sites make you upload a private file to a stranger\'s server just to shrink a photo, then bury the result under ads and a sign-up wall.',
+      'People arrive with one specific job — "get this image under 200 KB", "make this JSON readable" — and have to hunt through a menu to find it.',
+    ],
+    solution: [
+      'Built 28 tools that run entirely in the browser using the Canvas API and native crypto, so image compression, resizing, conversion, hashing and encoding never touch a server.',
+      'Led with a single search box answering "what do you want to do?" instead of a category tree, so the common jobs are one keystroke away.',
+      'Gave every tool its own indexable page with the utility on top and a real explanation underneath, rather than hiding them all behind one client-rendered route.',
+      'Kept the one server-dependent feature — the optional AI assistant — clearly labelled, with a privacy page stating exactly what runs where.',
+    ],
+    result: [
+      'A working product with no accounts, no uploads and no ad walls, covering image, text, developer, calculator, productivity and game categories.',
+      'Instant results with no network round trip, and tools that keep working on a slow connection.',
+      'Typing Battle extends the same client-side approach to live 1v1 races over a shared link.',
+    ],
+    features: [
+      'Client-side image processing',
+      'Search-first navigation',
+      'Per-tool SEO pages',
+      'Live multiplayer typing',
+      'Local-only score history',
+      'No sign-up, no uploads',
+    ],
+  },
   1: {
     problem: [
       'Bookings were hard to manage and users needed a clear booking flow.',
