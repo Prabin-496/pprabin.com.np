@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Github, Linkedin, Mail, MapPin, FileText } from 'lucide-react';
 import { profile, heroStats, skills } from '../content/portfolio';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const fade = {
   hidden: { opacity: 0, y: 18 },
@@ -12,6 +13,7 @@ const fade = {
 };
 
 export default function Hero() {
+  const { t } = useLanguage();
   // Lead with the infrastructure stack — it is what the role search is about.
   const primaryStack = skills[0].skills.slice(0, 6);
 
@@ -21,7 +23,7 @@ export default function Hero() {
         <motion.p variants={fade} custom={0} initial="hidden" animate="show">
           <span className="status-pill">
             <span className="status-dot" />
-            {profile.availability}
+            {t.hero.availability}
           </span>
         </motion.p>
 
@@ -42,7 +44,7 @@ export default function Hero() {
           animate="show"
           className="mt-4 text-xl font-medium sm:text-2xl"
         >
-          <span className="gradient-text">{profile.role}</span>
+          <span className="gradient-text">{t.hero.role}</span>
         </motion.p>
 
         <motion.p
@@ -53,7 +55,7 @@ export default function Hero() {
           className="mt-6 max-w-2xl text-base leading-relaxed sm:text-lg"
           style={{ color: 'var(--ink-soft)' }}
         >
-          {profile.summary}
+          {t.hero.summary}
         </motion.p>
 
         <motion.div
@@ -80,10 +82,10 @@ export default function Hero() {
           className="no-print mt-9 flex flex-wrap gap-3"
         >
           <a href="#contact" className="btn btn-primary">
-            Get in touch <ArrowRight className="h-4 w-4" />
+            {t.hero.getInTouch} <ArrowRight className="h-4 w-4" />
           </a>
           <a href="#experience" className="btn btn-secondary">
-            <FileText className="h-4 w-4" /> View experience
+            <FileText className="h-4 w-4" /> {t.hero.viewExperience}
           </a>
           <a href={profile.links.github} target="_blank" rel="noreferrer" className="btn btn-secondary">
             <Github className="h-4 w-4" /> GitHub

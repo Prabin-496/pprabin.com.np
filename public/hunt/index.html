@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Job Hunt — Prabin Parajuli</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Same tokens as the portfolio, so the two feel like one product. */
+      :root {
+        --bg: #0a0c0f; --surface: #14181d; --surface-2: #1a1f26;
+        --line: #23292f; --line-strong: #333b44;
+        --ink: #f2f4f6; --ink-soft: #b3bcc4; --muted: #7d8792;
+        --accent: #2dd4bf; --accent-hover: #5eead4; --accent-ink: #04211d;
+        --accent-soft: rgba(45, 212, 191, .13);
+        --success: #34d399; --warning: #fbbf24; --danger: #f87171;
+        --radius: 12px;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--ink);
+        font-family: Outfit, system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .shell { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+      h1 { font-family: Fraunces, Georgia, serif; font-size: 1.9rem; margin: 0; letter-spacing: -.02em; }
+      h2 { font-family: Fraunces, Georgia, serif; font-size: 1.15rem; margin: 0 0 4px; }
+      a { color: var(--accent); }
+
+      .top { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+      .sub { color: var(--muted); font-size: .9rem; margin: 6px 0 0; }
+
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+        border-radius: 10px; padding: 10px 16px; font-size: .85rem; font-weight: 600;
+        border: 1px solid transparent; font-family: inherit;
+        transition: background-color .18s, border-color .18s, color .18s;
+      }
+      .btn[disabled] { opacity: .5; cursor: not-allowed; }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); }
+      .btn-primary:not([disabled]):hover { background: var(--accent-hover); }
+      .btn-secondary { background: var(--surface); border-color: var(--line-strong); color: var(--ink); }
+      .btn-secondary:not([disabled]):hover { border-color: var(--accent); color: var(--accent); }
+      .btn-sm { padding: 6px 11px; font-size: .78rem; }
+
+      input, select, textarea {
+        background: #0f1216; border: 1px solid var(--line); color: var(--ink);
+        border-radius: 10px; padding: 10px 14px; font: inherit; font-size: .9rem;
+      }
+      input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+      .gate { max-width: 380px; margin: 18vh auto; text-align: center; }
+      .gate p { color: var(--ink-soft); font-size: .9rem; line-height: 1.6; }
+      .gate form { display: flex; gap: 8px; margin-top: 20px; }
+      .gate input { flex: 1; text-align: center; letter-spacing: .3em; }
+
+      .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin: 24px 0; }
+      .stat { background: var(--surface); padding: 14px 16px; }
+      .stat b { display: block; font-family: Fraunces, serif; font-size: 1.5rem; font-weight: 600; }
+      .stat span { color: var(--muted); font-size: .76rem; }
+
+      .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+      .chip { border-radius: 999px; padding: 6px 13px; font-size: .78rem; cursor: pointer; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); font-family: inherit; }
+      .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+      .job { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px; }
+      .job-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; justify-content: space-between; }
+      .job .meta { color: var(--muted); font-size: .82rem; margin: 4px 0 0; }
+      .score { font-family: Fraunces, serif; font-size: 1.5rem; font-weight: 600; color: var(--accent); line-height: 1; }
+
+      .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+      .tag { font-size: .7rem; padding: 3px 9px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-soft); }
+      .tag.warn { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 34%, transparent); background: color-mix(in srgb, var(--warning) 11%, transparent); }
+      .tag.good { color: var(--success); border-color: color-mix(in srgb, var(--success) 34%, transparent); background: color-mix(in srgb, var(--success) 11%, transparent); }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+      details { margin-top: 12px; }
+      summary { cursor: pointer; color: var(--muted); font-size: .8rem; }
+      details > div { margin-top: 10px; padding: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; font-size: .85rem; line-height: 1.6; }
+      ul { margin: 6px 0; padding-left: 20px; }
+      li { margin: 3px 0; color: var(--ink-soft); }
+      .verdict { font-weight: 600; }
+      .verdict.strong, .verdict\.worth-applying { color: var(--success); }
+      .verdict.stretch { color: var(--warning); }
+      .verdict.skip { color: var(--danger); }
+      pre.letter { white-space: pre-wrap; font: inherit; font-size: .85rem; color: var(--ink-soft); margin: 6px 0 0; }
+      .banner { padding: 12px 16px; border-radius: 10px; font-size: .85rem; margin-bottom: 16px; }
+      .banner.err { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+      .banner.info { background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--line); }
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <!-- Locked until the passcode is verified server-side. -->
+    <div class="shell" id="gate-view">
+      <div class="gate">
+        <h1>Job Hunt</h1>
+        <p>
+          Daily shortlist of cloud and infrastructure roles in Australia, Japan and the US,
+          scored against your profile. Private — enter the passcode to continue.
+        </p>
+        <form id="gate-form">
+          <input id="passcode" type="password" inputmode="numeric" placeholder="Passcode" autocomplete="off" />
+          <button class="btn btn-primary" type="submit">Unlock</button>
+        </form>
+        <div id="gate-error" class="banner err hidden" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+    <div class="shell hidden" id="app-view">
+      <div class="top">
+        <div>
+          <h1>Job Hunt</h1>
+          <p class="sub" id="subtitle"></p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a class="btn btn-secondary" href="/">← Portfolio</a>
+          <button class="btn btn-primary" id="refresh">Fetch today's jobs</button>
+        </div>
+      </div>
+
+      <div id="notice" class="banner info hidden"></div>
+      <div class="stats" id="stats"></div>
+      <div class="filters" id="filters"></div>
+      <div id="jobs"></div>
+    </div>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const state = { passcode: '', jobs: [], filter: 'all', targets: [] };
+
+      const api = async (action, body = {}) => {
+        const res = await fetch(`/api/hunt${action ? `?a=${action}` : ''}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...body, passcode: state.passcode }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+        return data;
+      };
+
+      const esc = (s) =>
+        String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+      $('gate-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        state.passcode = $('passcode').value;
+        try {
+          const data = await api('');
+          $('gate-view').classList.add('hidden');
+          $('app-view').classList.remove('hidden');
+          apply(data);
+        } catch (err) {
+          $('gate-error').textContent = err.message;
+          $('gate-error').classList.remove('hidden');
+        }
+      });
+
+      function apply(data) {
+        state.jobs = data.jobs || [];
+        state.targets = data.targets || [];
+        state.cvAvailable = data.cvAvailable;
+        $('subtitle').textContent =
+          `${data.today} · target ${data.dailyTarget} applications/day · ${state.jobs.length} tracked`;
+        if (!state.cvAvailable) {
+          $('notice').textContent =
+            'CV tailoring is off — set GEMINI_API_KEY to enable it. Matching and tracking still work.';
+          $('notice').classList.remove('hidden');
+        }
+        render();
+      }
+
+      function render() {
+        const counts = state.jobs.reduce((acc, j) => ((acc[j.status] = (acc[j.status] || 0) + 1), acc), {});
+        $('stats').innerHTML = [
+          ['Queued', counts.queued || 0],
+          ['Applied', counts.applied || 0],
+          ['Interview', counts.interview || 0],
+          ['Skipped', counts.skipped || 0],
+          ['Tracked', state.jobs.length],
+        ].map(([k, v]) => `<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
+
+        const filters = [['all', 'All'], ...state.targets.map((t) => [t.id, t.label]),
+          ['applied', 'Applied'], ['queued', 'Queued']];
+        $('filters').innerHTML = filters
+          .map(([id, label]) => {
+            const n = id === 'all' ? state.jobs.length
+              : state.jobs.filter((j) => j.target === id || j.status === id).length;
+            return `<button class="chip" data-f="${id}" aria-pressed="${state.filter === id}">${esc(label)} ${n}</button>`;
+          })
+          .join('');
+
+        const shown = state.jobs.filter(
+          (j) => state.filter === 'all' || j.target === state.filter || j.status === state.filter
+        );
+
+        $('jobs').innerHTML = shown.length
+          ? shown.map(jobCard).join('')
+          : '<p style="color:var(--muted)">Nothing here yet. Hit “Fetch today’s jobs”.</p>';
+      }
+
+      function jobCard(j) {
+        const flagTag = (f) => {
+          const cls = f === 'sponsorship-likely' ? 'good' : /senior|unstated|stale/.test(f) ? 'warn' : '';
+          return `<span class="tag ${cls}">${esc(f)}</span>`;
+        };
+        const a = j.application;
+        return `<div class="job" data-id="${esc(j.id)}">
+          <div class="job-head">
+            <div style="min-width:0">
+              <h2>${esc(j.title)}</h2>
+              <p class="meta">${esc(j.company)} · ${esc(j.location || 'Location not stated')} · via ${esc(j.source)}</p>
+            </div>
+            <div style="text-align:right">
+              <div class="score">${j.score}</div>
+              <div class="meta">${esc(j.status)}</div>
+            </div>
+          </div>
+          <div class="tags">${(j.flags || []).map(flagTag).join('')}</div>
+          <div class="actions">
+            <a class="btn btn-primary btn-sm" href="${esc(j.url)}" target="_blank" rel="noreferrer">Open &amp; apply →</a>
+            <button class="btn btn-secondary btn-sm" data-act="tailor">${a ? 'View draft' : 'Draft CV'}</button>
+            <select data-act="status" class="btn-sm" style="padding:6px 10px">
+              ${['queued', 'applied', 'skipped', 'interview', 'rejected', 'offer']
+                .map((s) => `<option value="${s}"${s === j.status ? ' selected' : ''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <details>
+            <summary>Why it scored ${j.score}</summary>
+            <div><ul>${(j.reasons || []).map((r) => `<li>${esc(r)}</li>`).join('')}</ul></div>
+          </details>
+          ${a ? draft(a) : '<div class="draft-slot"></div>'}
+        </div>`;
+      }
+
+      function draft(a) {
+        return `<details open class="draft-slot">
+          <summary>Tailored application</summary>
+          <div>
+            <p class="verdict ${esc(a.verdict)}">Verdict: ${esc(a.verdict)} — ${esc(a.verdictReason)}</p>
+            <p><strong>Summary</strong></p><p>${esc(a.summary)}</p>
+            <p><strong>CV highlights</strong></p>
+            <ul>${a.highlights.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>
+            <p><strong>Requirements you meet</strong></p>
+            <ul>${a.matchedRequirements.map((m) => `<li><strong>${esc(m.requirement)}</strong> — ${esc(m.evidence)}</li>`).join('')}</ul>
+            <p><strong>Gaps — be ready for these</strong></p>
+            <ul>${a.gaps.map((g) => `<li>${esc(g)}</li>`).join('')}</ul>
+            <p><strong>Cover letter</strong></p>
+            <pre class="letter">${esc(a.coverLetter)}</pre>
+          </div>
+        </details>`;
+      }
+
+      $('refresh').addEventListener('click', async () => {
+        const btn = $('refresh');
+        btn.disabled = true;
+        btn.textContent = 'Fetching…';
+        try {
+          const r = await api('refresh');
+          $('notice').textContent =
+            `Scanned ${r.scanned} jobs, ${r.viable} viable, ${r.added} new added` +
+            (r.errors?.length ? ` · sources down: ${r.errors.join('; ')}` : '');
+          $('notice').classList.remove('hidden');
+          apply(await api(''));
+        } catch (err) {
+          $('notice').textContent = err.message;
+          $('notice').classList.remove('hidden');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Fetch today's jobs";
+        }
+      });
+
+      $('filters').addEventListener('click', (e) => {
+        const chip = e.target.closest('[data-f]');
+        if (!chip) return;
+        state.filter = chip.dataset.f;
+        render();
+      });
+
+      $('jobs').addEventListener('click', async (e) => {
+        const btn = e.target.closest('[data-act="tailor"]');
+        if (!btn) return;
+        const card = btn.closest('.job');
+        const id = card.dataset.id;
+        btn.disabled = true;
+        btn.textContent = 'Drafting…';
+        try {
+          const { application } = await api('tailor', { id });
+          const job = state.jobs.find((j) => j.id === id);
+          if (job) job.application = application;
+          card.querySelector('.draft-slot')?.remove();
+          card.insertAdjacentHTML('beforeend', draft(application));
+          btn.textContent = 'View draft';
+        } catch (err) {
+          btn.textContent = 'Draft CV';
+          alert(err.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      $('jobs').addEventListener('change', async (e) => {
+        const select = e.target.closest('[data-act="status"]');
+        if (!select) return;
+        const id = select.closest('.job').dataset.id;
+        try {
+          await api('status', { id, status: select.value });
+          const job = state.jobs.find((j) => j.id === id);
+          if (job) job.status = select.value;
+          render();
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+    </script>
+  </body>
+</html>

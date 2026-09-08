@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { navLinks, profile } from '../content/portfolio';
+import { useLanguage } from '../i18n/LanguageContext';
 
 type Props = {
   theme: 'dark' | 'light';
@@ -8,6 +9,13 @@ type Props = {
 };
 
 export default function Nav({ theme, onToggleTheme }: Props) {
+  const { t, lang } = useLanguage();
+  // Japanese and Nepali labels are visibly wider than the English ones, and at
+  // xl the nine of them wrap mid-word. Those languages get the drawer until
+  // there is genuinely room for a single row.
+  const wide = lang === 'en';
+  const deskShow = wide ? 'xl:flex' : '2xl:flex';
+  const deskHide = wide ? 'xl:hidden' : '2xl:hidden';
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState('home');
@@ -81,23 +89,23 @@ export default function Nav({ theme, onToggleTheme }: Props) {
           >
             P
           </span>
-          <span className="hidden sm:inline">{profile.name}</span>
+          <span className="hidden whitespace-nowrap sm:inline">{profile.name}</span>
         </a>
 
         {/* Nine links need xl to breathe; below that they live in the drawer. */}
-        <ul className="hidden items-center gap-0.5 xl:flex">
+        <ul className={`hidden items-center gap-0.5 ${deskShow}`}>
           {navLinks.map((link) => (
             <li key={link.id}>
               <a
                 href={`#${link.id}`}
                 aria-current={active === link.id ? 'true' : undefined}
-                className="block rounded-md px-3 py-2 text-sm transition"
+                className="block whitespace-nowrap rounded-md px-3 py-2 text-sm transition"
                 style={{
                   color: active === link.id ? 'var(--accent)' : 'var(--ink-soft)',
                   background: active === link.id ? 'var(--accent-soft)' : 'transparent',
                 }}
               >
-                {link.label}
+                {t.nav[link.id] ?? link.label}
               </a>
             </li>
           ))}
@@ -113,14 +121,14 @@ export default function Nav({ theme, onToggleTheme }: Props) {
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          <a href="#contact" className="btn btn-primary hidden !px-4 !py-2 sm:inline-flex">
-            Hire me
+          <a href="#contact" className="btn btn-primary hidden whitespace-nowrap !px-4 !py-2 sm:inline-flex">
+            {t.hero.hireMe}
           </a>
 
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="icon-btn xl:hidden"
+            className={`icon-btn ${deskHide}`}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
           >
@@ -131,7 +139,7 @@ export default function Nav({ theme, onToggleTheme }: Props) {
 
       {open ? (
         <div
-          className="max-h-[calc(100vh-4rem)] overflow-y-auto xl:hidden"
+          className={`max-h-[calc(100vh-4rem)] overflow-y-auto ${deskHide}`}
           style={{ background: 'var(--bg-elevated)', borderTop: '1px solid var(--line)' }}
         >
           <ul className="shell grid gap-1 py-4">
@@ -147,7 +155,7 @@ export default function Nav({ theme, onToggleTheme }: Props) {
                     background: active === link.id ? 'var(--accent-soft)' : 'transparent',
                   }}
                 >
-                  {link.label}
+                  {t.nav[link.id] ?? link.label}
                 </a>
               </li>
             ))}

@@ -1,0 +1,171 @@
+{
+  "_comment": "Targeting rules and CV source facts for /hunt. Everything the matcher scores against and everything a tailored CV may claim comes from here. Nothing outside this file is invented \u2014 see huntCv.js.",
+  "candidate": {
+    "name": "Prabin Parajuli",
+    "email": "prabin.parajuli.jp@gmail.com",
+    "location": "Ichikawa, Chiba (Tokyo area), Japan",
+    "nationality": "Nepali",
+    "currentRole": "Cloud Infrastructure / AWS / Cloud DX Engineer",
+    "currentEmployer": "WITS Corp (Wistron)",
+    "workAuthorization": "Currently work-authorised in Japan. Requires visa sponsorship for Australia, the USA, and other countries.",
+    "education": "BSc Computing, London Metropolitan University",
+    "languages": [
+      "English (professional)",
+      "Nepali (native)",
+      "Japanese (business, JLPT N2 in progress)"
+    ],
+    "portfolio": "https://www.pprabin.com.np",
+    "linkedin": "https://www.linkedin.com/in/prabin-parajuli-techie496/",
+    "github": "https://github.com/Prabin-496"
+  },
+  "coreSkills": [
+    "AWS",
+    "Cloud Infrastructure",
+    "Cloud Operations",
+    "IAM",
+    "Cloud Security",
+    "Monitoring",
+    "Observability",
+    "Deployment Automation",
+    "Infrastructure Migration",
+    "AWS FSx",
+    "Robocopy",
+    "Linux",
+    "Networking",
+    "DevOps",
+    "CI/CD",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Node.js",
+    "Python",
+    "DynamoDB",
+    "Serverless",
+    "Vercel",
+    "Git",
+    "Documentation"
+  ],
+  "evidence": [
+    "Runs day-to-day AWS operations at WITS Corp (Wistron): IAM and security, monitoring, deployment reliability.",
+    "Delivered file-server migration work using AWS FSx and Robocopy, including cutover planning and validation.",
+    "Built and operates pprabin.com.np end to end: React + Vite frontend, Vercel Serverless Functions, DynamoDB single-table design with a GSI for queue and due lookups.",
+    "Built DO101 (do101.online), a 28-tool browser-based utility platform where image, hashing and encoding work runs entirely client-side via the Canvas API.",
+    "Built a spaced-repetition flashcards system (SM-2 scheduler, 5,700+ cards) with a serverless API and DynamoDB persistence.",
+    "Built a voice transcriber PWA with chunked browser recording and Gemini transcription, backed by SQLite.",
+    "AWS Academy Graduate \u2014 Cloud Foundations, plus 50+ completed courses in cloud, networking, Linux, programming foundations and generative AI.",
+    "Works daily in a Japanese-language IT environment; comfortable across English and Japanese documentation."
+  ],
+  "seniority": [
+    "junior",
+    "mid",
+    "associate",
+    "entry",
+    "graduate",
+    "l3",
+    "l4"
+  ],
+  "targets": [
+    {
+      "id": "australia",
+      "label": "Australia (visa sponsorship)",
+      "priority": 1,
+      "locationPattern": "australia|sydney|melbourne|brisbane|perth|canberra|adelaide",
+      "requiresSponsorship": true,
+      "note": "Top priority. Only worth queueing where sponsorship is plausible."
+    },
+    {
+      "id": "japan",
+      "label": "Japan (high paying)",
+      "priority": 2,
+      "locationPattern": "japan|tokyo|osaka|yokohama|kanagawa|chiba|saitama",
+      "requiresSponsorship": false,
+      "minMonthlyJpy": 300000,
+      "note": "Already work-authorised, so no sponsorship filter. Salary floor applies."
+    },
+    {
+      "id": "usa",
+      "label": "USA (visa sponsorship)",
+      "priority": 3,
+      "locationPattern": "united states|usa|new york|san francisco|seattle|austin|boston|remote - us",
+      "requiresSponsorship": true,
+      "note": "Sponsorship is hardest here; kept but ranked below AU and JP."
+    },
+    {
+      "id": "remote-global",
+      "label": "Global remote",
+      "priority": 4,
+      "locationPattern": "remote|anywhere|worldwide|global",
+      "requiresSponsorship": false,
+      "note": "Remote roles that accept applicants based in Japan."
+    }
+  ],
+  "roleKeywords": {
+    "strong": [
+      "cloud engineer",
+      "cloud infrastructure",
+      "infrastructure engineer",
+      "site reliability",
+      "sre",
+      "devops",
+      "platform engineer",
+      "cloud operations",
+      "cloud support",
+      "solutions architect",
+      "aws"
+    ],
+    "good": [
+      "backend engineer",
+      "systems engineer",
+      "technical support engineer",
+      "full stack",
+      "software engineer",
+      "network engineer",
+      "automation engineer"
+    ],
+    "exclude": [
+      "director",
+      "vp ",
+      "head of",
+      "principal",
+      "staff ",
+      "manager",
+      "sales",
+      "account executive",
+      "recruiter",
+      "marketing",
+      "intern",
+      "internship",
+      "phd",
+      "partner solutions",
+      "pre-sales",
+      "presales",
+      "account manager",
+      "customer success"
+    ]
+  },
+  "sponsorshipSignals": {
+    "positive": [
+      "visa sponsorship",
+      "sponsor",
+      "relocation",
+      "work permit",
+      "482",
+      "tss visa",
+      "skilled visa",
+      "h-1b",
+      "h1b",
+      "relocation assistance",
+      "immigration support"
+    ],
+    "negative": [
+      "no sponsorship",
+      "not sponsor",
+      "unable to sponsor",
+      "must have the right to work",
+      "existing work rights",
+      "citizens only",
+      "security clearance"
+    ]
+  },
+  "dailyTarget": 10
+}

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://pprabin.com.np/</loc>
+    <loc>https://www.pprabin.com.np/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://pprabin.com.np/voice-ai/</loc>
+    <loc>https://www.pprabin.com.np/voice-ai/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://pprabin.com.np/flashcards/</loc>
+    <loc>https://www.pprabin.com.np/flashcards/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

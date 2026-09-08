@@ -9,8 +9,11 @@ import VideoWork from './sections/VideoWork';
 import JapanReadiness from './sections/JapanReadiness';
 import Education from './sections/Education';
 import Certificates from './sections/Certificates';
+import FAQ from './sections/FAQ';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
+import LanguageSwitcher from './ui/LanguageSwitcher';
+import { LanguageProvider } from './i18n/LanguageContext';
 import './index.css';
 
 export type Theme = 'dark' | 'light';
@@ -63,6 +66,7 @@ export default function App() {
   const toggleTheme = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), []);
 
   return (
+    <LanguageProvider>
     <div className="site-shell">
       <a
         href="#home"
@@ -84,10 +88,13 @@ export default function App() {
         <JapanReadiness />
         <Education />
         <Certificates />
+        <FAQ />
         <Contact />
       </main>
 
       <Footer />
+      <LanguageSwitcher />
     </div>
+    </LanguageProvider>
   );
 }

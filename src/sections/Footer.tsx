@@ -11,6 +11,7 @@ const SOCIALS = [
 /** Same-page destinations worth a direct link from the footer. */
 const RESOURCES = [
   { href: '#certificates', label: 'Certificates' },
+  { href: '#faq', label: 'Who is Prabin?' },
   { href: '#experience', label: 'Experience' },
   { href: '#projects', label: 'Projects' },
 ];

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fallbackHtml, fallbackStyles, jsonLd, loadIdentity } from './scripts/seo-html.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicRoot = path.resolve(__dirname, 'public');
@@ -13,6 +14,8 @@ const SUBAPP_INDEX: Record<string, string> = {
   '/voice-ai/': 'voice-ai/index.html',
   '/flashcards': 'flashcards/index.html',
   '/flashcards/': 'flashcards/index.html',
+  '/hunt': 'hunt/index.html',
+  '/hunt/': 'hunt/index.html',
 };
 
 /**
@@ -152,8 +155,34 @@ function apiFunctions(): Plugin {
   };
 }
 
+/**
+ * Fill the SEO placeholders in index.html.
+ *
+ * The identity facts live in `src/content/identity.json` so the structured data
+ * and the crawlable fallback cannot drift from each other — or from what the
+ * React app renders. Injection happens in dev too, so the markup an AI crawler
+ * would receive is the markup you can inspect locally.
+ */
+function seo(): Plugin {
+  return {
+    name: 'seo-injection',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        const identity = loadIdentity();
+        const head =
+          `<script type="application/ld+json">${JSON.stringify(jsonLd(identity))}</script>\n` +
+          `    <style>${fallbackStyles}</style>`;
+        return html
+          .replace('<!--seo-head-->', head)
+          .replace('<!--seo-fallback-->', fallbackHtml(identity));
+      },
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [apiFunctions(), publicSubappRewrites(), react()],
+  plugins: [apiFunctions(), publicSubappRewrites(), seo(), react()],
   server: {
     port: 5174,
     strictPort: true,

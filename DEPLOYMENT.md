@@ -119,6 +119,35 @@ never edit it by hand.
 The company/identity documents work completely differently: never committed,
 never in `public/`. See [docs/private-documents.md](docs/private-documents.md).
 
+## SEO and entity recognition
+
+The site is a client-rendered SPA, which means the HTML leaving the server has
+an empty `<div id="root">`. Google runs JavaScript and sees the real page, but
+**GPTBot, ClaudeBot, PerplexityBot, CCBot and most AI crawlers do not** — to
+them the site had no content at all.
+
+`scripts/seo-html.mjs`, wired in as the `seo()` plugin in `vite.config.ts`,
+fixes that at build time from a single source, `src/content/identity.json`:
+
+| Injected | Purpose |
+|---|---|
+| `@graph` JSON-LD | `Person` (stable `@id`, `sameAs`, `disambiguatingDescription`), `WebSite`, `ProfilePage`, `FAQPage`, cross-referenced so consumers know they describe one entity |
+| `#seo-fallback` block | A real biography inside `#root`. React replaces it on mount, so crawlers and humans get the same facts. |
+
+`src/sections/FAQ.tsx` renders the same questions from the same file, because
+Google only honours `FAQPage` markup when the Q&A is visible on the page. Edit
+`identity.json` and the schema, the fallback and the visible FAQ all change
+together — they cannot drift.
+
+### Canonical host
+
+The apex redirects to `www`, so every self-reference names `https://www.pprabin.com.np`
+— canonical, `og:url`, JSON-LD, `sitemap.xml` and `robots.txt`. Pointing them at
+the apex means pointing at a URL that redirects away, which splits ranking
+signals. If you ever make the apex primary in Vercel, find-and-replace the host
+in `index.html`, `src/content/identity.json`, `public/sitemap.xml` and
+`public/robots.txt`.
+
 ## Data model
 
 Single-table design on `AnkiFlashcards` (`PK`/`SK`, plus `GSI1` for queue and

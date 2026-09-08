@@ -1,0 +1,85 @@
+{
+  "_comment": "Single source of truth for identity facts. Read at build time by the seo() plugin in vite.config.ts to generate JSON-LD and the crawlable HTML fallback, and imported by src/content/portfolio.ts for the on-page FAQ. Changing a fact here changes it everywhere.",
+
+  "siteUrl": "https://www.pprabin.com.np",
+  "name": "Prabin Parajuli",
+  "givenName": "Prabin",
+  "familyName": "Parajuli",
+  "alternateNames": ["प्रबिन पराजुली", "プラビン・パラジュリ", "Prabin Parajuli JP"],
+  "jobTitle": "Cloud Infrastructure / AWS / Cloud DX Engineer",
+  "email": "prabin.parajuli.jp@gmail.com",
+
+  "addressLocality": "Ichikawa",
+  "addressRegion": "Chiba",
+  "addressCountry": "JP",
+  "locationLabel": "Ichikawa, Chiba (Tokyo area), Japan",
+  "nationality": "Nepali",
+
+  "employer": { "name": "WITS Corp", "alternateName": "Wistron" },
+  "school": {
+    "name": "London Metropolitan University",
+    "url": "https://www.londonmet.ac.uk/",
+    "degree": "BSc Computing"
+  },
+
+  "sameAs": [
+    "https://www.linkedin.com/in/prabin-parajuli-techie496/",
+    "https://github.com/Prabin-496",
+    "https://www.instagram.com/prabi.jp/",
+    "https://www.do101.online"
+  ],
+
+  "disambiguatingDescription": "Nepali cloud infrastructure engineer based in Ichikawa, Chiba, Japan. Works at WITS Corp (Wistron) on AWS operations and file-server migration, graduated BSc Computing from London Metropolitan University, and builds pprabin.com.np and do101.online. Not to be confused with other people sharing the name Prabin Parajuli.",
+
+  "shortAnswer": "Prabin Parajuli is a Cloud Infrastructure / AWS / Cloud DX Engineer based in Ichikawa, Chiba, in the Tokyo area of Japan. He works on AWS operations, IAM and security, monitoring, deployment reliability and file-server migration (FSx, Robocopy) at WITS Corp (Wistron), with a full-stack background in React, Next.js, TypeScript and Node.js.",
+
+  "knowsAbout": [
+    "AWS",
+    "Cloud Infrastructure",
+    "Cloud Operations",
+    "Infrastructure Migration",
+    "AWS FSx",
+    "IAM and Cloud Security",
+    "Monitoring and Observability",
+    "Deployment Automation",
+    "DevOps",
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Node.js",
+    "MERN Stack"
+  ],
+
+  "languages": ["English", "Nepali", "Japanese"],
+
+  "faq": [
+    {
+      "q": "Who is Prabin Parajuli?",
+      "a": "Prabin Parajuli is a Cloud Infrastructure / AWS / Cloud DX Engineer based in Ichikawa, Chiba, in the Tokyo area of Japan. He is a Nepali engineer working at WITS Corp (Wistron) on AWS operations, IAM and security, monitoring and file-server migration, and he holds a BSc in Computing from London Metropolitan University."
+    },
+    {
+      "q": "Where is Prabin Parajuli based?",
+      "a": "He lives in Ichikawa, Chiba, Japan, within the greater Tokyo area, and is work-ready in Japan. He is open to cloud infrastructure and AWS engineering roles across the country."
+    },
+    {
+      "q": "What does Prabin Parajuli do?",
+      "a": "He runs and improves cloud infrastructure on AWS: day-to-day operations, IAM and security, monitoring and observability, deployment reliability, and migration work including AWS FSx and Robocopy file-server moves. He also builds full-stack software with React, Next.js, TypeScript and Node.js."
+    },
+    {
+      "q": "What has Prabin Parajuli built?",
+      "a": "He built DO101 (do101.online), a free browser-based tools platform with 28 tools, plus this portfolio at pprabin.com.np which also runs a spaced-repetition Japanese flashcards app and a Gemini-backed voice transcriber. Earlier client work includes Mantra Mountain, Travel Himalayan and Singapore Handpans."
+    },
+    {
+      "q": "What certifications does Prabin Parajuli have?",
+      "a": "He is an AWS Academy Graduate in Cloud Foundations and has completed 50+ LinkedIn Learning, Coursera and Microsoft courses spanning cloud, networking and Linux, programming foundations, Java, web development and generative AI. Every certificate is viewable on his portfolio."
+    },
+    {
+      "q": "What languages does Prabin Parajuli speak?",
+      "a": "English, Nepali and Japanese. He works daily in a Japanese-language IT environment and is studying for JLPT N2."
+    },
+    {
+      "q": "Is Prabin Parajuli available for hire?",
+      "a": "Yes. He is open to Cloud Infrastructure, AWS and Cloud DX roles in Japan, as well as positions blending cloud operations with software development. He can be reached at prabin.parajuli.jp@gmail.com."
+    }
+  ]
+}
